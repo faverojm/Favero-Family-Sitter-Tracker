@@ -1,1084 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Sitter Hours & Pay Tracker</title>
-  
-  <!-- iOS PWA Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Sitter Tracker" />
-  <link rel="apple-touch-icon" id="appleTouchIcon" href="" />
-  <link rel="icon" id="favicon" href="" />
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    /* Custom scrollbars & iOS smooth scrolling */
-    body {
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    input, select, textarea {
-      user-select: text;
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitter Hours & Pay Tracker</title>
+    <!-- Dynamic Apple Touch Icon for Home Screen -->
+    <link rel="apple-touch-icon" id="appleTouchIcon" href="">
+    <link rel="icon" id="favicon" href="">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased pb-12">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- TOP HEADER & BAR -->
-  <header class="sticky top-0 z-30 bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 px-4 py-3 shadow-md">
-    <div class="max-w-xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-          <i data-lucide="clock" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <h1 class="text-base font-bold text-white tracking-wide leading-none">Sitter Pay Tracker</h1>
-          <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5" id="syncStatus">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Local Storage
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- Household Sync Button -->
-        <button id="btnSyncModal" onclick="openSyncModal()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs text-indigo-300 font-medium transition border border-slate-600/60">
-          <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
-          <span id="syncBtnLabel">Sync</span>
-        </button>
-
-        <!-- Settings Button -->
-        <button onclick="openSettingsModal()" class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-xl mx-auto w-full px-4 pt-4 flex-1 flex flex-col gap-5">
-
-    <!-- SITTER FILTER / SELECTOR -->
-    <section class="flex items-center justify-between bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/60">
-      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1">Sitter Filter</span>
-      <select id="sitterFilter" onchange="handleSitterFilterChange(this.value)" class="bg-slate-700 text-white text-sm font-medium rounded-lg px-3 py-1.5 border border-slate-600 focus:outline-none focus:border-indigo-500">
-        <option value="ALL">All Sitters</option>
-      </select>
-    </section>
-
-    <!-- WEEK NAVIGATION HEADER -->
-    <section class="bg-slate-800 rounded-2xl p-4 border border-slate-700/80 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <button onclick="changeWeek(-1)" class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        
-        <div class="text-center">
-          <h2 class="text-sm font-semibold text-slate-300" id="weekDateRange">Week Range</h2>
-          <span class="text-xs text-indigo-400 font-medium" id="weekBadge">Current Week</span>
-        </div>
-
-        <button onclick="changeWeek(1)" class="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
-          <i data-lucide="chevron-right" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- STATS DASHBOARD GRID -->
-      <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-700/60 text-center">
-        <div class="bg-slate-900/60 p-2.5 rounded-xl">
-          <span class="text-[10px] uppercase tracking-wider text-slate-400 font-medium block mb-0.5">Total Hours</span>
-          <span class="text-base font-bold text-slate-100" id="statHours">0.0 hrs</span>
-        </div>
-        <div class="bg-slate-900/60 p-2.5 rounded-xl">
-          <span class="text-[10px] uppercase tracking-wider text-slate-400 font-medium block mb-0.5">Total Due</span>
-          <span class="text-base font-bold text-emerald-400" id="statTotalPay">$0.00</span>
-        </div>
-        <div class="bg-slate-900/60 p-2.5 rounded-xl">
-          <span class="text-[10px] uppercase tracking-wider text-slate-400 font-medium block mb-0.5">Unpaid</span>
-          <span class="text-base font-bold text-amber-400" id="statUnpaid">$0.00</span>
-        </div>
-      </div>
-
-      <!-- SHARE & SUMMARY ACTION -->
-      <div class="mt-3.5 flex gap-2">
-        <button onclick="copyWeeklySummary()" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/20">
-          <i data-lucide="copy" class="w-4 h-4"></i>
-          Copy Text Summary
-        </button>
-      </div>
-    </section>
-
-    <!-- ACTION BUTTONS: ADD SHIFT / ADD EXPENSE -->
-    <div class="grid grid-cols-2 gap-3">
-      <button onclick="openShiftModal()" class="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-        Log Shift
-      </button>
-      <button onclick="openExpenseModal()" class="py-3 px-4 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20 transition">
-        <i data-lucide="receipt" class="w-4 h-4"></i>
-        Add Expense
-      </button>
-    </div>
-
-    <!-- WEEKLY ACTIVITY FEED -->
-    <section class="flex flex-col gap-3">
-      <div class="flex items-center justify-between px-1">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Week Activity</h3>
-        <span class="text-xs text-slate-400" id="itemCount">0 items</span>
-      </div>
-
-      <div id="activityList" class="flex flex-col gap-2.5">
-        <!-- Rendered items go here dynamically -->
-      </div>
-    </section>
-
-  </main>
-
-  <!-- MODAL: ADD / EDIT SHIFT -->
-  <div id="shiftModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-base font-bold text-white flex items-center gap-2" id="shiftModalTitle">
-          <i data-lucide="clock" class="w-5 h-5 text-indigo-400"></i>
-          Log Babysitting Shift
-        </h3>
-        <button onclick="closeShiftModal()" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <form id="shiftForm" onsubmit="handleSaveShift(event)" class="flex flex-col gap-3.5">
-        <input type="hidden" id="shiftId" />
-
-        <!-- Sitter Selection -->
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Select Sitter</label>
-          <select id="shiftSitterId" onchange="updateModalRateFromSitter(this.value)" required class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500">
-          </select>
-        </div>
-
-        <!-- Date -->
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Date</label>
-          <input type="date" id="shiftDate" required class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-        </div>
-
-        <!-- Start & End Time -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Start Time</label>
-            <input type="time" id="shiftStartTime" required onchange="calculateModalTotals()" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">End Time</label>
-            <input type="time" id="shiftEndTime" required onchange="calculateModalTotals()" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-          </div>
-        </div>
-
-        <!-- Break & Hourly Rate -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Unpaid Break (mins)</label>
-            <input type="number" id="shiftBreak" min="0" value="0" step="5" onchange="calculateModalTotals()" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Hourly Rate ($/hr)</label>
-            <input type="number" id="shiftRate" min="0" step="0.5" required onchange="calculateModalTotals()" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-          </div>
-        </div>
-
-        <!-- Notes -->
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Notes / Activities (Optional)</label>
-          <textarea id="shiftNotes" rows="2" placeholder="e.g. Put kids to bed at 8:30pm" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500"></textarea>
-        </div>
-
-        <!-- Calculated Summary Preview -->
-        <div class="bg-slate-900/80 p-3 rounded-xl flex items-center justify-between text-xs border border-slate-700">
-          <div>
-            <span class="text-slate-400 block">Total Duration:</span>
-            <span id="shiftModalDuration" class="font-bold text-slate-200">0 hrs 0 mins</span>
-          </div>
-          <div class="text-right">
-            <span class="text-slate-400 block">Total Calculated Pay:</span>
-            <span id="shiftModalPay" class="font-bold text-emerald-400 text-base">$0.00</span>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2 pt-2">
-          <button type="button" onclick="closeShiftModal()" class="flex-1 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold transition">Cancel</button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shadow-lg shadow-indigo-600/30">Save Shift</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: ADD / EDIT EXPENSE -->
-  <div id="expenseModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="receipt" class="w-5 h-5 text-amber-400"></i>
-          Add Expense / Reimbursement
-        </h3>
-        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <form id="expenseForm" onsubmit="handleSaveExpense(event)" class="flex flex-col gap-3.5">
-        <input type="hidden" id="expenseId" />
-
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Select Sitter</label>
-          <select id="expenseSitterId" required class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500">
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Date</label>
-          <input type="date" id="expenseDate" required class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Category</label>
-            <select id="expenseCategory" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500">
-              <option value="Food/Meals">Food / Meals</option>
-              <option value="Gas/Mileage">Gas / Mileage</option>
-              <option value="Activities/Outings">Activities / Outings</option>
-              <option value="Supplies">Supplies</option>
-              <option value="Tip/Bonus">Tip / Bonus</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Amount ($)</label>
-            <input type="number" id="expenseAmount" min="0.01" step="0.01" required placeholder="0.00" class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Description / Receipt Note</label>
-          <input type="text" id="expenseNote" placeholder="e.g. Pizza dinner for kids" required class="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500" />
-        </div>
-
-        <div class="flex items-center gap-2 pt-2">
-          <button type="button" onclick="closeExpenseModal()" class="flex-1 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-semibold transition">Cancel</button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition shadow-lg shadow-amber-600/30">Save Expense</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: SETTINGS & SITTER MANAGEMENT -->
-  <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-lg rounded-2xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="settings" class="w-5 h-5 text-indigo-400"></i>
-          Settings & Sitters
-        </h3>
-        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- SITTER PROFILES -->
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Manage Sitters</h4>
-          <button onclick="addNewSitterPrompt()" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Sitter
-          </button>
-        </div>
-        <div id="sittersList" class="flex flex-col gap-2">
-          <!-- Rendered sitters -->
-        </div>
-      </div>
-
-      <!-- APP ICON CUSTOMIZER -->
-      <div class="border-t border-slate-700 pt-3 flex flex-col gap-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">App Icon Customizer</h4>
-        
-        <div class="flex items-center gap-4 bg-slate-900/60 p-3 rounded-xl border border-slate-700">
-          <canvas id="iconCanvas" width="180" height="180" class="w-16 h-16 rounded-2xl shadow-lg border border-slate-600/50"></canvas>
-          <div class="flex-1 flex flex-col gap-2">
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[10px] text-slate-400 mb-0.5">Icon Symbol</label>
-                <select id="iconSymbol" onchange="renderIconCanvas()" class="w-full bg-slate-700 text-white text-xs rounded p-1 border border-slate-600">
-                  <option value="clock">Clock</option>
-                  <option value="baby">Baby Bottle</option>
-                  <option value="heart">Heart</option>
-                  <option value="star">Star</option>
-                  <option value="shield">Shield</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] text-slate-400 mb-0.5">Theme Gradient</label>
-                <select id="iconBg" onchange="renderIconCanvas()" class="w-full bg-slate-700 text-white text-xs rounded p-1 border border-slate-600">
-                  <option value="indigo">Indigo / Blue</option>
-                  <option value="teal">Emerald / Teal</option>
-                  <option value="sunset">Sunset / Amber</option>
-                  <option value="rose">Rose / Pink</option>
-                </select>
-              </div>
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div id="headerIconPreview" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-sm overflow-hidden">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h1 class="text-lg font-bold tracking-tight">Sitter Tracker</h1>
             </div>
-            <button onclick="downloadIconPNG()" class="py-1 px-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded font-medium flex items-center justify-center gap-1">
-              <i data-lucide="download" class="w-3 h-3"></i> Download PNG for iOS
+            <button onclick="openSettings()" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
-          </div>
         </div>
-      </div>
+    </header>
 
-      <div class="pt-2 border-t border-slate-700">
-        <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold text-sm transition">Done</button>
-      </div>
-    </div>
-  </div>
+    <!-- Main Content Container -->
+    <main class="max-w-md mx-auto px-4 mt-6 space-y-6">
 
-  <!-- MODAL: HOUSEHOLD REAL-TIME SYNC -->
-  <div id="syncModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-md rounded-2xl p-5 border border-slate-700 shadow-2xl flex flex-col gap-4">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-700">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="wifi" class="w-5 h-5 text-indigo-400"></i>
-          Connect Family Devices
-        </h3>
-        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
+        <!-- Calculator Card -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+            <h2 class="text-base font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <span>Log Shift</span>
+            </h2>
 
-      <p class="text-xs text-slate-300 leading-relaxed">
-        Enter a shared <strong>Household Sync Code</strong> (e.g. <code class="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-300">FAVERO-SITTER</code>). Enter the exact same code on your spouse's iPhone to automatically sync shifts in real time!
-      </p>
-
-      <form onsubmit="handleSaveSyncCode(event)" class="flex flex-col gap-3">
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Household Sync Code</label>
-          <input type="text" id="householdCodeInput" required placeholder="e.g. SMITH-FAMILY-2026" class="w-full bg-slate-700 text-white uppercase rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-indigo-500 font-mono tracking-wider" />
-        </div>
-
-        <div class="flex items-center gap-2 pt-2">
-          <button type="button" onclick="disconnectSync()" class="py-2 px-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold">Use Local Only</button>
-          <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">Connect & Sync</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-  <!-- APPLICATION JAVASCRIPT -->
-  <script>
-    // INITIAL APP STATE
-    const state = {
-      sitters: JSON.parse(localStorage.getItem('sitters')) || [
-        { id: 'sitter-1', name: 'Primary Sitter', rate: 20.00, phone: '', paymentInfo: 'Venmo: @SitterHandle' }
-      ],
-      shifts: JSON.parse(localStorage.getItem('shifts')) || [],
-      expenses: JSON.parse(localStorage.getItem('expenses')) || [],
-      selectedSitterId: 'ALL',
-      currentWeekOffset: 0, // 0 = current week, -1 = last week, etc.
-      householdCode: localStorage.getItem('householdCode') || '',
-      db: null,
-      unsubscribeShifts: null,
-      unsubscribeExpenses: null
-    };
-
-    // INIT FUNCTION
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initDates();
-      renderSitterFilterOptions();
-      renderIconCanvas();
-      
-      if (state.householdCode) {
-        initFirebaseSync();
-      } else {
-        renderApp();
-      }
-    });
-
-    // DATE HELPERS
-    function getWeekRange(offset = 0) {
-      const now = new Date();
-      const currentDay = now.getDay(); // 0 is Sunday
-      const diffToSunday = now.getDate() - currentDay + (offset * 7);
-      
-      const startOfWeek = new Date(now.setDate(diffToSunday));
-      startOfWeek.setHours(0, 0, 0, 0);
-
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-
-      return { startOfWeek, endOfWeek };
-    }
-
-    function formatDateForInput(d) {
-      return d.toISOString().split('T')[0];
-    }
-
-    function initDates() {
-      const today = formatDateForInput(new Date());
-      document.getElementById('shiftDate').value = today;
-      document.getElementById('expenseDate').value = today;
-    }
-
-    // MAIN RENDER FUNCTION
-    function renderApp() {
-      const { startOfWeek, endOfWeek } = getWeekRange(state.currentWeekOffset);
-      
-      // Update Week Range Text
-      const options = { month: 'short', day: 'numeric' };
-      document.getElementById('weekDateRange').innerText = 
-        `${startOfWeek.toLocaleDateString('en-US', options)} - ${endOfWeek.toLocaleDateString('en-US', options)}`;
-      
-      if (state.currentWeekOffset === 0) {
-        document.getElementById('weekBadge').innerText = 'Current Week';
-      } else if (state.currentWeekOffset === -1) {
-        document.getElementById('weekBadge').innerText = 'Last Week';
-      } else {
-        document.getElementById('weekBadge').innerText = `${Math.abs(state.currentWeekOffset)} Weeks ${state.currentWeekOffset < 0 ? 'Ago' : 'Ahead'}`;
-      }
-
-      // Filter Data by Date Range and Selected Sitter
-      const weekShifts = state.shifts.filter(s => {
-        const d = new Date(s.date + 'T00:00:00');
-        const matchesDate = d >= startOfWeek && d <= endOfWeek;
-        const matchesSitter = state.selectedSitterId === 'ALL' || s.sitterId === state.selectedSitterId;
-        return matchesDate && matchesSitter;
-      });
-
-      const weekExpenses = state.expenses.filter(e => {
-        const d = new Date(e.date + 'T00:00:00');
-        const matchesDate = d >= startOfWeek && d <= endOfWeek;
-        const matchesSitter = state.selectedSitterId === 'ALL' || e.sitterId === state.selectedSitterId;
-        return matchesDate && matchesSitter;
-      });
-
-      // Calculate Totals
-      let totalHours = 0;
-      let totalShiftPay = 0;
-      let totalUnpaid = 0;
-
-      weekShifts.forEach(s => {
-        totalHours += s.hours;
-        totalShiftPay += s.totalPay;
-        if (!s.paid) totalUnpaid += s.totalPay;
-      });
-
-      let totalExpenses = 0;
-      weekExpenses.forEach(e => {
-        totalExpenses += e.amount;
-        if (!e.paid) totalUnpaid += e.amount;
-      });
-
-      const grandTotalPay = totalShiftPay + totalExpenses;
-
-      // Update Dashboard Stats
-      document.getElementById('statHours').innerText = `${totalHours.toFixed(1)} hrs`;
-      document.getElementById('statTotalPay').innerText = `$${grandTotalPay.toFixed(2)}`;
-      document.getElementById('statUnpaid').innerText = `$${totalUnpaid.toFixed(2)}`;
-
-      // Render Activity Items (Combined Shifts & Expenses sorted by date)
-      renderActivityFeed(weekShifts, weekExpenses);
-    }
-
-    function renderActivityFeed(shifts, expenses) {
-      const feedContainer = document.getElementById('activityList');
-      feedContainer.innerHTML = '';
-
-      const combined = [
-        ...shifts.map(s => ({ ...s, itemType: 'shift' })),
-        ...expenses.map(e => ({ ...e, itemType: 'expense' }))
-      ].sort((a, b) => new Date(b.date + 'T' + (b.startTime || '00:00')) - new Date(a.date + 'T' + (a.startTime || '00:00')));
-
-      document.getElementById('itemCount').innerText = `${combined.length} items`;
-
-      if (combined.length === 0) {
-        feedContainer.innerHTML = `
-          <div class="bg-slate-800/40 rounded-xl p-6 text-center border border-slate-700/50">
-            <i data-lucide="calendar-x" class="w-8 h-8 text-slate-500 mx-auto mb-2"></i>
-            <p class="text-sm font-medium text-slate-400">No shifts or expenses logged for this week.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      combined.forEach(item => {
-        const sitter = state.sitters.find(s => s.id === item.sitterId) || { name: 'Unknown Sitter' };
-        const card = document.createElement('div');
-        card.className = `bg-slate-800 p-3.5 rounded-xl border ${item.paid ? 'border-slate-700/60 opacity-80' : 'border-indigo-500/40'} shadow-md flex items-center justify-between gap-3`;
-
-        if (item.itemType === 'shift') {
-          card.innerHTML = `
-            <div class="flex items-start gap-3">
-              <button onclick="togglePaidStatus('shift', '${item.id}')" class="mt-0.5 p-1 rounded-lg ${item.paid ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400 hover:text-white'} transition">
-                <i data-lucide="${item.paid ? 'check-circle-2' : 'circle'}" class="w-5 h-5"></i>
-              </button>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-200">${formatDisplayDate(item.date)}</span>
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-medium">${sitter.name}</span>
+            <form id="shiftForm" class="space-y-4" onsubmit="event.preventDefault(); calculateAndSave();">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Date</label>
+                    <input type="date" id="shiftDate" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" required>
                 </div>
-                <p class="text-xs text-slate-400 mt-0.5">${item.startTime} - ${item.endTime} (${item.hours.toFixed(1)} hrs)</p>
-                ${item.notes ? `<p class="text-[11px] text-slate-300 italic mt-1 bg-slate-900/40 px-2 py-0.5 rounded">"${item.notes}"</p>` : ''}
-              </div>
-            </div>
 
-            <div class="text-right flex flex-col items-end gap-1">
-              <span class="text-sm font-bold text-emerald-400">$${item.totalPay.toFixed(2)}</span>
-              <div class="flex items-center gap-1">
-                <button onclick="editShift('${item.id}')" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                <button onclick="deleteItem('shift', '${item.id}')" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-              </div>
-            </div>
-          `;
-        } else {
-          card.innerHTML = `
-            <div class="flex items-start gap-3">
-              <button onclick="togglePaidStatus('expense', '${item.id}')" class="mt-0.5 p-1 rounded-lg ${item.paid ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400 hover:text-white'} transition">
-                <i data-lucide="${item.paid ? 'check-circle-2' : 'circle'}" class="w-5 h-5"></i>
-              </button>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-200">${formatDisplayDate(item.date)}</span>
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-medium">${item.category}</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Start Time</label>
+                        <input type="time" id="startTime" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">End Time</label>
+                        <input type="time" id="endTime" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-300 mt-0.5 font-medium">${item.note}</p>
-                <span class="text-[10px] text-slate-400">${sitter.name}</span>
-              </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Hourly Rate ($)</label>
+                        <input type="number" step="0.5" id="hourlyRate" value="20" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Unpaid Break (mins)</label>
+                        <input type="number" id="unpaidBreak" value="0" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Reimbursable Expenses ($)</label>
+                    <input type="number" step="0.01" id="expenses" value="0.00" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Notes / Description</label>
+                    <input type="text" id="notes" placeholder="e.g., Snacks, park entrance, extra task" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+
+                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 rounded-xl transition shadow-sm active:scale-[0.99]">
+                    Save Shift
+                </button>
+            </form>
+        </section>
+
+        <!-- History Log -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-base font-semibold text-slate-900">Shift History</h2>
+                <button onclick="clearHistory()" class="text-xs text-rose-500 hover:underline">Clear All</button>
+            </div>
+            <div id="historyList" class="space-y-3">
+                <p class="text-sm text-slate-400 text-center py-4">No shifts logged yet.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-900">App Settings</h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-600 text-xl font-bold p-1">&times;</button>
             </div>
 
-            <div class="text-right flex flex-col items-end gap-1">
-              <span class="text-sm font-bold text-amber-400">+$${item.amount.toFixed(2)}</span>
-              <div class="flex items-center gap-1">
-                <button onclick="deleteItem('expense', '${item.id}')" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-              </div>
+            <!-- Custom Icon Upload Section -->
+            <div class="space-y-3 border-t border-slate-100 pt-4">
+                <h4 class="text-sm font-semibold text-slate-800">Home Screen Icon</h4>
+                
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <label class="block text-xs font-medium text-slate-600">Option 1: Upload Your PNG File</label>
+                    <div class="flex items-center space-x-3">
+                        <div id="customIconPreview" class="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center overflow-hidden border border-slate-300">
+                            <span class="text-xs text-slate-400">None</span>
+                        </div>
+                        <input type="file" id="iconFileInput" accept="image/png, image/jpeg" class="hidden" onchange="handleIconUpload(event)">
+                        <button onclick="document.getElementById('iconFileInput').click()" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold py-2 px-3 rounded-xl shadow-sm transition">
+                            Choose PNG from Files
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-500">Pick the custom PNG saved in your iPhone Files or Photos.</p>
+                </div>
+
+                <div id="removeCustomIconBtn" class="hidden">
+                    <button onclick="removeCustomIcon()" class="text-xs text-rose-500 hover:underline">Remove Custom PNG Icon</button>
+                </div>
             </div>
-          `;
+
+            <button onclick="closeSettings()" class="w-full bg-slate-900 text-white font-medium py-3 rounded-xl">
+                Done
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Set default date to today
+        document.getElementById('shiftDate').valueToDate = new Date();
+        document.getElementById('shiftDate').value = new Date().toISOString().substring(0, 10);
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.remove('hidden');
         }
 
-        feedContainer.appendChild(card);
-      });
-
-      lucide.createIcons();
-    }
-
-    function formatDisplayDate(dateStr) {
-      const parts = dateStr.split('-');
-      const d = new Date(parts[0], parts[1] - 1, parts[2]);
-      return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    }
-
-    // WEEK NAV
-    function changeWeek(delta) {
-      state.currentWeekOffset += delta;
-      renderApp();
-    }
-
-    // SITTER FILTER
-    function renderSitterFilterOptions() {
-      const select = document.getElementById('sitterFilter');
-      select.innerHTML = '<option value="ALL">All Sitters</option>';
-      state.sitters.forEach(s => {
-        select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-      });
-      select.value = state.selectedSitterId;
-    }
-
-    function handleSitterFilterChange(val) {
-      state.selectedSitterId = val;
-      renderApp();
-    }
-
-    // MODAL POPULATION FOR SITTERS
-    function populateModalSitterDropdowns() {
-      const shiftSelect = document.getElementById('shiftSitterId');
-      const expenseSelect = document.getElementById('expenseSitterId');
-
-      shiftSelect.innerHTML = '';
-      expenseSelect.innerHTML = '';
-
-      state.sitters.forEach(s => {
-        shiftSelect.innerHTML += `<option value="${s.id}">${s.name} ($${s.rate}/hr)</option>`;
-        expenseSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-      });
-
-      if (state.sitters.length > 0) {
-        updateModalRateFromSitter(state.sitters[0].id);
-      }
-    }
-
-    function updateModalRateFromSitter(sitterId) {
-      const sitter = state.sitters.find(s => s.id === sitterId);
-      if (sitter) {
-        document.getElementById('shiftRate').value = sitter.rate;
-        calculateModalTotals();
-      }
-    }
-
-    // CALCULATE MODAL TOTALS
-    function calculateModalTotals() {
-      const startTime = document.getElementById('shiftStartTime').value;
-      const endTime = document.getElementById('shiftEndTime').value;
-      const breakMins = parseFloat(document.getElementById('shiftBreak').value) || 0;
-      const rate = parseFloat(document.getElementById('shiftRate').value) || 0;
-
-      if (!startTime || !endTime) return;
-
-      const [sH, sM] = startTime.split(':').map(Number);
-      const [eH, eM] = endTime.split(':').map(Number);
-
-      let start = new Date();
-      start.setHours(sH, sM, 0, 0);
-
-      let end = new Date();
-      end.setHours(eH, eM, 0, 0);
-
-      if (end <= start) {
-        end.setDate(end.getDate() + 1); // Overnight shift
-      }
-
-      let diffMs = end - start;
-      let totalMins = (diffMs / (1000 * 60)) - breakMins;
-      if (totalMins < 0) totalMins = 0;
-
-      const hours = totalMins / 60;
-      const pay = hours * rate;
-
-      const displayHours = Math.floor(totalMins / 60);
-      const displayMins = Math.round(totalMins % 60);
-
-      document.getElementById('shiftModalDuration').innerText = `${displayHours} hrs ${displayMins} mins`;
-      document.getElementById('shiftModalPay').innerText = `$${pay.toFixed(2)}`;
-    }
-
-    // SHIFT MODAL LOGIC
-    function openShiftModal(editId = null) {
-      populateModalSitterDropdowns();
-      document.getElementById('shiftModal').classList.remove('hidden');
-
-      if (editId) {
-        const shift = state.shifts.find(s => s.id === editId);
-        if (shift) {
-          document.getElementById('shiftModalTitle').innerText = 'Edit Shift';
-          document.getElementById('shiftId').value = shift.id;
-          document.getElementById('shiftSitterId').value = shift.sitterId;
-          document.getElementById('shiftDate').value = shift.date;
-          document.getElementById('shiftStartTime').value = shift.startTime;
-          document.getElementById('shiftEndTime').value = shift.endTime;
-          document.getElementById('shiftBreak').value = shift.breakMins;
-          document.getElementById('shiftRate').value = shift.rate;
-          document.getElementById('shiftNotes').value = shift.notes || '';
-          calculateModalTotals();
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
         }
-      } else {
-        document.getElementById('shiftModalTitle').innerText = 'Log Babysitting Shift';
-        document.getElementById('shiftId').value = '';
-        document.getElementById('shiftNotes').value = '';
-      }
-    }
 
-    function closeShiftModal() {
-      document.getElementById('shiftModal').classList.add('hidden');
-    }
+        // Handle Image Upload
+        function handleIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    function handleSaveShift(e) {
-      e.preventDefault();
-      const id = document.getElementById('shiftId').value || 'shift-' + Date.now();
-      const sitterId = document.getElementById('shiftSitterId').value;
-      const date = document.getElementById('shiftDate').value;
-      const startTime = document.getElementById('shiftStartTime').value;
-      const endTime = document.getElementById('shiftEndTime').value;
-      const breakMins = parseFloat(document.getElementById('shiftBreak').value) || 0;
-      const rate = parseFloat(document.getElementById('shiftRate').value) || 0;
-      const notes = document.getElementById('shiftNotes').value;
-
-      // Calc hours
-      const [sH, sM] = startTime.split(':').map(Number);
-      const [eH, eM] = endTime.split(':').map(Number);
-      let start = new Date(); start.setHours(sH, sM, 0, 0);
-      let end = new Date(); end.setHours(eH, eM, 0, 0);
-      if (end <= start) end.setDate(end.getDate() + 1);
-      const hours = ((end - start) / (1000 * 60) - breakMins) / 60;
-      const totalPay = hours * rate;
-
-      const newShift = {
-        id, sitterId, date, startTime, endTime, breakMins, rate, notes,
-        hours, totalPay, paid: false, updatedAt: Date.now()
-      };
-
-      const existingIdx = state.shifts.findIndex(s => s.id === id);
-      if (existingIdx >= 0) {
-        state.shifts[existingIdx] = { ...state.shifts[existingIdx], ...newShift };
-      } else {
-        state.shifts.push(newShift);
-      }
-
-      saveDataLocally();
-      if (state.db) syncItemToFirebase('shifts', newShift);
-
-      closeShiftModal();
-      renderApp();
-    }
-
-    function editShift(id) {
-      openShiftModal(id);
-    }
-
-    // EXPENSE MODAL LOGIC
-    function openExpenseModal() {
-      populateModalSitterDropdowns();
-      document.getElementById('expenseModal').classList.remove('hidden');
-      document.getElementById('expenseAmount').value = '';
-      document.getElementById('expenseNote').value = '';
-    }
-
-    function closeExpenseModal() {
-      document.getElementById('expenseModal').classList.add('hidden');
-    }
-
-    function handleSaveExpense(e) {
-      e.preventDefault();
-      const id = 'exp-' + Date.now();
-      const sitterId = document.getElementById('expenseSitterId').value;
-      const date = document.getElementById('expenseDate').value;
-      const category = document.getElementById('expenseCategory').value;
-      const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-      const note = document.getElementById('expenseNote').value;
-
-      const newExpense = {
-        id, sitterId, date, category, amount, note, paid: false, updatedAt: Date.now()
-      };
-
-      state.expenses.push(newExpense);
-      saveDataLocally();
-      if (state.db) syncItemToFirebase('expenses', newExpense);
-
-      closeExpenseModal();
-      renderApp();
-    }
-
-    // TOGGLE PAID STATUS
-    function togglePaidStatus(type, id) {
-      if (type === 'shift') {
-        const item = state.shifts.find(s => s.id === id);
-        if (item) {
-          item.paid = !item.paid;
-          item.updatedAt = Date.now();
-          if (state.db) syncItemToFirebase('shifts', item);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                localStorage.setItem('sitter_app_custom_icon', base64Image);
+                applyIcon(base64Image);
+            };
+            reader.readAsDataURL(file);
         }
-      } else {
-        const item = state.expenses.find(e => e.id === id);
-        if (item) {
-          item.paid = !item.paid;
-          item.updatedAt = Date.now();
-          if (state.db) syncItemToFirebase('expenses', item);
+
+        function removeCustomIcon() {
+            localStorage.removeItem('sitter_app_custom_icon');
+            applyIcon(null);
         }
-      }
-      saveDataLocally();
-      renderApp();
-    }
 
-    // DELETE ITEM
-    function deleteItem(type, id) {
-      if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+        function applyIcon(imageDataUrl) {
+            const appleIconLink = document.getElementById('appleTouchIcon');
+            const faviconLink = document.getElementById('favicon');
+            const previewContainer = document.getElementById('customIconPreview');
+            const headerPreview = document.getElementById('headerIconPreview');
+            const removeBtn = document.getElementById('removeCustomIconBtn');
 
-      if (type === 'shift') {
-        state.shifts = state.shifts.filter(s => s.id !== id);
-        if (state.db) removeItemFromFirebase('shifts', id);
-      } else {
-        state.expenses = state.expenses.filter(e => e.id !== id);
-        if (state.db) removeItemFromFirebase('expenses', id);
-      }
+            if (imageDataUrl) {
+                appleIconLink.href = imageDataUrl;
+                faviconLink.href = imageDataUrl;
+                previewContainer.innerHTML = `<img src="${imageDataUrl}" class="w-full h-full object-cover">`;
+                headerPreview.innerHTML = `<img src="${imageDataUrl}" class="w-full h-full object-cover">`;
+                removeBtn.classList.remove('hidden');
+            } else {
+                appleIconLink.href = '';
+                faviconLink.href = '';
+                previewContainer.innerHTML = `<span class="text-xs text-slate-400">None</span>`;
+                headerPreview.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                removeBtn.classList.add('hidden');
+            }
+        }
 
-      saveDataLocally();
-      renderApp();
-    }
-
-    // COPY TEXT SUMMARY FOR TEXTING
-    function copyWeeklySummary() {
-      const { startOfWeek, endOfWeek } = getWeekRange(state.currentWeekOffset);
-      const weekShifts = state.shifts.filter(s => {
-        const d = new Date(s.date + 'T00:00:00');
-        return d >= startOfWeek && d <= endOfWeek;
-      });
-
-      const weekExpenses = state.expenses.filter(e => {
-        const d = new Date(e.date + 'T00:00:00');
-        return d >= startOfWeek && d <= endOfWeek;
-      });
-
-      if (weekShifts.length === 0 && weekExpenses.length === 0) {
-        alert('No shifts or expenses recorded for this week.');
-        return;
-      }
-
-      let summaryText = `Babysitting Summary (${startOfWeek.toLocaleDateString('en-US', {month:'numeric', day:'numeric'})} - ${endOfWeek.toLocaleDateString('en-US', {month:'numeric', day:'numeric'})}):\n\n`;
-
-      let grandTotal = 0;
-
-      if (weekShifts.length > 0) {
-        summaryText += `SHIFTS:\n`;
-        weekShifts.forEach(s => {
-          summaryText += `• ${formatDisplayDate(s.date)}: ${s.startTime}-${s.endTime} (${s.hours.toFixed(1)} hrs) = $${s.totalPay.toFixed(2)}\n`;
-          grandTotal += s.totalPay;
+        // Load persisted icon on boot
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedIcon = localStorage.getItem('sitter_app_custom_icon');
+            if (savedIcon) {
+                applyIcon(savedIcon);
+            }
+            loadHistory();
         });
-        summaryText += `\n`;
-      }
 
-      if (weekExpenses.length > 0) {
-        summaryText += `REIMBURSEMENTS / EXPENSES:\n`;
-        weekExpenses.forEach(e => {
-          summaryText += `• ${formatDisplayDate(e.date)}: ${e.note} (${e.category}) = $${e.amount.toFixed(2)}\n`;
-          grandTotal += e.amount;
-        });
-        summaryText += `\n`;
-      }
+        function calculateAndSave() {
+            const date = document.getElementById('shiftDate').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const breakMins = parseInt(document.getElementById('unpaidBreak').value) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+            const notes = document.getElementById('notes').value;
 
-      summaryText += `TOTAL DUE: $${grandTotal.toFixed(2)}`;
+            // Compute total time
+            const start = new Date(`1970-01-01T${startTime}:00`);
+            let end = new Date(`1970-01-01T${endTime}:00`);
+            if (end < start) end.setDate(end.getDate() + 1); // Overnight shift
 
-      navigator.clipboard.writeText(summaryText).then(() => {
-        alert('Summary copied to clipboard! You can now paste it directly into a text message.');
-      });
-    }
+            const diffMins = (end - start) / (1000 * 60) - breakMins;
+            const totalHours = Math.max(0, diffMins / 60);
+            const totalPay = (totalHours * rate) + expenses;
 
-    // LOCAL STORAGE
-    function saveDataLocally() {
-      localStorage.setItem('sitters', JSON.stringify(state.sitters));
-      localStorage.setItem('shifts', JSON.stringify(state.shifts));
-      localStorage.setItem('expenses', JSON.stringify(state.expenses));
-    }
+            const shift = {
+                id: Date.now(),
+                date,
+                startTime,
+                endTime,
+                hours: totalHours.toFixed(2),
+                rate,
+                expenses: expenses.toFixed(2),
+                pay: totalPay.toFixed(2),
+                notes
+            };
 
-    // SETTINGS & SITTER MANAGEMENT
-    function openSettingsModal() {
-      renderSittersList();
-      document.getElementById('settingsModal').classList.remove('hidden');
-    }
+            const history = JSON.parse(localStorage.getItem('sitter_shifts') || '[]');
+            history.unshift(shift);
+            localStorage.setItem('sitter_shifts', JSON.stringify(history));
 
-    function closeSettingsModal() {
-      document.getElementById('settingsModal').classList.add('hidden');
-    }
-
-    function renderSittersList() {
-      const container = document.getElementById('sittersList');
-      container.innerHTML = '';
-
-      state.sitters.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'bg-slate-900/60 p-3 rounded-xl border border-slate-700/80 flex items-center justify-between';
-        div.innerHTML = `
-          <div>
-            <h5 class="text-sm font-bold text-white">${s.name}</h5>
-            <p class="text-xs text-slate-400">$${s.rate.toFixed(2)}/hr • ${s.paymentInfo || 'No Venmo/Zelle set'}</p>
-          </div>
-          <button onclick="editSitterPrompt('${s.id}')" class="p-1 text-slate-400 hover:text-white">
-            <i data-lucide="edit-2" class="w-4 h-4"></i>
-          </button>
-        `;
-        container.appendChild(div);
-      });
-      lucide.createIcons();
-    }
-
-    function addNewSitterPrompt() {
-      const name = prompt('Enter sitter name:');
-      if (!name) return;
-      const rate = parseFloat(prompt('Enter default hourly rate ($):', '20.00')) || 20.00;
-      const paymentInfo = prompt('Enter payment details (e.g. Venmo @handle):', '') || '';
-
-      const newSitter = { id: 'sitter-' + Date.now(), name, rate, paymentInfo };
-      state.sitters.push(newSitter);
-      saveDataLocally();
-      renderSitterFilterOptions();
-      renderSittersList();
-      renderApp();
-    }
-
-    function editSitterPrompt(id) {
-      const sitter = state.sitters.find(s => s.id === id);
-      if (!sitter) return;
-
-      const name = prompt('Update sitter name:', sitter.name);
-      if (!name) return;
-      const rate = parseFloat(prompt('Update default hourly rate ($):', sitter.rate)) || sitter.rate;
-      const paymentInfo = prompt('Update payment details:', sitter.paymentInfo || '');
-
-      sitter.name = name;
-      sitter.rate = rate;
-      sitter.paymentInfo = paymentInfo;
-
-      saveDataLocally();
-      renderSitterFilterOptions();
-      renderSittersList();
-      renderApp();
-    }
-
-    // ICON CANVAS CUSTOMIZER
-    function renderIconCanvas() {
-      const canvas = document.getElementById('iconCanvas');
-      const ctx = canvas.getContext('2d');
-      const symbol = document.getElementById('iconSymbol').value;
-      const bgTheme = document.getElementById('iconBg').value;
-
-      // Draw Gradient Background
-      const grad = ctx.createLinearGradient(0, 0, 180, 180);
-      if (bgTheme === 'indigo') { grad.addColorStop(0, '#4f46e5'); grad.addColorStop(1, '#06b6d4'); }
-      else if (bgTheme === 'teal') { grad.addColorStop(0, '#059669'); grad.addColorStop(1, '#10b981'); }
-      else if (bgTheme === 'sunset') { grad.addColorStop(0, '#d97706'); grad.addColorStop(1, '#f43f5e'); }
-      else if (bgTheme === 'rose') { grad.addColorStop(0, '#e11d48'); grad.addColorStop(1, '#a855f7'); }
-
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 180, 180);
-
-      // Draw Center Icon Shape
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = '70px sans-serif';
-
-      let emoji = '⏰';
-      if (symbol === 'baby') emoji = '🍼';
-      else if (symbol === 'heart') emoji = '❤️';
-      else if (symbol === 'star') emoji = '⭐';
-      else if (symbol === 'shield') emoji = '🛡️';
-
-      ctx.fillText(emoji, 90, 90);
-
-      // Update Apple Touch Icon link
-      const dataUrl = canvas.toDataURL('image/png');
-      document.getElementById('appleTouchIcon').href = dataUrl;
-      document.getElementById('favicon').href = dataUrl;
-    }
-
-    function downloadIconPNG() {
-      const canvas = document.getElementById('iconCanvas');
-      const a = document.createElement('a');
-      a.download = 'sitter-tracker-icon.png';
-      a.href = canvas.toDataURL('image/png');
-      a.click();
-    }
-
-    // FIREBASE REAL-TIME SYNC SETUP
-    function openSyncModal() {
-      document.getElementById('householdCodeInput').value = state.householdCode;
-      document.getElementById('syncModal').classList.remove('hidden');
-    }
-
-    function closeSyncModal() {
-      document.getElementById('syncModal').classList.add('hidden');
-    }
-
-    function handleSaveSyncCode(e) {
-      e.preventDefault();
-      const code = document.getElementById('householdCodeInput').value.trim().toUpperCase();
-      if (!code) return;
-
-      state.householdCode = code;
-      localStorage.setItem('householdCode', code);
-      closeSyncModal();
-      initFirebaseSync();
-    }
-
-    function disconnectSync() {
-      state.householdCode = '';
-      localStorage.removeItem('householdCode');
-      if (state.unsubscribeShifts) state.unsubscribeShifts();
-      if (state.unsubscribeExpenses) state.unsubscribeExpenses();
-      document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Local Storage`;
-      document.getElementById('syncBtnLabel').innerText = 'Sync';
-      closeSyncModal();
-      renderApp();
-    }
-
-    function initFirebaseSync() {
-      // Demo Firebase Configuration for real-time Firestore sync
-      const firebaseConfig = {
-        apiKey: "AIzaSyDemoKeyForSitterTracker12345678",
-        authDomain: "sitter-tracker-demo.firebaseapp.com",
-        projectId: "sitter-tracker-demo",
-        storageBucket: "sitter-tracker-demo.appspot.com",
-        messagingSenderId: "1234567890",
-        appId: "1:1234567890:web:abcdef123456"
-      };
-
-      try {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
+            loadHistory();
+            document.getElementById('notes').value = '';
         }
-        state.db = firebase.firestore();
 
-        document.getElementById('syncStatus').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Household: ${state.householdCode}`;
-        document.getElementById('syncBtnLabel').innerText = state.householdCode;
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('sitter_shifts') || '[]');
+            const container = document.getElementById('historyList');
 
-        // Listen for shifts live
-        state.unsubscribeShifts = state.db.collection('households')
-          .doc(state.householdCode)
-          .collection('shifts')
-          .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-              const data = change.doc.data();
-              if (change.type === "added" || change.type === "modified") {
-                const idx = state.shifts.findIndex(s => s.id === data.id);
-                if (idx >= 0) state.shifts[idx] = data;
-                else state.shifts.push(data);
-              }
-              if (change.type === "removed") {
-                state.shifts = state.shifts.filter(s => s.id !== change.doc.id);
-              }
-            });
-            saveDataLocally();
-            renderApp();
-          }, err => {
-            console.log("Firestore sync notice: Running in offline local mode.");
-          });
+            if (history.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">No shifts logged yet.</p>`;
+                return;
+            }
 
-      } catch (err) {
-        console.log("Firebase sync note:", err);
-      }
-    }
+            container.innerHTML = history.map(s => `
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center text-sm">
+                    <div>
+                        <div class="font-semibold text-slate-800">${s.date} (${s.hours} hrs)</div>
+                        <div class="text-xs text-slate-500">${s.startTime} - ${s.endTime} ${s.notes ? '• ' + s.notes : ''}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-sky-700">$${s.pay}</div>
+                        ${parseFloat(s.expenses) > 0 ? `<div class="text-[10px] text-slate-400">incl. $${s.expenses} exp</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
 
-    function syncItemToFirebase(collectionName, item) {
-      if (!state.db || !state.householdCode) return;
-      state.db.collection('households')
-        .doc(state.householdCode)
-        .collection(collectionName)
-        .doc(item.id)
-        .set(item, { merge: true });
-    }
-
-    function removeItemFromFirebase(collectionName, id) {
-      if (!state.db || !state.householdCode) return;
-      state.db.collection('households')
-        .doc(state.householdCode)
-        .collection(collectionName)
-        .doc(id)
-        .delete();
-    }
-  </script>
+        function clearHistory() {
+            if (confirm('Clear all shift history?')) {
+                localStorage.removeItem('sitter_shifts');
+                loadHistory();
+            }
+        }
+    </script>
 </body>
 </html>
