@@ -33,9 +33,9 @@
   <div id="landing-page" class="min-h-screen flex flex-col items-center justify-between p-6 max-w-md mx-auto text-center">
     <div class="w-full my-auto space-y-6">
       
-      <!-- Logo / Graphic Container -->
+      <!-- Welcome Image / Banner Box -->
       <div class="relative w-full rounded-3xl overflow-hidden bg-slate-800 border-2 border-slate-700 shadow-2xl p-4 flex flex-col items-center justify-center min-h-[220px]">
-        <img id="landing-hero-img" class="hidden w-full max-h-52 object-contain rounded-2xl shadow-md mb-2" alt="Family Logo">
+        <img id="landing-hero-img" class="hidden w-full max-h-64 object-contain rounded-2xl shadow-md mb-2" alt="Welcome Graphic">
         <div id="landing-hero-default" class="flex flex-col items-center space-y-3 py-6 text-blue-400">
           <div class="w-20 h-20 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center text-blue-400">
             <i data-lucide="baby" class="w-10 h-10"></i>
@@ -50,7 +50,7 @@
         <p id="landing-app-subtitle" class="text-sm font-medium text-slate-400">Hours, Expenses & Direct Payments</p>
       </div>
 
-      <!-- Quick Action Button -->
+      <!-- Enter App Button -->
       <div class="pt-4">
         <button id="enter-app-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-lg">
           <span>Enter Tracker</span>
@@ -59,16 +59,16 @@
       </div>
     </div>
 
-    <!-- Footer Credit / Branding -->
+    <!-- Footer Credit -->
     <div class="py-4 text-xs text-slate-500">
-      Favero Family Sitter App • Version 2.0
+      Favero Family Sitter App • Version 2.1
     </div>
   </div>
 
-  <!-- MAIN APP VIEW (Hidden by default) -->
+  <!-- MAIN APP VIEW -->
   <div id="main-app" class="hidden min-h-screen pb-28">
 
-    <!-- Sticky App Header -->
+    <!-- Header -->
     <header class="bg-slate-800/95 backdrop-blur-md border-b border-slate-700 sticky top-0 z-20 px-4 py-3 space-y-2 shadow-lg">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -85,7 +85,7 @@
         </button>
       </div>
 
-      <!-- Header Family Banner Image -->
+      <!-- Header Banner Graphic -->
       <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-xl border border-slate-700/70 p-1.5 flex items-center justify-center overflow-hidden shadow-inner min-h-[40px]">
         <div id="header-default-icon" class="py-1 flex items-center space-x-2 text-blue-400">
           <i data-lucide="users" class="w-5 h-5"></i>
@@ -112,7 +112,7 @@
         <form id="shift-form" class="space-y-4">
           <input type="hidden" id="edit-shift-id" value="">
 
-          <!-- Sitter Selection with Dynamic Avatar Preview -->
+          <!-- Sitter Selection with Avatar Preview -->
           <div>
             <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Select Sitter</label>
             <div class="flex items-center space-x-3">
@@ -169,7 +169,7 @@
         </form>
       </section>
 
-      <!-- Shift History Section -->
+      <!-- Shift History -->
       <section class="space-y-3">
         <div class="flex items-center justify-between px-1">
           <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Shift History</h2>
@@ -180,12 +180,12 @@
         </div>
 
         <div id="shifts-list" class="space-y-3">
-          <!-- Dynamic Shift Cards Inserted Here -->
+          <!-- Dynamic Shift Cards -->
         </div>
       </section>
     </main>
 
-    <!-- Sticky Batch Payment Action Bar -->
+    <!-- Sticky Batch Payment Bar -->
     <div id="batch-bar" class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-4 shadow-2xl z-30 transition-transform duration-300 translate-y-full">
       <div class="max-w-md mx-auto flex items-center justify-between">
         <div>
@@ -213,7 +213,7 @@
       <p class="text-xs text-slate-400">Review selected shifts and choose your payment method:</p>
 
       <div id="checkout-shifts-summary" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-        <!-- Dynamic Summary Inserted Here -->
+        <!-- Summary Dynamic Insertion -->
       </div>
 
       <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex items-center justify-between">
@@ -232,7 +232,7 @@
     </div>
   </div>
 
-  <!-- Settings & Customization Modal -->
+  <!-- Settings Modal -->
   <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
@@ -242,9 +242,9 @@
         </button>
       </div>
 
-      <!-- App Header Customization -->
+      <!-- App Title Customization -->
       <div class="space-y-2">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">App Header & Title</h4>
+        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">App Title & Header</h4>
         <div>
           <label class="block text-xs text-slate-400 mb-1">App Title</label>
           <input type="text" id="app-title-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
@@ -255,15 +255,40 @@
         </div>
       </div>
 
-      <!-- Manage Sitter Profiles with Avatars -->
+      <!-- Landing Page Welcome Graphic Upload -->
+      <div class="border-t border-slate-700/60 pt-3 space-y-2">
+        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Landing Page Welcome Graphic</label>
+        <input type="file" id="landing-image-file-input" accept="image/*" class="hidden">
+        <div class="flex space-x-2">
+          <button id="upload-landing-image-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            <span>Upload Landing Image</span>
+          </button>
+          <button id="remove-landing-image-btn" class="hidden border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs px-3 rounded-xl transition">
+            Remove
+          </button>
+        </div>
+      </div>
+
+      <!-- App Header Banner Graphic Customization -->
+      <div class="border-t border-slate-700/60 pt-3 space-y-2">
+        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Main App Banner Logo Graphic</label>
+        <input type="file" id="icon-file-input" accept="image/*" class="hidden">
+        <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
+          <i data-lucide="image" class="w-4 h-4"></i>
+          <span>Upload Header Banner</span>
+        </button>
+      </div>
+
+      <!-- Manage Sitters & Avatars -->
       <div class="space-y-3 border-t border-slate-700/60 pt-3">
         <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Manage Sitters & Avatars</h4>
         
         <div id="sitters-management-list" class="space-y-2">
-          <!-- Sitters listed here dynamically -->
+          <!-- Sitters listed here -->
         </div>
 
-        <!-- Add/Edit Sitter Form -->
+        <!-- Add/Edit Sitter Profile -->
         <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-3">
           <p id="sitter-form-heading" class="text-xs font-semibold text-slate-300">Add New Sitter Profile</p>
           <input type="hidden" id="editing-sitter-id" value="">
@@ -300,16 +325,6 @@
         </div>
       </div>
 
-      <!-- App Header Banner Graphic Customization -->
-      <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Family Banner Logo Graphic</label>
-        <input type="file" id="icon-file-input" accept="image/*" class="hidden">
-        <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
-          <i data-lucide="image" class="w-4 h-4"></i>
-          <span>Upload Header Graphic Banner</span>
-        </button>
-      </div>
-
       <button id="save-settings" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-sm transition">
         Done
       </button>
@@ -319,7 +334,7 @@
   <script>
     lucide.createIcons();
 
-    // App State Variables
+    // App State
     let appTitle = localStorage.getItem('sitter_app_title') || 'Favero Family Sitter Tracker';
     let appSubtitle = localStorage.getItem('sitter_app_subtitle') || 'Hours & Pay Log';
 
@@ -328,10 +343,11 @@
     ];
     let shifts = JSON.parse(localStorage.getItem('sitter_shifts')) || [];
     let customIcon = localStorage.getItem('sitter_custom_icon') || '';
+    let landingImage = localStorage.getItem('sitter_landing_image') || '';
     let selectedShiftIds = new Set();
     let currentSitterAvatarTemp = '';
 
-    // Navigation Elements
+    // Page Elements
     const landingPage = document.getElementById('landing-page');
     const mainApp = document.getElementById('main-app');
     const enterAppBtn = document.getElementById('enter-app-btn');
@@ -342,7 +358,7 @@
     const landingHeroImg = document.getElementById('landing-hero-img');
     const landingHeroDefault = document.getElementById('landing-hero-default');
 
-    // Form & List Elements
+    // Forms & Lists
     const shiftForm = document.getElementById('shift-form');
     const formTitle = document.getElementById('form-title');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
@@ -365,7 +381,7 @@
     const appTitleDisplay = document.getElementById('app-title-display');
     const appSubtitleDisplay = document.getElementById('app-subtitle-display');
 
-    // Batch Payment & Modals
+    // Batch Pay & Modals
     const batchBar = document.getElementById('batch-bar');
     const selectedCountEl = document.getElementById('selected-count');
     const selectedTotalEl = document.getElementById('selected-total');
@@ -379,7 +395,7 @@
     const payBatchVenmoBtn = document.getElementById('pay-batch-venmo');
     const payBatchPaypalBtn = document.getElementById('pay-batch-paypal');
 
-    // Settings Modal
+    // Settings
     const settingsModal = document.getElementById('settings-modal');
     const openSettingsBtn = document.getElementById('open-settings');
     const closeSettingsBtn = document.getElementById('close-settings');
@@ -403,9 +419,13 @@
     const iconFileInput = document.getElementById('icon-file-input');
     const uploadIconBtn = document.getElementById('upload-icon-btn');
 
+    const landingImageFileInput = document.getElementById('landing-image-file-input');
+    const uploadLandingImageBtn = document.getElementById('upload-landing-image-btn');
+    const removeLandingImageBtn = document.getElementById('remove-landing-image-btn');
+
     shiftDateInput.value = new Date().toISOString().split('T')[0];
 
-    // Page Switching Logic
+    // Page View Toggle
     enterAppBtn.onclick = () => {
       landingPage.classList.add('hidden');
       mainApp.classList.remove('hidden');
@@ -426,6 +446,24 @@
     }
     updateTitleDisplay();
 
+    function updateLandingGraphic() {
+      const activeLandingImg = landingImage || customIcon;
+      if (activeLandingImg) {
+        landingHeroImg.src = activeLandingImg;
+        landingHeroImg.classList.remove('hidden');
+        landingHeroDefault.classList.add('hidden');
+      } else {
+        landingHeroImg.classList.add('hidden');
+        landingHeroDefault.classList.remove('hidden');
+      }
+
+      if (landingImage) {
+        removeLandingImageBtn.classList.remove('hidden');
+      } else {
+        removeLandingImageBtn.classList.add('hidden');
+      }
+    }
+
     function applyCustomIcon(iconData) {
       if (iconData) {
         document.getElementById('app-favicon').href = iconData;
@@ -434,13 +472,31 @@
         headerCustomImg.src = iconData;
         headerCustomImg.classList.remove('hidden');
         headerDefaultIcon.classList.add('hidden');
-
-        landingHeroImg.src = iconData;
-        landingHeroImg.classList.remove('hidden');
-        landingHeroDefault.classList.add('hidden');
       }
+      updateLandingGraphic();
     }
-    if (customIcon) applyCustomIcon(customIcon);
+    
+    applyCustomIcon(customIcon);
+
+    uploadLandingImageBtn.onclick = () => landingImageFileInput.click();
+    landingImageFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          landingImage = event.target.result;
+          localStorage.setItem('sitter_landing_image', landingImage);
+          updateLandingGraphic();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    removeLandingImageBtn.onclick = () => {
+      landingImage = '';
+      localStorage.removeItem('sitter_landing_image');
+      updateLandingGraphic();
+    };
 
     function renderAvatarHTML(avatarUrl, name, sizeClass = "w-10 h-10 text-xs") {
       if (avatarUrl) {
@@ -628,7 +684,7 @@
       }
     };
 
-    // Shift Form Submission
+    // Form Submission
     shiftForm.onsubmit = (e) => {
       e.preventDefault();
 
@@ -891,7 +947,6 @@
         card.innerHTML = `
           <div class="flex items-center justify-between border-b border-slate-700/50 pb-2.5">
             
-            <!-- Explicit Checkbox Label -->
             <div class="flex items-center space-x-3">
               <label class="flex items-center space-x-1.5 cursor-pointer bg-slate-900/80 hover:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700/80 transition">
                 <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleShiftSelection('${shift.id}')" class="w-4 h-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer">
@@ -936,7 +991,6 @@
             </div>
           </div>
 
-          <!-- Quick Actions -->
           <div class="pt-2 border-t border-slate-700/40 flex items-center justify-between text-xs">
             <span class="text-[11px] font-medium text-slate-400">Quick Pay:</span>
             <div class="flex items-center space-x-2">
