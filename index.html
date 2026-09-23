@@ -13,14 +13,14 @@
     <header class="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-30">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-bold flex items-center gap-2">
+                <h1 id="appHeaderTitle" class="text-xl font-bold flex items-center gap-2">
                     <i class="fa-solid fa-baby-carriage"></i> CareTracker
                 </h1>
                 <p class="text-xs text-indigo-200">Babysitter & Shift Tracker</p>
             </div>
             <div id="syncBadge" class="bg-indigo-700 text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-indigo-500">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span id="syncText">Connected</span>
+                <span id="syncText">Saved On Device</span>
             </div>
         </div>
     </header>
@@ -36,13 +36,15 @@
             <button onclick="switchTab('sittersTab')" id="tabBtnSitters" class="flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">
                 <i class="fa-solid fa-users mr-1"></i> Sitters
             </button>
+            <button onclick="switchTab('settingsTab')" id="tabBtnSettings" class="flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition">
+                <i class="fa-solid fa-gear mr-1"></i> Settings
+            </button>
         </div>
 
         <!-- SHIFTS TAB -->
         <div id="shiftsTab" class="space-y-4">
-            
-            <!-- Quick Add Shift Button -->
-            <button onclick="openShiftModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition transform active:scale-95">
+            <!-- Log New Shift Button -->
+            <button onclick="openShiftModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition transform active:scale-95 text-base">
                 <i class="fa-solid fa-plus"></i> Log New Shift
             </button>
 
@@ -71,7 +73,7 @@
                 <div id="shiftsList" class="space-y-3">
                     <div class="text-center py-8 text-slate-400 text-sm">
                         <i class="fa-solid fa-spinner animate-spin text-xl mb-2"></i>
-                        <p>Loading shifts from cloud...</p>
+                        <p>Loading shifts...</p>
                     </div>
                 </div>
             </div>
@@ -79,7 +81,7 @@
 
         <!-- SITTERS TAB -->
         <div id="sittersTab" class="space-y-4 hidden">
-            <button onclick="openSitterModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition">
+            <button onclick="openSitterModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-base">
                 <i class="fa-solid fa-user-plus"></i> Add New Sitter
             </button>
 
@@ -91,6 +93,28 @@
             </div>
         </div>
 
+        <!-- SETTINGS TAB -->
+        <div id="settingsTab" class="space-y-4 hidden">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <h3 class="font-bold text-slate-800 border-b border-slate-100 pb-2">Customization & Backup</h3>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">App Title</label>
+                    <input type="text" id="settingAppTitle" placeholder="e.g. Favero Family Care" class="w-full border border-slate-300 rounded-xl p-3 text-base bg-slate-50 focus:bg-white outline-none">
+                </div>
+
+                <button onclick="saveSettings()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700">Save Custom Title</button>
+
+                <div class="pt-4 border-t border-slate-100">
+                    <p class="text-xs font-semibold text-slate-500 uppercase mb-2">Data Protection</p>
+                    <p class="text-xs text-slate-500 mb-3">Your data and photos are securely stored on this device in permanent IndexedDB database storage.</p>
+                    <button onclick="exportData()" class="w-full bg-slate-100 text-slate-700 border border-slate-300 font-semibold py-2.5 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Backup Data to File
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- MODAL: ADD / EDIT SHIFT -->
@@ -98,74 +122,72 @@
         <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 id="shiftModalTitle" class="font-bold text-lg text-slate-800">Log Shift</h3>
-                <button onclick="closeShiftModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                <button onclick="closeShiftModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold p-1">&times;</button>
             </div>
 
-            <form id="shiftForm" onsubmit="saveShift(event)" class="space-y-3 text-sm">
+            <form id="shiftForm" onsubmit="saveShift(event)" class="space-y-4 text-base">
                 <input type="hidden" id="shiftId">
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Select Sitter</label>
-                    <select id="shiftSitter" required onchange="updateDefaultRate()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <!-- Options populated via JS -->
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Select Sitter</label>
+                    <select id="shiftSitter" required onchange="updateDefaultRate()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Date</label>
-                    <input type="date" id="shiftDate" required class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Date</label>
+                    <input type="date" id="shiftDate" required class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">Start Time</label>
-                        <input type="time" id="shiftStart" required onchange="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-slate-600 font-medium mb-1 text-sm">Start Time</label>
+                        <input type="time" id="shiftStart" required onchange="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">End Time</label>
-                        <input type="time" id="shiftEnd" required onchange="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-slate-600 font-medium mb-1 text-sm">End Time</label>
+                        <input type="time" id="shiftEnd" required onchange="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">Hourly Rate ($)</label>
-                        <input type="number" step="0.50" id="shiftRate" required oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-slate-600 font-medium mb-1 text-sm">Hourly Rate ($)</label>
+                        <input type="number" step="0.50" id="shiftRate" required oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">Unpaid Break (mins)</label>
-                        <input type="number" id="shiftBreak" value="0" min="0" oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-slate-600 font-medium mb-1 text-sm">Break (mins)</label>
+                        <input type="number" id="shiftBreak" value="0" min="0" oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Expenses / Reimbursements ($)</label>
-                    <input type="number" step="0.01" id="shiftExpense" value="0.00" oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Expenses / Reimbursements ($)</label>
+                    <input type="number" step="0.01" id="shiftExpense" value="0.00" oninput="calcFormTotal()" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Receipt / Photo Attachment</label>
-                    <input type="file" id="shiftPhoto" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Receipt / Photo Attachment</label>
+                    <input type="file" id="shiftPhoto" accept="image/*" class="w-full text-sm text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     <div id="photoPreviewContainer" class="mt-2 hidden">
-                        <img id="photoPreview" class="h-20 w-auto rounded-lg object-cover border border-slate-200">
+                        <img id="photoPreview" class="h-24 w-auto rounded-xl object-cover border border-slate-200 shadow-sm">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Notes</label>
-                    <textarea id="shiftNotes" rows="2" placeholder="Tasks done, kids activities, snacks..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Notes</label>
+                    <textarea id="shiftNotes" rows="2" placeholder="Activities, meal expenses, reminders..." class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base"></textarea>
                 </div>
 
-                <!-- Calculated Earnings Preview -->
                 <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
                     <span class="text-xs text-indigo-600 font-medium">Estimated Total: </span>
-                    <span id="formEstTotal" class="text-base font-bold text-indigo-700">$0.00</span>
+                    <span id="formEstTotal" class="text-lg font-bold text-indigo-700">$0.00</span>
                     <span id="formEstHours" class="text-xs text-indigo-500 ml-1">(0 hrs)</span>
                 </div>
 
                 <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeShiftModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium">Cancel</button>
-                    <button type="submit" id="saveShiftBtn" class="w-1/2 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Save Shift</button>
+                    <button type="button" onclick="closeShiftModal()" class="w-1/2 py-3 rounded-xl border border-slate-300 text-slate-600 font-medium">Cancel</button>
+                    <button type="submit" class="w-1/2 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Save Shift</button>
                 </div>
             </form>
         </div>
@@ -176,140 +198,131 @@
         <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 id="sitterModalTitle" class="font-bold text-lg text-slate-800">Add Sitter</h3>
-                <button onclick="closeSitterModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                <button onclick="closeSitterModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold p-1">&times;</button>
             </div>
 
-            <form id="sitterForm" onsubmit="saveSitter(event)" class="space-y-3 text-sm">
+            <form id="sitterForm" onsubmit="saveSitter(event)" class="space-y-4 text-base">
                 <input type="hidden" id="sitterId">
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Sitter Name</label>
-                    <input type="text" id="sitterName" required placeholder="e.g. Sarah" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Sitter Name</label>
+                    <input type="text" id="sitterName" required placeholder="e.g. Sarah" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Default Hourly Rate ($)</label>
-                    <input type="number" step="0.50" id="sitterRate" required placeholder="20.00" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Default Hourly Rate ($)</label>
+                    <input type="number" step="0.50" id="sitterRate" required placeholder="20.00" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">Venmo Username (optional)</label>
-                    <input type="text" id="sitterVenmo" placeholder="e.g. sarah-babysitter" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">Venmo Username (optional)</label>
+                    <input type="text" id="sitterVenmo" placeholder="e.g. sarah-babysitter" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">CashApp Tag (optional)</label>
-                    <input type="text" id="sitterCashApp" placeholder="e.g. $SarahSits" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-slate-600 font-medium mb-1 text-sm">CashApp Tag (optional)</label>
+                    <input type="text" id="sitterCashApp" placeholder="e.g. $SarahSits" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-base">
                 </div>
 
                 <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeSitterModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium">Cancel</button>
-                    <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Save Sitter</button>
+                    <button type="button" onclick="closeSitterModal()" class="w-1/2 py-3 rounded-xl border border-slate-300 text-slate-600 font-medium">Cancel</button>
+                    <button type="submit" class="w-1/2 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Save Sitter</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: PAY / DETAILS -->
+    <!-- MODAL: PAY DETAILS -->
     <div id="payModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-2xl text-center">
             <h3 class="font-bold text-lg text-slate-800">Shift Payment Details</h3>
             <div id="payModalContent" class="text-sm text-slate-600 space-y-2"></div>
             <div id="payModalLinks" class="space-y-2 pt-2"></div>
-            <button onclick="closePayModal()" class="w-full py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium mt-2">Close</button>
+            <button onclick="closePayModal()" class="w-full py-3 rounded-xl border border-slate-300 text-slate-600 font-medium mt-2">Close</button>
         </div>
     </div>
 
     <!-- MODAL: PHOTO FULL VIEW -->
     <div id="photoModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden" onclick="closePhotoModal()">
-        <img id="fullPhoto" class="max-w-full max-h-full rounded-lg shadow-2xl object-contain">
+        <img id="fullPhoto" class="max-w-full max-h-full rounded-xl shadow-2xl object-contain">
     </div>
 
-    <!-- Firebase Storage & Sync Implementation Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <script>
+        // IndexedDB Persistent Engine
+        let db;
+        const DB_NAME = 'CareTrackerDB';
+        const DB_VERSION = 1;
 
-        // Firebase configuration using local app fallback
-        const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForLocalStorageFallback",
-            authDomain: "care-tracker-app.firebaseapp.com",
-            projectId: "care-tracker-app",
-            storageBucket: "care-tracker-app.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
-        };
-
-        let db = null;
-        let useLocalStorage = false;
-
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-        } catch (e) {
-            console.warn("Firestore init failed, falling back to LocalStorage persistence mode:", e);
-            useLocalStorage = true;
-        }
-
-        // Global Application State
         window.sitters = [];
         window.shifts = [];
 
-        // App Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            initDataSync();
-            // Set default date in shift form to today
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('sitters')) db.createObjectStore('sitters', { keyPath: 'id' });
+                    if (!db.objectStoreNames.contains('shifts')) db.createObjectStore('shifts', { keyPath: 'id' });
+                    if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'id' });
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+
+                request.onerror = (e) => {
+                    console.error('IndexedDB error:', e);
+                    reject(e);
+                };
+            });
+        }
+
+        async function dbGetAll(storeName) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+            });
+        }
+
+        async function dbPut(storeName, item) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.put(item);
+                req.onsuccess = () => resolve();
+            });
+        }
+
+        async function dbDelete(storeName, id) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.delete(id);
+                req.onsuccess = () => resolve();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initIndexedDB();
+            await loadAllData();
             document.getElementById('shiftDate').value = new Date().toISOString().split('T')[0];
         });
 
-        // Data Sync Layer
-        function initDataSync() {
-            const syncText = document.getElementById('syncText');
+        async function loadAllData() {
+            window.sitters = await dbGetAll('sitters');
+            window.shifts = await dbGetAll('shifts');
+            const settings = await dbGetAll('settings');
             
-            // Check if we are in local fallback or live Firebase sync
-            if (useLocalStorage || window.location.hostname === 'localhost') {
-                loadFromLocalStorage();
-                syncText.innerText = "Local Auto-Save";
-            } else {
-                // Realtime Cloud Firestore listeners
-                try {
-                    const sittersCol = collection(db, 'sitters');
-                    onSnapshot(sittersCol, (snapshot) => {
-                        window.sitters = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderSitters();
-                        populateSitterDropdown();
-                    }, (err) => {
-                        console.error("Firestore Sitters Err:", err);
-                        loadFromLocalStorage();
-                    });
-
-                    const shiftsCol = collection(db, 'shifts');
-                    onSnapshot(shiftsCol, (snapshot) => {
-                        window.shifts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderShifts();
-                        calculateSummary();
-                    }, (err) => {
-                        console.error("Firestore Shifts Err:", err);
-                        loadFromLocalStorage();
-                    });
-                } catch(err) {
-                    loadFromLocalStorage();
-                }
+            const appTitleSetting = settings.find(s => s.id === 'appTitle');
+            if (appTitleSetting) {
+                document.getElementById('appHeaderTitle').innerHTML = `<i class="fa-solid fa-baby-carriage"></i> ${appTitleSetting.value}`;
+                document.getElementById('settingAppTitle').value = appTitleSetting.value;
             }
-        }
 
-        function loadFromLocalStorage() {
-            window.sitters = JSON.parse(localStorage.getItem('care_sitters') || '[]');
-            window.shifts = JSON.parse(localStorage.getItem('care_shifts') || '[]');
-            renderSitters();
-            populateSitterDropdown();
-            renderShifts();
-            calculateSummary();
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('care_sitters', JSON.stringify(window.sitters));
-            localStorage.setItem('care_shifts', JSON.stringify(window.shifts));
             renderSitters();
             populateSitterDropdown();
             renderShifts();
@@ -325,9 +338,8 @@
             let startMin = sH * 60 + sM;
             let endMin = eH * 60 + eM;
 
-            // Handle Overnight Shift
             if (endMin <= startMin) {
-                endMin += 24 * 60;
+                endMin += 24 * 60; // Overnight
             }
 
             let totalMins = endMin - startMin - Number(breakMins);
@@ -348,24 +360,24 @@
             document.getElementById('formEstTotal').innerText = `$${total.toFixed(2)}`;
         };
 
-        // UI Tab Switcher
+        // Navigation Switcher
         window.switchTab = function(tabName) {
             document.getElementById('shiftsTab').classList.toggle('hidden', tabName !== 'shiftsTab');
             document.getElementById('sittersTab').classList.toggle('hidden', tabName !== 'sittersTab');
+            document.getElementById('settingsTab').classList.toggle('hidden', tabName !== 'settingsTab');
 
             const btnShifts = document.getElementById('tabBtnShifts');
             const btnSitters = document.getElementById('tabBtnSitters');
+            const btnSettings = document.getElementById('tabBtnSettings');
 
-            if (tabName === 'shiftsTab') {
-                btnShifts.className = "flex-1 py-2 rounded-lg bg-white shadow-sm text-indigo-600 transition font-medium";
-                btnSitters.className = "flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium";
-            } else {
-                btnSitters.className = "flex-1 py-2 rounded-lg bg-white shadow-sm text-indigo-600 transition font-medium";
-                btnShifts.className = "flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium";
-            }
+            const activeClass = "flex-1 py-2 rounded-lg bg-white shadow-sm text-indigo-600 transition font-medium";
+            const inactiveClass = "flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium";
+
+            btnShifts.className = tabName === 'shiftsTab' ? activeClass : inactiveClass;
+            btnSitters.className = tabName === 'sittersTab' ? activeClass : inactiveClass;
+            btnSettings.className = tabName === 'settingsTab' ? activeClass : inactiveClass;
         };
 
-        // Populate Sitters Select Menu
         function populateSitterDropdown() {
             const select = document.getElementById('shiftSitter');
             select.innerHTML = '';
@@ -391,7 +403,6 @@
             }
         };
 
-        // Render Sitters
         function renderSitters() {
             const container = document.getElementById('sittersList');
             if (window.sitters.length === 0) {
@@ -421,7 +432,6 @@
             `).join('');
         }
 
-        // Render Shifts
         function renderShifts() {
             const container = document.getElementById('shiftsList');
             if (window.shifts.length === 0) {
@@ -433,11 +443,10 @@
                 return;
             }
 
-            // Sort shifts newest date first
             const sorted = [...window.shifts].sort((a,b) => new Date(b.date) - new Date(a.date));
 
             container.innerHTML = sorted.map(shift => {
-                const sitter = window.sitters.find(s => s.id === shift.sitterId) || { name: shift.sitterName || 'Unknown Sitter' };
+                const sitter = window.sitters.find(s => s.id === shift.sitterId) || { name: shift.sitterName || 'Unknown' };
                 const hours = window.calcShiftHours(shift.start, shift.end, shift.breakMins);
                 const total = (hours * shift.rate) + (Number(shift.expense) || 0);
 
@@ -445,11 +454,11 @@
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">${shift.date}</span>
-                            <h3 class="font-bold text-slate-800 text-base mt-1">${sitter.name}</h3>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">${shift.date}</span>
+                            <h3 class="font-bold text-slate-800 text-lg mt-1">${sitter.name}</h3>
                         </div>
                         <div class="text-right">
-                            <span class="text-lg font-bold text-slate-900">$${total.toFixed(2)}</span>
+                            <span class="text-xl font-bold text-slate-900">$${total.toFixed(2)}</span>
                             <p class="text-xs text-slate-400">${hours.toFixed(1)} hrs @ $${shift.rate}/hr</p>
                         </div>
                     </div>
@@ -460,29 +469,28 @@
                         ${shift.expense > 0 ? `<span><i class="fa-solid fa-receipt mr-1 text-emerald-500"></i> +$${Number(shift.expense).toFixed(2)} exp</span>` : ''}
                     </div>
 
-                    ${shift.notes ? `<p class="text-xs text-slate-600 bg-slate-50 p-2 rounded-xl italic">"${shift.notes}"</p>` : ''}
+                    ${shift.notes ? `<p class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl italic">"${shift.notes}"</p>` : ''}
 
                     ${shift.photo ? `
                         <div class="mt-2">
-                            <img src="${shift.photo}" onclick="openPhotoModal('${shift.photo}')" class="h-16 w-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition">
+                            <img src="${shift.photo}" onclick="openPhotoModal('${shift.photo}')" class="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition shadow-sm">
                         </div>
                     ` : ''}
 
                     <div class="flex justify-between items-center pt-1">
-                        <button onclick="openPayModal('${shift.id}')" class="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center gap-1">
+                        <button onclick="openPayModal('${shift.id}')" class="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-xl flex items-center gap-1.5">
                             <i class="fa-solid fa-paper-plane"></i> Pay Sitter
                         </button>
 
                         <div class="flex gap-1">
-                            <button onclick="editShift('${shift.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteShift('${shift.id}')" class="p-1.5 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="editShift('${shift.id}')" class="p-2 text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteShift('${shift.id}')" class="p-2 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                 </div>
             `}).join('');
         }
 
-        // Weekly Summary Calculation
         function calculateSummary() {
             const now = new Date();
             const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -507,7 +515,6 @@
             document.getElementById('sumTotal').innerText = `$${totalPay.toFixed(2)}`;
         }
 
-        // Shift Actions
         window.openShiftModal = function(editId = null) {
             document.getElementById('shiftForm').reset();
             document.getElementById('shiftId').value = '';
@@ -548,7 +555,7 @@
 
         window.saveShift = async function(e) {
             e.preventDefault();
-            const id = document.getElementById('shiftId').value;
+            const id = document.getElementById('shiftId').value || ('shift_' + Date.now());
             const sitterId = document.getElementById('shiftSitter').value;
             const sitter = window.sitters.find(s => s.id === sitterId);
 
@@ -557,12 +564,13 @@
 
             if (fileInput.files && fileInput.files[0]) {
                 photoBase64 = await convertFileToBase64(fileInput.files[0]);
-            } else if (id) {
+            } else {
                 const existing = window.shifts.find(s => s.id === id);
                 if (existing) photoBase64 = existing.photo;
             }
 
             const shiftData = {
+                id: id,
                 sitterId: sitterId,
                 sitterName: sitter ? sitter.name : 'Unknown',
                 date: document.getElementById('shiftDate').value,
@@ -575,49 +583,21 @@
                 photo: photoBase64
             };
 
-            if (useLocalStorage || !db) {
-                if (id) {
-                    const idx = window.shifts.findIndex(s => s.id === id);
-                    if (idx !== -1) window.shifts[idx] = { id, ...shiftData };
-                } else {
-                    window.shifts.push({ id: 'shift_' + Date.now(), ...shiftData });
-                }
-                saveToLocalStorage();
-            } else {
-                try {
-                    if (id) {
-                        await updateDoc(doc(db, 'shifts', id), shiftData);
-                    } else {
-                        await addDoc(collection(db, 'shifts'), { ...shiftData, createdAt: serverTimestamp() });
-                    }
-                } catch(err) {
-                    console.error("Cloud Save Shift Error:", err);
-                }
-            }
-
+            await dbPut('shifts', shiftData);
+            await loadAllData();
             closeShiftModal();
         };
 
         window.deleteShift = async function(id) {
             if (!confirm('Are you sure you want to delete this shift?')) return;
-
-            if (useLocalStorage || !db) {
-                window.shifts = window.shifts.filter(s => s.id !== id);
-                saveToLocalStorage();
-            } else {
-                try {
-                    await deleteDoc(doc(db, 'shifts', id));
-                } catch(err) {
-                    console.error("Delete Error:", err);
-                }
-            }
+            await dbDelete('shifts', id);
+            await loadAllData();
         };
 
         window.editShift = function(id) {
             window.openShiftModal(id);
         };
 
-        // Sitter Actions
         window.openSitterModal = function(editId = null) {
             document.getElementById('sitterForm').reset();
             document.getElementById('sitterId').value = '';
@@ -645,58 +625,31 @@
 
         window.saveSitter = async function(e) {
             e.preventDefault();
-            const id = document.getElementById('sitterId').value;
+            const id = document.getElementById('sitterId').value || ('sitter_' + Date.now());
 
             const sitterData = {
+                id: id,
                 name: document.getElementById('sitterName').value,
                 rate: parseFloat(document.getElementById('sitterRate').value),
                 venmo: document.getElementById('sitterVenmo').value.replace('@', '').trim(),
                 cashapp: document.getElementById('sitterCashApp').value.replace('$', '').trim()
             };
 
-            if (useLocalStorage || !db) {
-                if (id) {
-                    const idx = window.sitters.findIndex(s => s.id === id);
-                    if (idx !== -1) window.sitters[idx] = { id, ...sitterData };
-                } else {
-                    window.sitters.push({ id: 'sitter_' + Date.now(), ...sitterData });
-                }
-                saveToLocalStorage();
-            } else {
-                try {
-                    if (id) {
-                        await updateDoc(doc(db, 'sitters', id), sitterData);
-                    } else {
-                        await addDoc(collection(db, 'sitters'), sitterData);
-                    }
-                } catch(err) {
-                    console.error("Cloud Save Sitter Error:", err);
-                }
-            }
-
+            await dbPut('sitters', sitterData);
+            await loadAllData();
             closeSitterModal();
         };
 
         window.deleteSitter = async function(id) {
             if (!confirm('Are you sure you want to delete this sitter?')) return;
-
-            if (useLocalStorage || !db) {
-                window.sitters = window.sitters.filter(s => s.id !== id);
-                saveToLocalStorage();
-            } else {
-                try {
-                    await deleteDoc(doc(db, 'sitters', id));
-                } catch(err) {
-                    console.error("Delete Error:", err);
-                }
-            }
+            await dbDelete('sitters', id);
+            await loadAllData();
         };
 
         window.editSitter = function(id) {
             window.openSitterModal(id);
         };
 
-        // Quick Pay Modal
         window.openPayModal = function(shiftId) {
             const shift = window.shifts.find(s => s.id === shiftId);
             if (!shift) return;
@@ -721,7 +674,7 @@
             if (sitter.venmo) {
                 const venmoUrl = `https://venmo.com/${sitter.venmo}?txn=pay&amount=${total.toFixed(2)}&note=Babysitting%20-${shift.date}`;
                 links.innerHTML += `
-                    <a href="${venmoUrl}" target="_blank" class="w-full bg-[#008CFF] text-white py-2.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 block">
+                    <a href="${venmoUrl}" target="_blank" class="w-full bg-[#008CFF] text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 block">
                         <i class="fa-brands fa-vimeo"></i> Pay via Venmo
                     </a>`;
             }
@@ -729,13 +682,13 @@
             if (sitter.cashapp) {
                 const cashAppUrl = `https://cash.app/$${sitter.cashapp}/${total.toFixed(2)}`;
                 links.innerHTML += `
-                    <a href="${cashAppUrl}" target="_blank" class="w-full bg-[#00D632] text-white py-2.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 block">
+                    <a href="${cashAppUrl}" target="_blank" class="w-full bg-[#00D632] text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 block">
                         <i class="fa-solid fa-dollar-sign"></i> Pay via Cash App
                     </a>`;
             }
 
             if (!sitter.venmo && !sitter.cashapp) {
-                links.innerHTML = `<p class="text-xs text-slate-400 py-2">No Venmo/CashApp handles configured for ${sitter.name}. Edit sitter info in the Sitters tab to add handles.</p>`;
+                links.innerHTML = `<p class="text-xs text-slate-400 py-2">No payment usernames configured. Edit sitter info in the Sitters tab to add Venmo or CashApp tags.</p>`;
             }
 
             document.getElementById('payModal').classList.remove('hidden');
@@ -745,7 +698,6 @@
             document.getElementById('payModal').classList.add('hidden');
         };
 
-        // Photo Preview Modal
         window.openPhotoModal = function(src) {
             document.getElementById('fullPhoto').src = src;
             document.getElementById('photoModal').classList.remove('hidden');
@@ -755,7 +707,28 @@
             document.getElementById('photoModal').classList.add('hidden');
         };
 
-        // Utility: File to Base64
+        window.saveSettings = async function() {
+            const title = document.getElementById('settingAppTitle').value.trim();
+            if (title) {
+                await dbPut('settings', { id: 'appTitle', value: title });
+                document.getElementById('appHeaderTitle').innerHTML = `<i class="fa-solid fa-baby-carriage"></i> ${title}`;
+                alert('Settings saved!');
+            }
+        };
+
+        window.exportData = function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+                sitters: window.sitters,
+                shifts: window.shifts
+            }));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `care_tracker_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        };
+
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
