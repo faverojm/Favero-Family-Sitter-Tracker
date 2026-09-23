@@ -2,1270 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Favero Family Sitter Tracker</title>
-
-  <!-- PWA & Mobile Header Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Sitter Tracker">
-  <link id="app-favicon" rel="icon" type="image/png" href="">
-  <link id="app-apple-icon" rel="apple-touch-icon" href="">
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
+  <link rel="apple-touch-icon" href="icon.png">
+  <title>Sitter Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body {
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --accent: #3b82f6;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --border: #374151;
+      --green: #10b981;
     }
-    input, select, textarea {
-      user-select: text;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; padding-bottom: 40px; }
+    
+    /* PIN Modal */
+    #pin-modal {
+      position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
     }
+    .pin-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; }
+    .pin-display { font-size: 2rem; letter-spacing: 12px; margin-bottom: 24px; height: 40px; }
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 280px; }
+    .pin-btn {
+      aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 1.5rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .pin-btn:active { background: var(--border); }
+
+    /* Main UI */
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 10px; }
+    h1 { font-size: 1.4rem; font-weight: 700; }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+    input, textarea {
+      width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
+      padding: 10px 12px; border-radius: 8px; font-size: 1rem; outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    
+    button.submit-btn {
+      width: 100%; background: var(--accent); color: white; border: none;
+      padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 8px;
+    }
+    button.submit-btn:active { opacity: 0.8; }
+
+    /* Shift List */
+    .shift-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .shift-header { display: flex; justify-content: space-between; align-items: center; }
+    .shift-name { font-weight: 600; font-size: 1.05rem; }
+    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.1rem; }
+    .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; gap: 12px; }
+    .shift-notes { font-size: 0.9rem; color: #d1d5db; margin-top: 4px; }
+    .status-badge {
+      display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    }
+    .badge-paid { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+    .badge-unpaid { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+<body>
 
-  <!-- LANDING PAGE VIEW -->
-  <div id="landing-page" class="min-h-screen flex flex-col items-center justify-between p-6 max-w-md mx-auto text-center">
-    <div class="w-full my-auto space-y-6">
-      
-      <!-- Welcome Image / Banner Box -->
-      <div class="relative w-full rounded-3xl overflow-hidden bg-slate-800 border-2 border-slate-700 shadow-2xl p-4 flex flex-col items-center justify-center min-h-[220px]">
-        <img id="landing-hero-img" class="hidden w-full max-h-64 object-contain rounded-2xl shadow-md mb-2" alt="Welcome Graphic">
-        <div id="landing-hero-default" class="flex flex-col items-center space-y-3 py-6 text-blue-400">
-          <div class="w-20 h-20 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center text-blue-400">
-            <i data-lucide="baby" class="w-10 h-10"></i>
-          </div>
-          <span class="text-xs uppercase tracking-widest text-slate-400 font-bold">Childcare Management</span>
-        </div>
-      </div>
-
-      <!-- App Title & Subtitle -->
-      <div class="space-y-2">
-        <h1 id="landing-app-title" class="text-2xl font-black text-white tracking-tight">Favero Family Sitter Tracker</h1>
-        <p id="landing-app-subtitle" class="text-sm font-medium text-slate-400">Hours, Expenses & Direct Payments</p>
-      </div>
-
-      <!-- Cloud Sync Status Indicator -->
-      <div id="sync-status" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 inline-flex items-center space-x-2">
-        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-blue-400"></i>
-        <span>Connecting to cloud storage...</span>
-      </div>
-
-      <!-- Enter App Button -->
-      <div class="pt-2">
-        <button id="enter-app-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-lg">
-          <span>Enter Tracker</span>
-          <i data-lucide="arrow-right" class="w-5 h-5"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Footer Credit -->
-    <div class="py-4 text-xs text-slate-500">
-      Favero Family Sitter App • Version 4.1 (Persistent Cloud Sync)
+  <!-- PIN Modal -->
+  <div id="pin-modal">
+    <div class="pin-title">Enter Favero Family PIN</div>
+    <div class="pin-display" id="pin-dots">••••</div>
+    <div class="pin-pad">
+      <div class="pin-btn" onclick="pressPin('1')">1</div>
+      <div class="pin-btn" onclick="pressPin('2')">2</div>
+      <div class="pin-btn" onclick="pressPin('3')">3</div>
+      <div class="pin-btn" onclick="pressPin('4')">4</div>
+      <div class="pin-btn" onclick="pressPin('5')">5</div>
+      <div class="pin-btn" onclick="pressPin('6')">6</div>
+      <div class="pin-btn" onclick="pressPin('7')">7</div>
+      <div class="pin-btn" onclick="pressPin('8')">8</div>
+      <div class="pin-btn" onclick="pressPin('9')">9</div>
+      <div class="pin-btn" onclick="clearPin()">C</div>
+      <div class="pin-btn" onclick="pressPin('0')">0</div>
+      <div class="pin-btn" onclick="checkPin()">✓</div>
     </div>
   </div>
 
-  <!-- MAIN APP VIEW -->
-  <div id="main-app" class="hidden min-h-screen pb-28">
+  <!-- Main App -->
+  <header>
+    <h1>Sitter Tracker</h1>
+    <button onclick="lockApp()" style="background:none; border:none; color:var(--muted); font-size:0.85rem;">Lock</button>
+  </header>
 
-    <!-- Header -->
-    <header class="bg-slate-800/95 backdrop-blur-md border-b border-slate-700 sticky top-0 z-20 px-4 py-3 space-y-2 shadow-lg">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <button id="back-to-landing" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
-            <i data-lucide="home" class="w-4 h-4"></i>
-          </button>
-          <div>
-            <h1 id="app-title-display" class="text-base font-bold text-white leading-tight">Favero Family Sitter Tracker</h1>
-            <p id="app-subtitle-display" class="text-[11px] text-slate-400 font-medium">Hours & Pay Log</p>
-          </div>
+  <div class="card">
+    <form id="shift-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="date" required>
         </div>
-        <div class="flex items-center space-x-2">
-          <button id="refresh-data-btn" title="Refresh Data from Sheets" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-          </button>
-          <button id="open-settings" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-          </button>
+        <div class="form-group">
+          <label>Sitter Name</label>
+          <input type="text" id="sitterName" placeholder="Name" required>
         </div>
       </div>
-
-      <!-- Header Banner Graphic Container -->
-      <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-xl border border-slate-700/70 p-2 flex items-center justify-center overflow-hidden shadow-inner min-h-[50px] relative">
-        <div id="header-default-icon" class="py-1 flex items-center space-x-2 text-blue-400">
-          <i data-lucide="users" class="w-5 h-5"></i>
-          <span class="text-xs font-semibold text-slate-300">Family Account</span>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Hours</label>
+          <input type="number" step="0.5" id="hours" placeholder="4.5" required>
         </div>
-        <img id="header-custom-img" class="hidden w-full max-h-40 object-contain rounded-lg" alt="Main App Banner">
+        <div class="form-group">
+          <label>Total Pay ($)</label>
+          <input type="number" step="1" id="pay" placeholder="90" required>
+        </div>
       </div>
-    </header>
-
-    <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
-
-      <!-- Shift Log Form -->
-      <section class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
-          <div class="flex items-center space-x-2">
-            <i id="form-icon" data-lucide="plus-circle" class="w-5 h-5 text-blue-400"></i>
-            <h2 id="form-title" class="text-lg font-semibold text-slate-100">Log Shift</h2>
-          </div>
-          <button id="cancel-edit-btn" class="hidden text-xs bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg border border-amber-500/20 font-medium hover:bg-amber-500/20 transition">
-            Cancel Edit
-          </button>
-        </div>
-
-        <form id="shift-form" class="space-y-4">
-          <input type="hidden" id="edit-shift-id" value="">
-
-          <!-- Sitter Selection with Avatar Preview -->
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Select Sitter</label>
-            <div class="flex items-center space-x-3">
-              <div id="selected-sitter-avatar" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden border-2 border-slate-600 shadow-md">
-                S
-              </div>
-              <select id="sitter-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-                <!-- Dynamically Populated -->
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
-            <input type="date" id="shift-date" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Start Time</label>
-              <input type="time" id="start-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">End Time</label>
-              <input type="time" id="end-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Hourly Rate ($)</label>
-              <input type="number" id="hourly-rate" step="0.5" min="0" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Unpaid Break (mins)</label>
-              <input type="number" id="unpaid-break" min="0" value="0" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Reimbursable Expenses ($)</label>
-            <input type="number" id="expenses" step="0.01" min="0" value="0.00" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Notes / Description</label>
-            <input type="text" id="shift-notes" placeholder="e.g., Pizza, snacks, gas" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium placeholder-slate-500">
-          </div>
-
-          <button type="submit" id="save-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-base">
-            <i data-lucide="save" class="w-5 h-5"></i>
-            <span id="save-btn-text">Save Shift</span>
-          </button>
-        </form>
-      </section>
-
-      <!-- Shift History -->
-      <section class="space-y-3">
-        <div class="flex items-center justify-between px-1">
-          <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Shift History</h2>
-          <div class="flex items-center space-x-3 text-xs">
-            <button id="toggle-select-all" class="text-blue-400 hover:underline font-medium">Select Unpaid</button>
-            <button id="clear-history" class="text-rose-400 hover:underline font-medium">Clear All</button>
-          </div>
-        </div>
-
-        <div id="shifts-list" class="space-y-3">
-          <!-- Dynamic Shift Cards -->
-        </div>
-      </section>
-    </main>
-
-    <!-- Sticky Batch Payment Bar -->
-    <div id="batch-bar" class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-4 shadow-2xl z-30 transition-transform duration-300 translate-y-full">
-      <div class="max-w-md mx-auto flex items-center justify-between">
-        <div>
-          <span id="selected-count" class="text-xs text-slate-400 font-medium">0 shifts selected</span>
-          <div id="selected-total" class="text-xl font-black text-emerald-400">$0.00</div>
-        </div>
-        <button id="pay-selected-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition">
-          <span>Pay Selected</span>
-          <i data-lucide="chevron-right" class="w-4 h-4"></i>
-        </button>
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <textarea id="notes" rows="2" placeholder="Date night, tip included, etc."></textarea>
       </div>
-    </div>
+      <button type="submit" class="submit-btn">Log Shift</button>
+    </form>
   </div>
 
-  <!-- Multi-Shift Checkout Modal -->
-  <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
-        <h3 class="font-bold text-slate-100 text-base">Batch Payment Checkout</h3>
-        <button id="close-checkout" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-400">Review selected shifts and choose your payment method:</p>
-
-      <div id="checkout-shifts-summary" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-        <!-- Summary Dynamic Insertion -->
-      </div>
-
-      <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex items-center justify-between">
-        <span class="text-xs font-semibold text-slate-300">Total Payment</span>
-        <span id="checkout-grand-total" class="text-xl font-black text-emerald-400">$0.00</span>
-      </div>
-
-      <div class="space-y-2 pt-1">
-        <button id="pay-batch-venmo" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg shadow-sky-600/30 flex items-center justify-center space-x-2">
-          <span>Pay Total with Venmo</span>
-        </button>
-        <button id="pay-batch-paypal" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2">
-          <span>Pay Total with PayPal</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
-        <h3 class="font-bold text-slate-100 text-base">Settings & Customization</h3>
-        <button id="close-settings" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Google Sheets Web App Connection -->
-      <div class="space-y-2 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
-        <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Google Sheets Cloud Sync</h4>
-        <label class="block text-[11px] text-slate-400">Apps Script Web App URL</label>
-        <input type="url" id="sheets-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
-      </div>
-
-      <!-- App Title Customization -->
-      <div class="space-y-2">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">App Title & Header</h4>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">App Title</label>
-          <input type="text" id="app-title-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Subtitle</label>
-          <input type="text" id="app-subtitle-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-        </div>
-      </div>
-
-      <!-- Landing Page Welcome Graphic Upload -->
-      <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Landing Page Welcome Graphic</label>
-        <input type="file" id="landing-image-file-input" accept="image/*" class="hidden">
-        <div class="flex space-x-2">
-          <button id="upload-landing-image-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
-            <i data-lucide="image" class="w-4 h-4"></i>
-            <span>Upload Landing Image</span>
-          </button>
-          <button id="remove-landing-image-btn" class="hidden border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs px-3 rounded-xl transition">
-            Remove
-          </button>
-        </div>
-      </div>
-
-      <!-- Main App Banner Logo Graphic Customization -->
-      <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Main App Banner Graphic</label>
-        <input type="file" id="icon-file-input" accept="image/*" class="hidden">
-        <div class="flex space-x-2">
-          <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
-            <i data-lucide="image" class="w-4 h-4"></i>
-            <span>Upload Header Banner</span>
-          </button>
-          <button id="remove-header-image-btn" class="hidden border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs px-3 rounded-xl transition">
-            Remove
-          </button>
-        </div>
-      </div>
-
-      <!-- Manage Sitters & Avatars -->
-      <div class="space-y-3 border-t border-slate-700/60 pt-3">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Manage Sitters & Avatars</h4>
-        
-        <div id="sitters-management-list" class="space-y-2">
-          <!-- Sitters listed here -->
-        </div>
-
-        <!-- Add/Edit Sitter Profile -->
-        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-3">
-          <p id="sitter-form-heading" class="text-xs font-semibold text-slate-300">Add New Sitter Profile</p>
-          <input type="hidden" id="editing-sitter-id" value="">
-          
-          <div class="flex items-center space-x-3">
-            <div id="sitter-avatar-preview" class="w-12 h-12 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 text-xs shrink-0 overflow-hidden">
-              <i data-lucide="user" class="w-6 h-6"></i>
-            </div>
-            <div class="w-full">
-              <input type="file" id="sitter-avatar-file" accept="image/*" class="hidden">
-              <button type="button" id="upload-sitter-avatar-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 px-3 py-2 rounded-lg w-full flex items-center justify-center space-x-1.5 transition">
-                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-                <span>Choose Sitter Photo</span>
-              </button>
-            </div>
-          </div>
-
-          <input type="text" id="sitter-name-input" placeholder="Sitter Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-          
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="sitter-rate-input" step="0.5" placeholder="Rate ($/hr)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-            <input type="text" id="sitter-venmo-input" placeholder="Venmo (@username)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-          </div>
-          <input type="text" id="sitter-paypal-input" placeholder="PayPal username or link" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
-          
-          <div class="flex space-x-2 pt-1">
-            <button id="save-sitter-btn" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-semibold py-2 rounded-lg text-white transition">
-              + Save Profile
-            </button>
-            <button id="cancel-sitter-edit" type="button" class="hidden bg-slate-700 hover:bg-slate-600 text-xs text-slate-300 px-3 py-2 rounded-lg">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Backup & Data Safety -->
-      <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Backup & Safety</h4>
-        <div class="flex space-x-2">
-          <button id="export-backup-btn" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>Export Data</span>
-          </button>
-          <button id="import-backup-btn" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-            <span>Import Data</span>
-          </button>
-          <input type="file" id="import-file-input" accept=".json" class="hidden">
-        </div>
-      </div>
-
-      <button id="save-settings" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-sm transition">
-        Done
-      </button>
-    </div>
-  </div>
+  <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--muted);">Shift History</h2>
+  <div id="shift-list">Loading shifts...</div>
 
   <script>
-    lucide.createIcons();
+    // Configuration
+    const SUPABASE_URL = 'https://mvwmpoofylsrmkdfzat.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12d21wb29meWxzcmhta2RmemF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTc3NzAsImV4cCI6MjEwNTczMzc3MH0.RXaqF8nRHLUNoDqGlQkORHpASRxcwJmyckBGxRWnkPg';
+    const CORRECT_PIN = '1313'; // Change this to your custom 4-digit PIN
 
-    // High-Capacity IndexedDB Engine (Persists Data & Images directly on device memory)
-    const DB_NAME = 'FaveroAppDB_v2';
-    const DB_VERSION = 1;
-    let db;
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function initDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = (e) => {
-          const database = e.target.result;
-          if (!database.objectStoreNames.contains('store')) {
-            database.createObjectStore('store');
-          }
-        };
-        request.onsuccess = (e) => {
-          db = e.target.result;
-          resolve(db);
-        };
-        request.onerror = (e) => reject(e.target.error);
-      });
-    }
-
-    function setValDB(key, val) {
-      return new Promise((resolve) => {
-        if (!db) return resolve();
-        const tx = db.transaction('store', 'readwrite');
-        tx.objectStore('store').put(val, key);
-        tx.oncomplete = () => resolve();
-      });
-    }
-
-    function getValDB(key) {
-      return new Promise((resolve) => {
-        if (!db) return resolve(null);
-        const tx = db.transaction('store', 'readonly');
-        const req = tx.objectStore('store').get(key);
-        req.onsuccess = () => resolve(req.result || null);
-        req.onerror = () => resolve(null);
-      });
-    }
-
-    // App State
-    let googleSheetsUrl = localStorage.getItem('sitter_sheets_url') || '';
-    let appTitle = localStorage.getItem('sitter_app_title') || 'Favero Family Sitter Tracker';
-    let appSubtitle = localStorage.getItem('sitter_app_subtitle') || 'Hours & Pay Log';
-
-    let sitters = JSON.parse(localStorage.getItem('sitter_profiles')) || [
-      { id: '1', name: 'Primary Sitter', rate: 20, venmo: '', paypal: '', avatar: '' }
-    ];
-    let shifts = JSON.parse(localStorage.getItem('sitter_shifts')) || [];
-    let customIcon = '';
-    let landingImage = '';
-    let selectedShiftIds = new Set();
-    let currentSitterAvatarTemp = '';
-
-    const syncStatusEl = document.getElementById('sync-status');
-
-    function updateSyncStatus(msg, isSuccess = true) {
-      if (!syncStatusEl) return;
-      if (isSuccess) {
-        syncStatusEl.innerHTML = `<i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i><span>${msg}</span>`;
-      } else {
-        syncStatusEl.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-400"></i><span>${msg}</span>`;
-      }
-      lucide.createIcons();
-    }
-
-    // Save Data Locally to both localStorage and IndexedDB
-    async function persistLocalState() {
-      localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
-      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
-      await setValDB('sitter_profiles', sitters);
-      await setValDB('sitter_shifts', shifts);
-    }
-
-    // Push Shift to Google Sheets
-    function syncShiftToSheets(shiftData) {
-      if (!googleSheetsUrl) return;
-      try {
-        fetch(googleSheetsUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save', shift: shiftData })
-        });
-      } catch (err) {
-        console.warn('Google Sheets sync skipped or offline:', err);
-      }
-    }
-
-    // Pull All Data directly from Google Sheets on Launch
-    async function fetchFromSheets() {
-      if (!googleSheetsUrl) {
-        updateSyncStatus("Local storage active (No Cloud URL)");
-        return;
-      }
-
-      updateSyncStatus("Syncing with Google Sheets...");
-
-      try {
-        const response = await fetch(googleSheetsUrl + "?action=get");
-        if (response.ok) {
-          const remoteShifts = await response.json();
-          if (Array.isArray(remoteShifts) && remoteShifts.length > 0) {
-            shifts = remoteShifts;
-            await persistLocalState();
-            renderShifts();
-            updateSyncStatus("Cloud Sync Active");
-          } else {
-            updateSyncStatus("Cloud Sync Active");
-          }
-        } else {
-          updateSyncStatus("Loaded from local storage");
-        }
-      } catch (err) {
-        updateSyncStatus("Offline mode (Local storage)");
-      }
-    }
-
-    // Elements
-    const landingPage = document.getElementById('landing-page');
-    const mainApp = document.getElementById('main-app');
-    const enterAppBtn = document.getElementById('enter-app-btn');
-    const backToLandingBtn = document.getElementById('back-to-landing');
-    const refreshDataBtn = document.getElementById('refresh-data-btn');
-
-    const landingAppTitle = document.getElementById('landing-app-title');
-    const landingAppSubtitle = document.getElementById('landing-app-subtitle');
-    const landingHeroImg = document.getElementById('landing-hero-img');
-    const landingHeroDefault = document.getElementById('landing-hero-default');
-
-    const shiftForm = document.getElementById('shift-form');
-    const formTitle = document.getElementById('form-title');
-    const cancelEditBtn = document.getElementById('cancel-edit-btn');
-    const editShiftId = document.getElementById('edit-shift-id');
-    const sitterSelect = document.getElementById('sitter-select');
-    const selectedSitterAvatar = document.getElementById('selected-sitter-avatar');
-    const shiftDateInput = document.getElementById('shift-date');
-    const startTimeInput = document.getElementById('start-time');
-    const endTimeInput = document.getElementById('end-time');
-    const hourlyRateInput = document.getElementById('hourly-rate');
-    const unpaidBreakInput = document.getElementById('unpaid-break');
-    const expensesInput = document.getElementById('expenses');
-    const shiftNotesInput = document.getElementById('shift-notes');
-    const saveBtnText = document.getElementById('save-btn-text');
-    const shiftsList = document.getElementById('shifts-list');
-
-    const headerDefaultIcon = document.getElementById('header-default-icon');
-    const headerCustomImg = document.getElementById('header-custom-img');
-    const appTitleDisplay = document.getElementById('app-title-display');
-    const appSubtitleDisplay = document.getElementById('app-subtitle-display');
-
-    const batchBar = document.getElementById('batch-bar');
-    const selectedCountEl = document.getElementById('selected-count');
-    const selectedTotalEl = document.getElementById('selected-total');
-    const paySelectedBtn = document.getElementById('pay-selected-btn');
-    const toggleSelectAllBtn = document.getElementById('toggle-select-all');
-
-    const checkoutModal = document.getElementById('checkout-modal');
-    const closeCheckoutBtn = document.getElementById('close-checkout');
-    const checkoutShiftsSummary = document.getElementById('checkout-shifts-summary');
-    const checkoutGrandTotal = document.getElementById('checkout-grand-total');
-    const payBatchVenmoBtn = document.getElementById('pay-batch-venmo');
-    const payBatchPaypalBtn = document.getElementById('pay-batch-paypal');
-
-    const settingsModal = document.getElementById('settings-modal');
-    const openSettingsBtn = document.getElementById('open-settings');
-    const closeSettingsBtn = document.getElementById('close-settings');
-    const saveSettingsBtn = document.getElementById('save-settings');
-    const appTitleInput = document.getElementById('app-title-input');
-    const appSubtitleInput = document.getElementById('app-subtitle-input');
-    const sheetsUrlInput = document.getElementById('sheets-url-input');
-
-    const sittersMgmtList = document.getElementById('sitters-management-list');
-    const sitterFormHeading = document.getElementById('sitter-form-heading');
-    const editingSitterId = document.getElementById('editing-sitter-id');
-    const sitterNameInput = document.getElementById('sitter-name-input');
-    const sitterRateInput = document.getElementById('sitter-rate-input');
-    const sitterVenmoInput = document.getElementById('sitter-venmo-input');
-    const sitterPaypalInput = document.getElementById('sitter-paypal-input');
-    const saveSitterBtn = document.getElementById('save-sitter-btn');
-    const cancelSitterEditBtn = document.getElementById('cancel-sitter-edit');
-    const uploadSitterAvatarBtn = document.getElementById('upload-sitter-avatar-btn');
-    const sitterAvatarFileInput = document.getElementById('sitter-avatar-file');
-    const sitterAvatarPreview = document.getElementById('sitter-avatar-preview');
-
-    const iconFileInput = document.getElementById('icon-file-input');
-    const uploadIconBtn = document.getElementById('upload-icon-btn');
-    const removeHeaderImageBtn = document.getElementById('remove-header-image-btn');
-
-    const landingImageFileInput = document.getElementById('landing-image-file-input');
-    const uploadLandingImageBtn = document.getElementById('upload-landing-image-btn');
-    const removeLandingImageBtn = document.getElementById('remove-landing-image-btn');
-
-    const exportBackupBtn = document.getElementById('export-backup-btn');
-    const importBackupBtn = document.getElementById('import-backup-btn');
-    const importFileInput = document.getElementById('import-file-input');
-
-    shiftDateInput.value = new Date().toISOString().split('T')[0];
-
-    enterAppBtn.onclick = () => {
-      landingPage.classList.add('hidden');
-      mainApp.classList.remove('hidden');
-      window.scrollTo(0, 0);
-    };
-
-    backToLandingBtn.onclick = () => {
-      mainApp.classList.add('hidden');
-      landingPage.classList.remove('hidden');
-      window.scrollTo(0, 0);
-    };
-
-    refreshDataBtn.onclick = () => {
-      fetchFromSheets();
-    };
-
-    function updateTitleDisplay() {
-      appTitleDisplay.textContent = appTitle;
-      appSubtitleDisplay.textContent = appSubtitle;
-      landingAppTitle.textContent = appTitle;
-      landingAppSubtitle.textContent = appSubtitle;
-    }
-    updateTitleDisplay();
-
-    function updateLandingGraphic() {
-      const activeLandingImg = landingImage || customIcon;
-      if (activeLandingImg) {
-        landingHeroImg.src = activeLandingImg;
-        landingHeroImg.classList.remove('hidden');
-        landingHeroDefault.classList.add('hidden');
-      } else {
-        landingHeroImg.classList.add('hidden');
-        landingHeroDefault.classList.remove('hidden');
-      }
-
-      if (landingImage) {
-        removeLandingImageBtn.classList.remove('hidden');
-      } else {
-        removeLandingImageBtn.classList.add('hidden');
-      }
-    }
-
-    function applyCustomIcon(iconData) {
-      if (iconData) {
-        document.getElementById('app-favicon').href = iconData;
-        document.getElementById('app-apple-icon').href = iconData;
-        
-        headerCustomImg.src = iconData;
-        headerCustomImg.classList.remove('hidden');
-        headerDefaultIcon.classList.add('hidden');
-        removeHeaderImageBtn.classList.remove('hidden');
-      } else {
-        headerCustomImg.classList.add('hidden');
-        headerDefaultIcon.classList.remove('hidden');
-        removeHeaderImageBtn.classList.add('hidden');
-      }
-      updateLandingGraphic();
-    }
-
-    uploadLandingImageBtn.onclick = () => landingImageFileInput.click();
-    landingImageFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          landingImage = event.target.result;
-          await setValDB('landing_image', landingImage);
-          updateLandingGraphic();
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    removeLandingImageBtn.onclick = async () => {
-      landingImage = '';
-      await setValDB('landing_image', '');
-      updateLandingGraphic();
-    };
-
-    uploadIconBtn.onclick = () => iconFileInput.click();
-    iconFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          customIcon = event.target.result;
-          await setValDB('custom_icon', customIcon);
-          applyCustomIcon(customIcon);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    removeHeaderImageBtn.onclick = async () => {
-      customIcon = '';
-      await setValDB('custom_icon', '');
-      applyCustomIcon('');
-    };
-
-    function renderAvatarHTML(avatarUrl, name, sizeClass = "w-10 h-10 text-xs") {
-      if (avatarUrl) {
-        return `<img src="${avatarUrl}" class="${sizeClass} rounded-full object-cover border border-slate-600 shrink-0" alt="${name}">`;
-      }
-      const initial = name ? name.charAt(0).toUpperCase() : 'S';
-      return `<div class="${sizeClass} rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0 border border-slate-600">${initial}</div>`;
-    }
-
-    function updateSelectedSitterAvatar() {
-      const selected = sitters.find(s => s.id === sitterSelect.value);
-      if (selected) {
-        selectedSitterAvatar.innerHTML = renderAvatarHTML(selected.avatar, selected.name, "w-12 h-12 text-base");
-      }
-    }
-
-    function populateSitterSelect() {
-      sitterSelect.innerHTML = '';
-      sitters.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.textContent = `${s.name} ($${s.rate}/hr)`;
-        sitterSelect.appendChild(opt);
-      });
-      if (sitters.length > 0 && !editShiftId.value) {
-        hourlyRateInput.value = sitters[0].rate;
-      }
-      updateSelectedSitterAvatar();
-    }
-
-    sitterSelect.onchange = () => {
-      const selected = sitters.find(s => s.id === sitterSelect.value);
-      if (selected && !editShiftId.value) {
-        hourlyRateInput.value = selected.rate;
-      }
-      updateSelectedSitterAvatar();
-    };
-
-    function renderSitterMgmt() {
-      sittersMgmtList.innerHTML = '';
-      sitters.forEach(s => {
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80 text-xs";
-        div.innerHTML = `
-          <div class="flex items-center space-x-2.5">
-            ${renderAvatarHTML(s.avatar, s.name, "w-8 h-8 text-[10px]")}
-            <div>
-              <p class="font-bold text-slate-100">${s.name} <span class="text-blue-400 font-normal">($${s.rate}/hr)</span></p>
-              <p class="text-[10px] text-slate-400">Venmo: ${s.venmo || 'None'} | PayPal: ${s.paypal || 'None'}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-1">
-            <button onclick="editSitter('${s.id}')" class="text-amber-400 hover:text-amber-300 p-1">
-              <i data-lucide="pencil" class="w-4 h-4"></i>
-            </button>
-            ${sitters.length > 1 ? `
-              <button onclick="removeSitter('${s.id}')" class="text-rose-400 hover:text-rose-300 p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
-          </div>
-        `;
-        sittersMgmtList.appendChild(div);
-      });
-      lucide.createIcons();
-    }
-
-    uploadSitterAvatarBtn.onclick = () => sitterAvatarFileInput.click();
-    sitterAvatarFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          currentSitterAvatarTemp = event.target.result;
-          sitterAvatarPreview.innerHTML = `<img src="${currentSitterAvatarTemp}" class="w-full h-full object-cover">`;
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    window.editSitter = function(id) {
-      const sitter = sitters.find(s => s.id === id);
-      if (!sitter) return;
-
-      editingSitterId.value = sitter.id;
-      sitterNameInput.value = sitter.name;
-      sitterRateInput.value = sitter.rate;
-      sitterVenmoInput.value = sitter.venmo || '';
-      sitterPaypalInput.value = sitter.paypal || '';
-      currentSitterAvatarTemp = sitter.avatar || '';
-
-      if (currentSitterAvatarTemp) {
-        sitterAvatarPreview.innerHTML = `<img src="${currentSitterAvatarTemp}" class="w-full h-full object-cover">`;
-      } else {
-        sitterAvatarPreview.innerHTML = `<i data-lucide="user" class="w-6 h-6"></i>`;
-        lucide.createIcons();
-      }
-
-      sitterFormHeading.textContent = "Edit Sitter Profile";
-      saveSitterBtn.textContent = "Update Sitter Profile";
-      cancelSitterEditBtn.classList.remove('hidden');
-    };
-
-    function resetSitterForm() {
-      editingSitterId.value = '';
-      sitterNameInput.value = '';
-      sitterRateInput.value = '';
-      sitterVenmoInput.value = '';
-      sitterPaypalInput.value = '';
-      currentSitterAvatarTemp = '';
-      sitterAvatarPreview.innerHTML = `<i data-lucide="user" class="w-6 h-6"></i>`;
-      sitterFormHeading.textContent = "Add New Sitter Profile";
-      saveSitterBtn.textContent = "+ Save Profile";
-      cancelSitterEditBtn.classList.add('hidden');
-      lucide.createIcons();
-    }
-
-    cancelSitterEditBtn.onclick = resetSitterForm;
-
-    saveSitterBtn.onclick = async () => {
-      const name = sitterNameInput.value.trim();
-      const rate = parseFloat(sitterRateInput.value) || 20;
-      let venmo = sitterVenmoInput.value.trim().replace(/^@/, '');
-      let paypal = sitterPaypalInput.value.trim();
-
-      if (!name) return alert("Please enter a sitter name.");
-
-      if (editingSitterId.value) {
-        sitters = sitters.map(s => s.id === editingSitterId.value ? { id: s.id, name, rate, venmo, paypal, avatar: currentSitterAvatarTemp } : s);
-      } else {
-        sitters.push({ id: Date.now().toString(), name, rate, venmo, paypal, avatar: currentSitterAvatarTemp });
-      }
-
-      await persistLocalState();
-      resetSitterForm();
-      renderSitterMgmt();
-      populateSitterSelect();
-      renderShifts();
-    };
-
-    window.removeSitter = async function(id) {
-      if (sitters.length <= 1) return;
-      if (confirm("Delete this sitter profile?")) {
-        sitters = sitters.filter(s => s.id !== id);
-        await persistLocalState();
-        renderSitterMgmt();
-        populateSitterSelect();
-        renderShifts();
-      }
-    };
-
-    openSettingsBtn.onclick = () => {
-      appTitleInput.value = appTitle;
-      appSubtitleInput.value = appSubtitle;
-      sheetsUrlInput.value = googleSheetsUrl;
-      renderSitterMgmt();
-      settingsModal.classList.remove('hidden');
-    };
-
-    closeSettingsBtn.onclick = () => settingsModal.classList.add('hidden');
+    // PIN State
+    let currentPin = '';
     
-    saveSettingsBtn.onclick = () => {
-      if (appTitleInput.value.trim()) {
-        appTitle = appTitleInput.value.trim();
-        localStorage.setItem('sitter_app_title', appTitle);
-      }
-      if (appSubtitleInput.value.trim()) {
-        appSubtitle = appSubtitleInput.value.trim();
-        localStorage.setItem('sitter_app_subtitle', appSubtitle);
-      }
-      googleSheetsUrl = sheetsUrlInput.value.trim();
-      localStorage.setItem('sitter_sheets_url', googleSheetsUrl);
-
-      updateTitleDisplay();
-      fetchFromSheets();
-      settingsModal.classList.add('hidden');
-    };
-
-    exportBackupBtn.onclick = async () => {
-      const backupData = {
-        appTitle,
-        appSubtitle,
-        googleSheetsUrl,
-        sitters,
-        shifts,
-        customIcon: await getValDB('custom_icon'),
-        landingImage: await getValDB('landing_image')
-      };
-
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `SitterTracker_Backup_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    };
-
-    importBackupBtn.onclick = () => importFileInput.click();
-    importFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const data = JSON.parse(event.target.result);
-            if (data.appTitle) {
-              appTitle = data.appTitle;
-              localStorage.setItem('sitter_app_title', appTitle);
-            }
-            if (data.appSubtitle) {
-              appSubtitle = data.appSubtitle;
-              localStorage.setItem('sitter_app_subtitle', appSubtitle);
-            }
-            if (data.googleSheetsUrl) {
-              googleSheetsUrl = data.googleSheetsUrl;
-              localStorage.setItem('sitter_sheets_url', googleSheetsUrl);
-            }
-            if (data.sitters) sitters = data.sitters;
-            if (data.shifts) shifts = data.shifts;
-            
-            await persistLocalState();
-
-            if (data.customIcon) {
-              customIcon = data.customIcon;
-              await setValDB('custom_icon', customIcon);
-            }
-            if (data.landingImage) {
-              landingImage = data.landingImage;
-              await setValDB('landing_image', landingImage);
-            }
-
-            updateTitleDisplay();
-            applyCustomIcon(customIcon);
-            populateSitterSelect();
-            renderShifts();
-            alert("Backup restored successfully!");
-            settingsModal.classList.add('hidden');
-          } catch (err) {
-            alert("Failed to restore backup file.");
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-
-    // Form Submission
-    shiftForm.onsubmit = async (e) => {
-      e.preventDefault();
-
-      const sitterId = sitterSelect.value;
-      const sitter = sitters.find(s => s.id === sitterId) || { name: 'Sitter' };
-      const dateVal = shiftDateInput.value;
-      const startVal = startTimeInput.value;
-      const endVal = endTimeInput.value;
-      const rateVal = parseFloat(hourlyRateInput.value) || 0;
-      const breakVal = parseInt(unpaidBreakInput.value) || 0;
-      const expVal = parseFloat(expensesInput.value) || 0;
-      const notesVal = shiftNotesInput.value;
-
-      const start = new Date(`${dateVal}T${startVal}`);
-      let end = new Date(`${dateVal}T${endVal}`);
-      if (end < start) end.setDate(end.getDate() + 1);
-
-      const totalMins = Math.max(0, ((end - start) / 60000) - breakVal);
-      const hoursWorked = totalMins / 60;
-      const wage = hoursWorked * rateVal;
-      const totalPay = wage + expVal;
-
-      const existingShift = shifts.find(s => s.id === editShiftId.value);
-
-      const shiftData = {
-        id: editShiftId.value || Date.now().toString(),
-        sitterId: sitterId,
-        sitterName: sitter.name,
-        date: dateVal,
-        startTime: startVal,
-        endTime: endVal,
-        rate: rateVal,
-        breakMins: breakVal,
-        expenses: expVal,
-        notes: notesVal,
-        hours: hoursWorked.toFixed(2),
-        pay: totalPay.toFixed(2),
-        paid: existingShift ? existingShift.paid : false
-      };
-
-      if (editShiftId.value) {
-        shifts = shifts.map(s => s.id === editShiftId.value ? shiftData : s);
-      } else {
-        shifts.unshift(shiftData);
-      }
-
-      await persistLocalState();
-      syncShiftToSheets(shiftData);
-      resetForm();
-      renderShifts();
-    };
-
-    function resetForm() {
-      editShiftId.value = '';
-      formTitle.textContent = 'Log Shift';
-      saveBtnText.textContent = 'Save Shift';
-      cancelEditBtn.classList.add('hidden');
-      shiftForm.reset();
-      shiftDateInput.value = new Date().toISOString().split('T')[0];
-      populateSitterSelect();
-      unpaidBreakInput.value = '0';
-      expensesInput.value = '0.00';
+    function updatePinDisplay() {
+      document.getElementById('pin-dots').textContent = '•'.repeat(currentPin.length) || '';
     }
 
-    cancelEditBtn.onclick = resetForm;
-
-    window.editShift = function(id) {
-      const shift = shifts.find(s => s.id === id);
-      if (!shift) return;
-
-      editShiftId.value = shift.id;
-      sitterSelect.value = shift.sitterId || sitters[0]?.id;
-      updateSelectedSitterAvatar();
-      shiftDateInput.value = shift.date;
-      startTimeInput.value = shift.startTime;
-      endTimeInput.value = shift.endTime;
-      hourlyRateInput.value = shift.rate;
-      unpaidBreakInput.value = shift.breakMins;
-      expensesInput.value = shift.expenses;
-      shiftNotesInput.value = shift.notes || '';
-
-      formTitle.textContent = 'Edit Shift';
-      saveBtnText.textContent = 'Update Shift';
-      cancelEditBtn.classList.remove('hidden');
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.deleteShift = async function(id) {
-      if (confirm("Delete this shift record?")) {
-        shifts = shifts.filter(s => s.id !== id);
-        selectedShiftIds.delete(id);
-        await persistLocalState();
-        renderShifts();
-      }
-    };
-
-    window.toggleShiftPaid = async function(id) {
-      shifts = shifts.map(s => s.id === id ? { ...s, paid: !s.paid } : s);
-      await persistLocalState();
-      renderShifts();
-    };
-
-    window.toggleShiftSelection = function(id) {
-      if (selectedShiftIds.has(id)) {
-        selectedShiftIds.delete(id);
-      } else {
-        selectedShiftIds.add(id);
-      }
-      updateBatchBar();
-      renderShifts();
-    };
-
-    toggleSelectAllBtn.onclick = () => {
-      const unpaidShifts = shifts.filter(s => !s.paid);
-      if (selectedShiftIds.size === unpaidShifts.length && unpaidShifts.length > 0) {
-        selectedShiftIds.clear();
-      } else {
-        selectedShiftIds.clear();
-        unpaidShifts.forEach(s => selectedShiftIds.add(s.id));
-      }
-      updateBatchBar();
-      renderShifts();
-    };
-
-    function updateBatchBar() {
-      const count = selectedShiftIds.size;
-      if (count > 0) {
-        let total = 0;
-        shifts.forEach(s => {
-          if (selectedShiftIds.has(s.id)) total += parseFloat(s.pay);
-        });
-        selectedCountEl.textContent = `${count} shift${count > 1 ? 's' : ''} selected`;
-        selectedTotalEl.textContent = `$${total.toFixed(2)}`;
-        batchBar.classList.remove('translate-y-full');
-      } else {
-        batchBar.classList.add('translate-y-full');
+    function pressPin(num) {
+      if (currentPin.length < 4) {
+        currentPin += num;
+        updatePinDisplay();
+        if (currentPin.length === 4) setTimeout(checkPin, 150);
       }
     }
 
-    paySelectedBtn.onclick = () => {
-      if (selectedShiftIds.size === 0) return;
-
-      const selectedList = shifts.filter(s => selectedShiftIds.has(s.id));
-      let total = 0;
-
-      checkoutShiftsSummary.innerHTML = '';
-      selectedList.forEach(s => {
-        total += parseFloat(s.pay);
-        const sitter = sitters.find(st => st.id === s.sitterId);
-        const avatarHTML = renderAvatarHTML(sitter ? sitter.avatar : '', s.sitterName, "w-6 h-6 text-[9px]");
-
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between text-xs bg-slate-900/70 p-2 rounded-lg border border-slate-700/60";
-        div.innerHTML = `
-          <div class="flex items-center space-x-2">
-            ${avatarHTML}
-            <div>
-              <p class="font-bold text-slate-200">${s.date} (${s.hours} hrs)</p>
-              <p class="text-[10px] text-slate-400">${s.sitterName}</p>
-            </div>
-          </div>
-          <span class="font-bold text-emerald-400">$${s.pay}</span>
-        `;
-        checkoutShiftsSummary.appendChild(div);
-      });
-
-      checkoutGrandTotal.textContent = `$${total.toFixed(2)}`;
-      checkoutModal.classList.remove('hidden');
-    };
-
-    closeCheckoutBtn.onclick = () => checkoutModal.classList.add('hidden');
-
-    async function executeBatchPayment(type) {
-      const selectedList = shifts.filter(s => selectedShiftIds.has(s.id));
-      if (selectedList.length === 0) return;
-
-      let total = 0;
-      selectedList.forEach(s => total += parseFloat(s.pay));
-
-      const firstSitterId = selectedList[0].sitterId;
-      const sitter = sitters.find(s => s.id === firstSitterId) || {};
-      const datesString = selectedList.map(s => s.date).join(', ');
-
-      const noteText = encodeURIComponent(`Babysitting (${selectedList.length} shifts: ${datesString})`);
-      const amount = total.toFixed(2);
-
-      if (type === 'venmo') {
-        const username = sitter.venmo || '';
-        const venmoUrl = username 
-          ? `venmo://paycharge?txn=pay&recipients=${username}&amount=${amount}&note=${noteText}`
-          : `venmo://paycharge?txn=pay&amount=${amount}&note=${noteText}`;
-        window.location.href = venmoUrl;
-      } else if (type === 'paypal') {
-        const paypalHandle = sitter.paypal || '';
-        if (paypalHandle.includes('paypal.me')) {
-          let cleanLink = paypalHandle.startsWith('http') ? paypalHandle : `https://${paypalHandle}`;
-          window.open(`${cleanLink}/${amount}`, '_blank');
-        } else if (paypalHandle) {
-          window.open(`https://www.paypal.com/myaccount/transfer/homepage/external/summary?recipient=${encodeURIComponent(paypalHandle)}&amount=${amount}`, '_blank');
-        } else {
-          window.open(`https://www.paypal.com`, '_blank');
-        }
-      }
-
-      shifts = shifts.map(s => selectedShiftIds.has(s.id) ? { ...s, paid: true } : s);
-      await persistLocalState();
-      selectedShiftIds.clear();
-      updateBatchBar();
-      checkoutModal.classList.add('hidden');
-      renderShifts();
+    function clearPin() {
+      currentPin = '';
+      updatePinDisplay();
     }
 
-    payBatchVenmoBtn.onclick = () => executeBatchPayment('venmo');
-    payBatchPaypalBtn.onclick = () => executeBatchPayment('paypal');
-
-    window.paySingleViaVenmo = function(shiftId) {
-      selectedShiftIds.clear();
-      selectedShiftIds.add(shiftId);
-      executeBatchPayment('venmo');
-    };
-
-    window.paySingleViaPaypal = function(shiftId) {
-      selectedShiftIds.clear();
-      selectedShiftIds.add(shiftId);
-      executeBatchPayment('paypal');
-    };
-
-    document.getElementById('clear-history').onclick = async () => {
-      if (confirm("Clear all shift records?")) {
-        shifts = [];
-        selectedShiftIds.clear();
-        await persistLocalState();
-        updateBatchBar();
-        renderShifts();
+    function checkPin() {
+      if (currentPin === CORRECT_PIN) {
+        document.getElementById('pin-modal').style.display = 'none';
+        clearPin();
+        loadShifts();
+      } else {
+        alert('Incorrect PIN');
+        clearPin();
       }
-    };
+    }
 
-    function renderShifts() {
-      shiftsList.innerHTML = '';
+    function lockApp() {
+      clearPin();
+      document.getElementById('pin-modal').style.display = 'flex';
+    }
 
-      if (shifts.length === 0) {
-        shiftsList.innerHTML = `
-          <div class="text-center py-8 text-slate-500 text-xs">
-            No shifts recorded yet.
-          </div>
-        `;
+    // Auto-lock when switching apps or backgrounding Safari
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        lockApp();
+      }
+    });
+
+    // Default Date to Today
+    document.getElementById('date').valueAsDate = new Date();
+
+    // Data Actions
+    async function loadShifts() {
+      const { data, error } = await db.from('shifts').select('*').order('created_at', { ascending: false });
+      const container = document.getElementById('shift-list');
+      
+      if (error) {
+        container.innerHTML = '<p style="color:#ef4444">Error loading shifts.</p>';
         return;
       }
 
-      shifts.forEach(shift => {
-        const sitter = sitters.find(s => s.id === shift.sitterId);
-        const sitterDisplayName = sitter ? sitter.name : (shift.sitterName || 'Sitter');
-        const isSelected = selectedShiftIds.has(shift.id);
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted)">No shifts logged yet.</p>';
+        return;
+      }
 
-        const card = document.createElement('div');
-        card.className = `bg-slate-800 border rounded-2xl p-4 shadow-lg space-y-3 transition ${
-          isSelected ? 'border-emerald-500/80 bg-slate-800/95 ring-1 ring-emerald-500/50' : 'border-slate-700/80'
-        }`;
-
-        card.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-700/50 pb-2.5">
-            
-            <div class="flex items-center space-x-3">
-              <label class="flex items-center space-x-1.5 cursor-pointer bg-slate-900/80 hover:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700/80 transition">
-                <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleShiftSelection('${shift.id}')" class="w-4 h-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer">
-                <span class="text-[11px] font-bold tracking-wide uppercase ${isSelected ? 'text-emerald-400' : 'text-slate-400'}">Select</span>
-              </label>
-              
-              <div class="flex items-center space-x-2">
-                ${renderAvatarHTML(sitter ? sitter.avatar : '', sitterDisplayName, "w-8 h-8 text-[11px]")}
-                <div>
-                  <div class="flex items-center space-x-2">
-                    <span class="text-xs font-bold text-slate-100">${sitterDisplayName}</span>
-                    ${shift.paid ? '<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">PAID</span>' : ''}
-                  </div>
-                  <span class="text-xs text-slate-400 font-medium">${shift.date}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-1">
-              <button onclick="toggleShiftPaid('${shift.id}')" title="Toggle Paid Status" class="p-1.5 text-slate-400 hover:text-emerald-400 rounded-lg hover:bg-slate-700/50 transition">
-                <i data-lucide="${shift.paid ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${shift.paid ? 'text-emerald-400' : ''}"></i>
-              </button>
-              <button onclick="editShift('${shift.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 rounded-lg hover:bg-slate-700/50 transition">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
-              <button onclick="deleteShift('${shift.id}')" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-700/50 transition">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
+      container.innerHTML = data.map(shift => `
+        <div class="shift-card">
+          <div class="shift-header">
+            <span class="shift-name">${shift.sitterName}</span>
+            <span class="shift-pay">$${shift.pay}</span>
           </div>
-
-          <div class="flex items-end justify-between pt-1">
-            <div class="text-xs space-y-0.5 text-slate-300">
-              <p><span class="text-slate-400">Time:</span> ${shift.startTime} - ${shift.endTime} (${shift.hours} hrs)</p>
-              <p><span class="text-slate-400">Rate:</span> $${parseFloat(shift.rate).toFixed(2)}/hr</p>
-              ${shift.expenses > 0 ? `<p><span class="text-slate-400">Expenses:</span> $${parseFloat(shift.expenses).toFixed(2)}</p>` : ''}
-              ${shift.notes ? `<p class="italic text-slate-400 text-[11px] mt-1">"${shift.notes}"</p>` : ''}
-            </div>
-            <div class="text-right">
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Total</span>
-              <span class="text-xl font-black text-emerald-400">$${shift.pay}</span>
-            </div>
+          <div class="shift-meta">
+            <span>📅 ${shift.date}</span>
+            <span>⏱ ${shift.hours} hrs</span>
           </div>
-
-          <div class="pt-2 border-t border-slate-700/40 flex items-center justify-between text-xs">
-            <span class="text-[11px] font-medium text-slate-400">Quick Pay:</span>
-            <div class="flex items-center space-x-2">
-              <button onclick="paySingleViaVenmo('${shift.id}')" class="bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 font-semibold px-2.5 py-1 rounded-lg transition">
-                Venmo
-              </button>
-              <button onclick="paySingleViaPaypal('${shift.id}')" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold px-2.5 py-1 rounded-lg transition">
-                PayPal
-              </button>
-            </div>
+          ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
+          <div style="margin-top:6px;">
+            <span class="status-badge ${shift.paid ? 'badge-paid' : 'badge-unpaid'}" onclick="togglePaid('${shift.id}', ${shift.paid})">
+              ${shift.paid ? '✓ Paid' : 'Unpaid (Tap to mark Paid)'}
+            </span>
           </div>
-        `;
-        shiftsList.appendChild(card);
-      });
-
-      lucide.createIcons();
+        </div>
+      `).join('');
     }
 
-    // App Initialization
-    async function initApp() {
-      await initDB();
+    document.getElementById('shift-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newShift = {
+        date: document.getElementById('date').value,
+        sitterName: document.getElementById('sitterName').value,
+        hours: document.getElementById('hours').value,
+        pay: document.getElementById('pay').value,
+        notes: document.getElementById('notes').value,
+        paid: false
+      };
 
-      // Retrieve local persistent state
-      const dbSitters = await getValDB('sitter_profiles');
-      if (dbSitters) sitters = dbSitters;
+      const { error } = await db.from('shifts').insert([newShift]);
+      if (error) {
+        alert('Failed to save shift: ' + error.message);
+      } else {
+        document.getElementById('shift-form').reset();
+        document.getElementById('date').valueAsDate = new Date();
+        loadShifts();
+      }
+    });
 
-      const dbShifts = await getValDB('sitter_shifts');
-      if (dbShifts) shifts = dbShifts;
-
-      customIcon = await getValDB('custom_icon');
-      landingImage = await getValDB('landing_image');
-
-      applyCustomIcon(customIcon);
-      populateSitterSelect();
-      renderShifts();
-
-      // Sync latest shifts from Google Sheets on launch
-      await fetchFromSheets();
+    async function togglePaid(id, currentStatus) {
+      const { error } = await db.from('shifts').update({ paid: !currentStatus }).eq('id', id);
+      if (!error) loadShifts();
     }
-
-    initApp();
   </script>
 </body>
 </html>
