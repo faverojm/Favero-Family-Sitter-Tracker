@@ -61,7 +61,7 @@
 
     <!-- Footer Credit -->
     <div class="py-4 text-xs text-slate-500">
-      Favero Family Sitter App • Version 2.1
+      Favero Family Sitter App • Version 2.2
     </div>
   </div>
 
@@ -85,13 +85,13 @@
         </button>
       </div>
 
-      <!-- Header Banner Graphic -->
-      <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-xl border border-slate-700/70 p-1.5 flex items-center justify-center overflow-hidden shadow-inner min-h-[40px]">
+      <!-- Header Banner Graphic Container -->
+      <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-xl border border-slate-700/70 p-2 flex items-center justify-center overflow-hidden shadow-inner min-h-[50px] relative">
         <div id="header-default-icon" class="py-1 flex items-center space-x-2 text-blue-400">
           <i data-lucide="users" class="w-5 h-5"></i>
           <span class="text-xs font-semibold text-slate-300">Family Account</span>
         </div>
-        <img id="header-custom-img" class="hidden w-full max-h-28 object-contain rounded-lg" alt="Family Logo">
+        <img id="header-custom-img" class="hidden w-full max-h-40 object-contain rounded-lg" alt="Main App Banner">
       </div>
     </header>
 
@@ -270,14 +270,19 @@
         </div>
       </div>
 
-      <!-- App Header Banner Graphic Customization -->
+      <!-- Main App Banner Logo Graphic Customization -->
       <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Main App Banner Logo Graphic</label>
+        <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider">Main App Banner Graphic</label>
         <input type="file" id="icon-file-input" accept="image/*" class="hidden">
-        <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
-          <i data-lucide="image" class="w-4 h-4"></i>
-          <span>Upload Header Banner</span>
-        </button>
+        <div class="flex space-x-2">
+          <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            <span>Upload Header Banner</span>
+          </button>
+          <button id="remove-header-image-btn" class="hidden border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs px-3 rounded-xl transition">
+            Remove
+          </button>
+        </div>
       </div>
 
       <!-- Manage Sitters & Avatars -->
@@ -418,6 +423,7 @@
 
     const iconFileInput = document.getElementById('icon-file-input');
     const uploadIconBtn = document.getElementById('upload-icon-btn');
+    const removeHeaderImageBtn = document.getElementById('remove-header-image-btn');
 
     const landingImageFileInput = document.getElementById('landing-image-file-input');
     const uploadLandingImageBtn = document.getElementById('upload-landing-image-btn');
@@ -472,6 +478,11 @@
         headerCustomImg.src = iconData;
         headerCustomImg.classList.remove('hidden');
         headerDefaultIcon.classList.add('hidden');
+        removeHeaderImageBtn.classList.remove('hidden');
+      } else {
+        headerCustomImg.classList.add('hidden');
+        headerDefaultIcon.classList.remove('hidden');
+        removeHeaderImageBtn.classList.add('hidden');
       }
       updateLandingGraphic();
     }
@@ -496,6 +507,26 @@
       landingImage = '';
       localStorage.removeItem('sitter_landing_image');
       updateLandingGraphic();
+    };
+
+    uploadIconBtn.onclick = () => iconFileInput.click();
+    iconFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          customIcon = event.target.result;
+          localStorage.setItem('sitter_custom_icon', customIcon);
+          applyCustomIcon(customIcon);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    removeHeaderImageBtn.onclick = () => {
+      customIcon = '';
+      localStorage.removeItem('sitter_custom_icon');
+      applyCustomIcon('');
     };
 
     function renderAvatarHTML(avatarUrl, name, sizeClass = "w-10 h-10 text-xs") {
@@ -668,20 +699,6 @@
       }
       updateTitleDisplay();
       settingsModal.classList.add('hidden');
-    };
-
-    uploadIconBtn.onclick = () => iconFileInput.click();
-    iconFileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          customIcon = event.target.result;
-          localStorage.setItem('sitter_custom_icon', customIcon);
-          applyCustomIcon(customIcon);
-        };
-        reader.readAsDataURL(file);
-      }
     };
 
     // Form Submission
