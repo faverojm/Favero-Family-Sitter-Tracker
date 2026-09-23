@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Sitter Tracker</title>
-  
-  <!-- Apple Home Screen / PWA tags -->
+  <title>Favero Family Sitter Tracker</title>
+
+  <!-- PWA & Mobile Header Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Sitter Tracker">
@@ -22,12 +22,15 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
+    input, select, textarea {
+      user-select: text;
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-12">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-28">
 
-  <!-- Header -->
-  <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-10 px-4 py-3 space-y-2 shadow-lg">
+  <!-- Header Section -->
+  <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-20 px-4 py-3 space-y-2 shadow-lg">
     <div class="flex items-center justify-between">
       <div>
         <h1 id="app-title-display" class="text-xl font-bold tracking-tight text-white leading-tight">Favero Family Sitter Tracker</h1>
@@ -38,8 +41,8 @@
       </button>
     </div>
 
-    <!-- Prominent Header Logo / Banner Container -->
-    <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-2xl border border-slate-700/70 p-2 flex items-center justify-center overflow-hidden shadow-inner">
+    <!-- Prominent Full-Width Family Banner Artwork -->
+    <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-2xl border border-slate-700/70 p-2 flex items-center justify-center overflow-hidden shadow-inner min-h-[50px]">
       <div id="header-default-icon" class="py-2 flex items-center space-x-2 text-blue-400">
         <i data-lucide="users" class="w-6 h-6"></i>
         <span class="text-xs font-semibold text-slate-300">Family Account</span>
@@ -50,14 +53,14 @@
 
   <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
 
-    <!-- Form Card -->
+    <!-- Shift Log Form -->
     <section class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
         <div class="flex items-center space-x-2">
           <i id="form-icon" data-lucide="plus-circle" class="w-5 h-5 text-blue-400"></i>
-          <h2 id="form-title" class="text-base font-semibold text-slate-100">Log Shift</h2>
+          <h2 id="form-title" class="text-lg font-semibold text-slate-100">Log Shift</h2>
         </div>
-        <button id="cancel-edit-btn" class="hidden text-xs bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/20 font-medium hover:bg-amber-500/20 transition">
+        <button id="cancel-edit-btn" class="hidden text-xs bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg border border-amber-500/20 font-medium hover:bg-amber-500/20 transition">
           Cancel Edit
         </button>
       </div>
@@ -65,130 +68,200 @@
       <form id="shift-form" class="space-y-4">
         <input type="hidden" id="edit-shift-id" value="">
 
-        <!-- Sitter Selection -->
+        <!-- Sitter Selection with Live Avatar Preview -->
         <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Select Sitter</label>
-          <select id="sitter-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
-            <!-- Populated dynamically -->
-          </select>
+          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Select Sitter</label>
+          <div class="flex items-center space-x-3">
+            <div id="selected-sitter-avatar" class="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden border border-slate-600">
+              S
+            </div>
+            <select id="sitter-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
+              <!-- Dynamically Populated -->
+            </select>
+          </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Date</label>
-          <input type="date" id="shift-date" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
+          <input type="date" id="shift-date" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Start Time</label>
-            <input type="time" id="start-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Start Time</label>
+            <input type="time" id="start-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">End Time</label>
-            <input type="time" id="end-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">End Time</label>
+            <input type="time" id="end-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Hourly Rate ($)</label>
-            <input type="number" id="hourly-rate" step="0.5" min="0" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Hourly Rate ($)</label>
+            <input type="number" id="hourly-rate" step="0.5" min="0" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Unpaid Break (mins)</label>
-            <input type="number" id="unpaid-break" min="0" value="0" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Unpaid Break (mins)</label>
+            <input type="number" id="unpaid-break" min="0" value="0" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Reimbursable Expenses ($)</label>
-          <input type="number" id="expenses" step="0.01" min="0" value="0.00" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm">
+          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Reimbursable Expenses ($)</label>
+          <input type="number" id="expenses" step="0.01" min="0" value="0.00" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Notes / Expenses Description</label>
-          <input type="text" id="shift-notes" placeholder="e.g., Snacks, gas, pizza" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 text-sm placeholder-slate-500">
+          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Notes / Description</label>
+          <input type="text" id="shift-notes" placeholder="e.g., Pizza, snacks, gas" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium placeholder-slate-500">
         </div>
 
-        <button type="submit" id="save-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-sm">
-          <i data-lucide="save" class="w-4 h-4"></i>
+        <button type="submit" id="save-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-base">
+          <i data-lucide="save" class="w-5 h-5"></i>
           <span id="save-btn-text">Save Shift</span>
         </button>
       </form>
     </section>
 
-    <!-- Shift History -->
+    <!-- Shift History & Selection Controls -->
     <section class="space-y-3">
       <div class="flex items-center justify-between px-1">
         <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Shift History</h2>
-        <button id="clear-history" class="text-xs text-rose-400 hover:underline font-medium">Clear All</button>
+        <div class="flex items-center space-x-3 text-xs">
+          <button id="toggle-select-all" class="text-blue-400 hover:underline font-medium">Select Unpaid</button>
+          <button id="clear-history" class="text-rose-400 hover:underline font-medium">Clear All</button>
+        </div>
       </div>
 
       <div id="shifts-list" class="space-y-3">
-        <!-- Dynamic Shift Cards -->
+        <!-- Dynamic Shift Cards Inserted Here -->
       </div>
     </section>
   </main>
+
+  <!-- Sticky Batch Checkout Action Bar -->
+  <div id="batch-bar" class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-4 shadow-2xl z-30 transition-transform duration-300 translate-y-full">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div>
+        <span id="selected-count" class="text-xs text-slate-400 font-medium">0 shifts selected</span>
+        <div id="selected-total" class="text-xl font-black text-emerald-400">$0.00</div>
+      </div>
+      <button id="pay-selected-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition">
+        <span>Pay Selected</span>
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Multi-Shift Checkout Modal -->
+  <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+        <h3 class="font-bold text-slate-100 text-base">Batch Payment Checkout</h3>
+        <button id="close-checkout" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">Review selected shifts and choose your payment method:</p>
+
+      <div id="checkout-shifts-summary" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+        <!-- Items inserted dynamically -->
+      </div>
+
+      <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex items-center justify-between">
+        <span class="text-xs font-semibold text-slate-300">Total Payment</span>
+        <span id="checkout-grand-total" class="text-xl font-black text-emerald-400">$0.00</span>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button id="pay-batch-venmo" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg shadow-sky-600/30 flex items-center justify-center space-x-2">
+          <span>Pay Total with Venmo</span>
+        </button>
+        <button id="pay-batch-paypal" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2">
+          <span>Pay Total with PayPal</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Settings Modal -->
   <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
-        <h3 class="font-bold text-slate-100">Settings & Customization</h3>
+        <h3 class="font-bold text-slate-100 text-base">Settings & Customization</h3>
         <button id="close-settings" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Family / App Title Customization -->
+      <!-- App Header Customization -->
       <div class="space-y-2">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">App Title Settings</h4>
+        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">App Header & Title</h4>
         <div>
-          <label class="block text-[11px] text-slate-400 mb-1">App Title</label>
-          <input type="text" id="app-title-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100" placeholder="Favero Family Sitter Tracker">
+          <label class="block text-xs text-slate-400 mb-1">App Title</label>
+          <input type="text" id="app-title-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
         </div>
         <div>
-          <label class="block text-[11px] text-slate-400 mb-1">Subtitle</label>
-          <input type="text" id="app-subtitle-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100" placeholder="Hours & Pay Log">
+          <label class="block text-xs text-slate-400 mb-1">Subtitle</label>
+          <input type="text" id="app-subtitle-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
         </div>
       </div>
 
-      <!-- Manage Sitters Section -->
+      <!-- Manage Sitter Profiles with Avatars -->
       <div class="space-y-3 border-t border-slate-700/60 pt-3">
-        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Manage Sitter Profiles</h4>
+        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Manage Sitters & Avatars</h4>
         
         <div id="sitters-management-list" class="space-y-2">
-          <!-- List of existing sitters -->
+          <!-- Sitters listed here dynamically -->
         </div>
 
-        <!-- Add/Edit Sitter Form -->
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 space-y-2">
+        <!-- Add/Edit Sitter Sub-Form -->
+        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-3">
           <p id="sitter-form-heading" class="text-xs font-semibold text-slate-300">Add New Sitter Profile</p>
           <input type="hidden" id="editing-sitter-id" value="">
-          <input type="text" id="sitter-name-input" placeholder="Sitter Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="sitter-rate-input" step="0.5" placeholder="Rate ($/hr)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
-            <input type="text" id="sitter-venmo-input" placeholder="Venmo (@handle)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
+          
+          <div class="flex items-center space-x-3">
+            <div id="sitter-avatar-preview" class="w-12 h-12 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 text-xs shrink-0 overflow-hidden">
+              <i data-lucide="user" class="w-6 h-6"></i>
+            </div>
+            <div class="w-full">
+              <input type="file" id="sitter-avatar-file" accept="image/*" class="hidden">
+              <button type="button" id="upload-sitter-avatar-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 px-3 py-2 rounded-lg w-full flex items-center justify-center space-x-1.5 transition">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                <span>Choose Sitter Photo</span>
+              </button>
+            </div>
           </div>
-          <input type="text" id="sitter-paypal-input" placeholder="PayPal username or link" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100">
-          <div class="flex space-x-2">
-            <button id="save-sitter-btn" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-semibold py-1.5 rounded-lg text-white transition">
-              + Save Sitter Profile
+
+          <input type="text" id="sitter-name-input" placeholder="Sitter Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
+          
+          <div class="grid grid-cols-2 gap-2">
+            <input type="number" id="sitter-rate-input" step="0.5" placeholder="Rate ($/hr)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
+            <input type="text" id="sitter-venmo-input" placeholder="Venmo (@username)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
+          </div>
+          <input type="text" id="sitter-paypal-input" placeholder="PayPal username or link" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100">
+          
+          <div class="flex space-x-2 pt-1">
+            <button id="save-sitter-btn" type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-semibold py-2 rounded-lg text-white transition">
+              + Save Profile
             </button>
-            <button id="cancel-sitter-edit" type="button" class="hidden bg-slate-700 hover:bg-slate-600 text-xs text-slate-300 px-3 py-1.5 rounded-lg">
+            <button id="cancel-sitter-edit" type="button" class="hidden bg-slate-700 hover:bg-slate-600 text-xs text-slate-300 px-3 py-2 rounded-lg">
               Cancel
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Custom Icon Section -->
+      <!-- App Header Image Customization -->
       <div class="border-t border-slate-700/60 pt-3 space-y-2">
-        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">App Header & Logo Photo</label>
+        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Family Banner Logo Graphic</label>
         <input type="file" id="icon-file-input" accept="image/*" class="hidden">
-        <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
-          <i data-lucide="upload" class="w-4 h-4"></i>
-          <span>Choose Photo from Files</span>
+        <button id="upload-icon-btn" class="w-full border border-slate-600 hover:border-slate-500 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs py-2.5 px-3 rounded-xl flex items-center justify-center space-x-2 transition">
+          <i data-lucide="image" class="w-4 h-4"></i>
+          <span>Upload Header Graphic Banner</span>
         </button>
       </div>
 
@@ -201,23 +274,25 @@
   <script>
     lucide.createIcons();
 
-    // App Title State
+    // App State
     let appTitle = localStorage.getItem('sitter_app_title') || 'Favero Family Sitter Tracker';
     let appSubtitle = localStorage.getItem('sitter_app_subtitle') || 'Hours & Pay Log';
 
-    // Default Sitters State
     let sitters = JSON.parse(localStorage.getItem('sitter_profiles')) || [
-      { id: '1', name: 'Primary Sitter', rate: 20, venmo: '', paypal: '' }
+      { id: '1', name: 'Primary Sitter', rate: 20, venmo: '', paypal: '', avatar: '' }
     ];
     let shifts = JSON.parse(localStorage.getItem('sitter_shifts')) || [];
     let customIcon = localStorage.getItem('sitter_custom_icon') || '';
+    let selectedShiftIds = new Set();
+    let currentSitterAvatarTemp = '';
 
-    // Form Elements
+    // Elements
     const shiftForm = document.getElementById('shift-form');
     const formTitle = document.getElementById('form-title');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const editShiftId = document.getElementById('edit-shift-id');
     const sitterSelect = document.getElementById('sitter-select');
+    const selectedSitterAvatar = document.getElementById('selected-sitter-avatar');
     const shiftDateInput = document.getElementById('shift-date');
     const startTimeInput = document.getElementById('start-time');
     const endTimeInput = document.getElementById('end-time');
@@ -228,13 +303,27 @@
     const saveBtnText = document.getElementById('save-btn-text');
     const shiftsList = document.getElementById('shifts-list');
 
-    // Header Display Elements
+    // Header Display
     const headerDefaultIcon = document.getElementById('header-default-icon');
     const headerCustomImg = document.getElementById('header-custom-img');
     const appTitleDisplay = document.getElementById('app-title-display');
     const appSubtitleDisplay = document.getElementById('app-subtitle-display');
 
-    // Settings Modal Elements
+    // Batch Bar & Modal
+    const batchBar = document.getElementById('batch-bar');
+    const selectedCountEl = document.getElementById('selected-count');
+    const selectedTotalEl = document.getElementById('selected-total');
+    const paySelectedBtn = document.getElementById('pay-selected-btn');
+    const toggleSelectAllBtn = document.getElementById('toggle-select-all');
+
+    const checkoutModal = document.getElementById('checkout-modal');
+    const closeCheckoutBtn = document.getElementById('close-checkout');
+    const checkoutShiftsSummary = document.getElementById('checkout-shifts-summary');
+    const checkoutGrandTotal = document.getElementById('checkout-grand-total');
+    const payBatchVenmoBtn = document.getElementById('pay-batch-venmo');
+    const payBatchPaypalBtn = document.getElementById('pay-batch-paypal');
+
+    // Settings Modal & Sitter Management
     const settingsModal = document.getElementById('settings-modal');
     const openSettingsBtn = document.getElementById('open-settings');
     const closeSettingsBtn = document.getElementById('close-settings');
@@ -242,7 +331,6 @@
     const appTitleInput = document.getElementById('app-title-input');
     const appSubtitleInput = document.getElementById('app-subtitle-input');
 
-    // Sitter Management Elements
     const sittersMgmtList = document.getElementById('sitters-management-list');
     const sitterFormHeading = document.getElementById('sitter-form-heading');
     const editingSitterId = document.getElementById('editing-sitter-id');
@@ -252,6 +340,9 @@
     const sitterPaypalInput = document.getElementById('sitter-paypal-input');
     const saveSitterBtn = document.getElementById('save-sitter-btn');
     const cancelSitterEditBtn = document.getElementById('cancel-sitter-edit');
+    const uploadSitterAvatarBtn = document.getElementById('upload-sitter-avatar-btn');
+    const sitterAvatarFileInput = document.getElementById('sitter-avatar-file');
+    const sitterAvatarPreview = document.getElementById('sitter-avatar-preview');
 
     const iconFileInput = document.getElementById('icon-file-input');
     const uploadIconBtn = document.getElementById('upload-icon-btn');
@@ -275,6 +366,21 @@
     }
     if (customIcon) applyCustomIcon(customIcon);
 
+    function renderAvatarHTML(avatarUrl, name, sizeClass = "w-10 h-10 text-xs") {
+      if (avatarUrl) {
+        return `<img src="${avatarUrl}" class="${sizeClass} rounded-full object-cover border border-slate-600 shrink-0" alt="${name}">`;
+      }
+      const initial = name ? name.charAt(0).toUpperCase() : 'S';
+      return `<div class="${sizeClass} rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0 border border-slate-600">${initial}</div>`;
+    }
+
+    function updateSelectedSitterAvatar() {
+      const selected = sitters.find(s => s.id === sitterSelect.value);
+      if (selected) {
+        selectedSitterAvatar.innerHTML = renderAvatarHTML(selected.avatar, selected.name, "w-11 h-11 text-sm");
+      }
+    }
+
     function populateSitterSelect() {
       sitterSelect.innerHTML = '';
       sitters.forEach(s => {
@@ -286,6 +392,7 @@
       if (sitters.length > 0 && !editShiftId.value) {
         hourlyRateInput.value = sitters[0].rate;
       }
+      updateSelectedSitterAvatar();
     }
 
     sitterSelect.onchange = () => {
@@ -293,6 +400,7 @@
       if (selected && !editShiftId.value) {
         hourlyRateInput.value = selected.rate;
       }
+      updateSelectedSitterAvatar();
     };
 
     function renderSitterMgmt() {
@@ -301,9 +409,12 @@
         const div = document.createElement('div');
         div.className = "flex items-center justify-between bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80 text-xs";
         div.innerHTML = `
-          <div>
-            <p class="font-bold text-slate-100">${s.name} <span class="text-blue-400 font-normal">($${s.rate}/hr)</span></p>
-            <p class="text-[10px] text-slate-400">Venmo: ${s.venmo || 'None'} | PayPal: ${s.paypal || 'None'}</p>
+          <div class="flex items-center space-x-2.5">
+            ${renderAvatarHTML(s.avatar, s.name, "w-8 h-8 text-[10px]")}
+            <div>
+              <p class="font-bold text-slate-100">${s.name} <span class="text-blue-400 font-normal">($${s.rate}/hr)</span></p>
+              <p class="text-[10px] text-slate-400">Venmo: ${s.venmo || 'None'} | PayPal: ${s.paypal || 'None'}</p>
+            </div>
           </div>
           <div class="flex items-center space-x-1">
             <button onclick="editSitter('${s.id}')" class="text-amber-400 hover:text-amber-300 p-1">
@@ -321,6 +432,19 @@
       lucide.createIcons();
     }
 
+    uploadSitterAvatarBtn.onclick = () => sitterAvatarFileInput.click();
+    sitterAvatarFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          currentSitterAvatarTemp = event.target.result;
+          sitterAvatarPreview.innerHTML = `<img src="${currentSitterAvatarTemp}" class="w-full h-full object-cover">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
     window.editSitter = function(id) {
       const sitter = sitters.find(s => s.id === id);
       if (!sitter) return;
@@ -330,9 +454,17 @@
       sitterRateInput.value = sitter.rate;
       sitterVenmoInput.value = sitter.venmo || '';
       sitterPaypalInput.value = sitter.paypal || '';
+      currentSitterAvatarTemp = sitter.avatar || '';
+
+      if (currentSitterAvatarTemp) {
+        sitterAvatarPreview.innerHTML = `<img src="${currentSitterAvatarTemp}" class="w-full h-full object-cover">`;
+      } else {
+        sitterAvatarPreview.innerHTML = `<i data-lucide="user" class="w-6 h-6"></i>`;
+        lucide.createIcons();
+      }
 
       sitterFormHeading.textContent = "Edit Sitter Profile";
-      saveSitterBtn.textContent = "Update Sitter";
+      saveSitterBtn.textContent = "Update Sitter Profile";
       cancelSitterEditBtn.classList.remove('hidden');
     };
 
@@ -342,9 +474,12 @@
       sitterRateInput.value = '';
       sitterVenmoInput.value = '';
       sitterPaypalInput.value = '';
+      currentSitterAvatarTemp = '';
+      sitterAvatarPreview.innerHTML = `<i data-lucide="user" class="w-6 h-6"></i>`;
       sitterFormHeading.textContent = "Add New Sitter Profile";
-      saveSitterBtn.textContent = "+ Save Sitter Profile";
+      saveSitterBtn.textContent = "+ Save Profile";
       cancelSitterEditBtn.classList.add('hidden');
+      lucide.createIcons();
     }
 
     cancelSitterEditBtn.onclick = resetSitterForm;
@@ -358,15 +493,16 @@
       if (!name) return alert("Please enter a sitter name.");
 
       if (editingSitterId.value) {
-        sitters = sitters.map(s => s.id === editingSitterId.value ? { id: s.id, name, rate, venmo, paypal } : s);
+        sitters = sitters.map(s => s.id === editingSitterId.value ? { id: s.id, name, rate, venmo, paypal, avatar: currentSitterAvatarTemp } : s);
       } else {
-        sitters.push({ id: Date.now().toString(), name, rate, venmo, paypal });
+        sitters.push({ id: Date.now().toString(), name, rate, venmo, paypal, avatar: currentSitterAvatarTemp });
       }
 
       localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
       resetSitterForm();
       renderSitterMgmt();
       populateSitterSelect();
+      renderShifts();
     };
 
     window.removeSitter = function(id) {
@@ -376,6 +512,7 @@
         localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
         renderSitterMgmt();
         populateSitterSelect();
+        renderShifts();
       }
     };
 
@@ -415,7 +552,7 @@
       }
     };
 
-    // Form submission
+    // Form Submission
     shiftForm.onsubmit = (e) => {
       e.preventDefault();
 
@@ -438,6 +575,8 @@
       const wage = hoursWorked * rateVal;
       const totalPay = wage + expVal;
 
+      const existingShift = shifts.find(s => s.id === editShiftId.value);
+
       const shiftData = {
         id: editShiftId.value || Date.now().toString(),
         sitterId: sitterId,
@@ -450,7 +589,8 @@
         expenses: expVal,
         notes: notesVal,
         hours: hoursWorked.toFixed(2),
-        pay: totalPay.toFixed(2)
+        pay: totalPay.toFixed(2),
+        paid: existingShift ? existingShift.paid : false
       };
 
       if (editShiftId.value) {
@@ -484,6 +624,7 @@
 
       editShiftId.value = shift.id;
       sitterSelect.value = shift.sitterId || sitters[0]?.id;
+      updateSelectedSitterAvatar();
       shiftDateInput.value = shift.date;
       startTimeInput.value = shift.startTime;
       endTimeInput.value = shift.endTime;
@@ -502,48 +643,150 @@
     window.deleteShift = function(id) {
       if (confirm("Delete this shift record?")) {
         shifts = shifts.filter(s => s.id !== id);
+        selectedShiftIds.delete(id);
         localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
         renderShifts();
       }
     };
 
-    // Deep Link Payment Triggers
-    window.payViaVenmo = function(shiftId) {
-      const shift = shifts.find(s => s.id === shiftId);
-      if (!shift) return;
-      const sitter = sitters.find(s => s.id === shift.sitterId) || {};
-      const username = sitter.venmo || '';
-
-      const noteText = encodeURIComponent(`Babysitting on ${shift.date} (${shift.hours} hrs @ $${shift.rate}/hr${shift.expenses > 0 ? ` + $${shift.expenses} expenses` : ''})`);
-      const amount = shift.pay;
-
-      const venmoUrl = username 
-        ? `venmo://paycharge?txn=pay&recipients=${username}&amount=${amount}&note=${noteText}`
-        : `venmo://paycharge?txn=pay&amount=${amount}&note=${noteText}`;
-
-      window.location.href = venmoUrl;
+    window.toggleShiftPaid = function(id) {
+      shifts = shifts.map(s => s.id === id ? { ...s, paid: !s.paid } : s);
+      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      renderShifts();
     };
 
-    window.payViaPaypal = function(shiftId) {
-      const shift = shifts.find(s => s.id === shiftId);
-      if (!shift) return;
-      const sitter = sitters.find(s => s.id === shift.sitterId) || {};
-      const paypalHandle = sitter.paypal || '';
-
-      if (paypalHandle.includes('paypal.me')) {
-        let cleanLink = paypalHandle.startsWith('http') ? paypalHandle : `https://${paypalHandle}`;
-        window.open(`${cleanLink}/${shift.pay}`, '_blank');
-      } else if (paypalHandle) {
-        window.open(`https://www.paypal.com/myaccount/transfer/homepage/external/summary?recipient=${encodeURIComponent(paypalHandle)}&amount=${shift.pay}`, '_blank');
+    window.toggleShiftSelection = function(id) {
+      if (selectedShiftIds.has(id)) {
+        selectedShiftIds.delete(id);
       } else {
-        window.open(`https://www.paypal.com`, '_blank');
+        selectedShiftIds.add(id);
       }
+      updateBatchBar();
+      renderShifts();
+    };
+
+    toggleSelectAllBtn.onclick = () => {
+      const unpaidShifts = shifts.filter(s => !s.paid);
+      if (selectedShiftIds.size === unpaidShifts.length && unpaidShifts.length > 0) {
+        selectedShiftIds.clear();
+      } else {
+        selectedShiftIds.clear();
+        unpaidShifts.forEach(s => selectedShiftIds.add(s.id));
+      }
+      updateBatchBar();
+      renderShifts();
+    };
+
+    function updateBatchBar() {
+      const count = selectedShiftIds.size;
+      if (count > 0) {
+        let total = 0;
+        shifts.forEach(s => {
+          if (selectedShiftIds.has(s.id)) total += parseFloat(s.pay);
+        });
+        selectedCountEl.textContent = `${count} shift${count > 1 ? 's' : ''} selected`;
+        selectedTotalEl.textContent = `$${total.toFixed(2)}`;
+        batchBar.classList.remove('translate-y-full');
+      } else {
+        batchBar.classList.add('translate-y-full');
+      }
+    }
+
+    paySelectedBtn.onclick = () => {
+      if (selectedShiftIds.size === 0) return;
+
+      const selectedList = shifts.filter(s => selectedShiftIds.has(s.id));
+      let total = 0;
+
+      checkoutShiftsSummary.innerHTML = '';
+      selectedList.forEach(s => {
+        total += parseFloat(s.pay);
+        const sitter = sitters.find(st => st.id === s.sitterId);
+        const avatarHTML = renderAvatarHTML(sitter ? sitter.avatar : '', s.sitterName, "w-6 h-6 text-[9px]");
+
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between text-xs bg-slate-900/70 p-2 rounded-lg border border-slate-700/60";
+        div.innerHTML = `
+          <div class="flex items-center space-x-2">
+            ${avatarHTML}
+            <div>
+              <p class="font-bold text-slate-200">${s.date} (${s.hours} hrs)</p>
+              <p class="text-[10px] text-slate-400">${s.sitterName}</p>
+            </div>
+          </div>
+          <span class="font-bold text-emerald-400">$${s.pay}</span>
+        `;
+        checkoutShiftsSummary.appendChild(div);
+      });
+
+      checkoutGrandTotal.textContent = `$${total.toFixed(2)}`;
+      checkoutModal.classList.remove('hidden');
+    };
+
+    closeCheckoutBtn.onclick = () => checkoutModal.classList.add('hidden');
+
+    function executeBatchPayment(type) {
+      const selectedList = shifts.filter(s => selectedShiftIds.has(s.id));
+      if (selectedList.length === 0) return;
+
+      let total = 0;
+      selectedList.forEach(s => total += parseFloat(s.pay));
+
+      const firstSitterId = selectedList[0].sitterId;
+      const sitter = sitters.find(s => s.id === firstSitterId) || {};
+      const datesString = selectedList.map(s => s.date).join(', ');
+
+      const noteText = encodeURIComponent(`Babysitting (${selectedList.length} shifts: ${datesString})`);
+      const amount = total.toFixed(2);
+
+      if (type === 'venmo') {
+        const username = sitter.venmo || '';
+        const venmoUrl = username 
+          ? `venmo://paycharge?txn=pay&recipients=${username}&amount=${amount}&note=${noteText}`
+          : `venmo://paycharge?txn=pay&amount=${amount}&note=${noteText}`;
+        window.location.href = venmoUrl;
+      } else if (type === 'paypal') {
+        const paypalHandle = sitter.paypal || '';
+        if (paypalHandle.includes('paypal.me')) {
+          let cleanLink = paypalHandle.startsWith('http') ? paypalHandle : `https://${paypalHandle}`;
+          window.open(`${cleanLink}/${amount}`, '_blank');
+        } else if (paypalHandle) {
+          window.open(`https://www.paypal.com/myaccount/transfer/homepage/external/summary?recipient=${encodeURIComponent(paypalHandle)}&amount=${amount}`, '_blank');
+        } else {
+          window.open(`https://www.paypal.com`, '_blank');
+        }
+      }
+
+      // Mark shifts as Paid
+      shifts = shifts.map(s => selectedShiftIds.has(s.id) ? { ...s, paid: true } : s);
+      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      selectedShiftIds.clear();
+      updateBatchBar();
+      checkoutModal.classList.add('hidden');
+      renderShifts();
+    }
+
+    payBatchVenmoBtn.onclick = () => executeBatchPayment('venmo');
+    payBatchPaypalBtn.onclick = () => executeBatchPayment('paypal');
+
+    window.paySingleViaVenmo = function(shiftId) {
+      selectedShiftIds.clear();
+      selectedShiftIds.add(shiftId);
+      executeBatchPayment('venmo');
+    };
+
+    window.paySingleViaPaypal = function(shiftId) {
+      selectedShiftIds.clear();
+      selectedShiftIds.add(shiftId);
+      executeBatchPayment('paypal');
     };
 
     document.getElementById('clear-history').onclick = () => {
       if (confirm("Clear all shift records?")) {
         shifts = [];
+        selectedShiftIds.clear();
         localStorage.removeItem('sitter_shifts');
+        updateBatchBar();
         renderShifts();
       }
     };
@@ -563,16 +806,34 @@
       shifts.forEach(shift => {
         const sitter = sitters.find(s => s.id === shift.sitterId);
         const sitterDisplayName = sitter ? sitter.name : (shift.sitterName || 'Sitter');
+        const isSelected = selectedShiftIds.has(shift.id);
 
         const card = document.createElement('div');
-        card.className = "bg-slate-800 border border-slate-700/80 rounded-2xl p-4 shadow-lg space-y-3";
+        card.className = `bg-slate-800 border rounded-2xl p-4 shadow-lg space-y-3 transition ${
+          isSelected ? 'border-emerald-500/80 bg-slate-800/95 ring-1 ring-emerald-500/50' : 'border-slate-700/80'
+        }`;
+
         card.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-            <div>
-              <span class="text-xs font-bold text-blue-400">${sitterDisplayName}</span>
-              <span class="text-xs text-slate-400 ml-2 font-medium">${shift.date}</span>
+          <div class="flex items-center justify-between border-b border-slate-700/50 pb-2.5">
+            <div class="flex items-center space-x-3">
+              <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleShiftSelection('${shift.id}')" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-0">
+              
+              <div class="flex items-center space-x-2">
+                ${renderAvatarHTML(sitter ? sitter.avatar : '', sitterDisplayName, "w-8 h-8 text-[11px]")}
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-slate-100">${sitterDisplayName}</span>
+                    ${shift.paid ? '<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">PAID</span>' : ''}
+                  </div>
+                  <span class="text-xs text-slate-400 font-medium">${shift.date}</span>
+                </div>
+              </div>
             </div>
+
             <div class="flex items-center space-x-1">
+              <button onclick="toggleShiftPaid('${shift.id}')" title="Toggle Paid Status" class="p-1.5 text-slate-400 hover:text-emerald-400 rounded-lg hover:bg-slate-700/50 transition">
+                <i data-lucide="${shift.paid ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${shift.paid ? 'text-emerald-400' : ''}"></i>
+              </button>
               <button onclick="editShift('${shift.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 rounded-lg hover:bg-slate-700/50 transition">
                 <i data-lucide="pencil" class="w-4 h-4"></i>
               </button>
@@ -590,20 +851,20 @@
               ${shift.notes ? `<p class="italic text-slate-400 text-[11px] mt-1">"${shift.notes}"</p>` : ''}
             </div>
             <div class="text-right">
-              <span class="text-xs text-slate-400 uppercase tracking-wider block">Total Owed</span>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Total</span>
               <span class="text-xl font-black text-emerald-400">$${shift.pay}</span>
             </div>
           </div>
 
-          <!-- Quick Pay Buttons -->
+          <!-- Quick Pay Actions for Individual Shift -->
           <div class="pt-2 border-t border-slate-700/40 flex items-center justify-between text-xs">
-            <span class="text-[11px] font-medium text-slate-400">Pay Shift:</span>
+            <span class="text-[11px] font-medium text-slate-400">Quick Pay:</span>
             <div class="flex items-center space-x-2">
-              <button onclick="payViaVenmo('${shift.id}')" class="bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 font-semibold px-2.5 py-1 rounded-lg transition flex items-center space-x-1">
-                <span>Venmo</span>
+              <button onclick="paySingleViaVenmo('${shift.id}')" class="bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 font-semibold px-2.5 py-1 rounded-lg transition">
+                Venmo
               </button>
-              <button onclick="payViaPaypal('${shift.id}')" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold px-2.5 py-1 rounded-lg transition flex items-center space-x-1">
-                <span>PayPal</span>
+              <button onclick="paySingleViaPaypal('${shift.id}')" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold px-2.5 py-1 rounded-lg transition">
+                PayPal
               </button>
             </div>
           </div>
