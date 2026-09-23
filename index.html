@@ -61,7 +61,7 @@
 
     <!-- Footer Credit -->
     <div class="py-4 text-xs text-slate-500">
-      Favero Family Sitter App • Version 2.2
+      Favero Family Sitter App • Version 3.0 (IndexedDB Storage)
     </div>
   </div>
 
@@ -330,6 +330,22 @@
         </div>
       </div>
 
+      <!-- Backup & Data Safety -->
+      <div class="border-t border-slate-700/60 pt-3 space-y-2">
+        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Backup & Safety</h4>
+        <div class="flex space-x-2">
+          <button id="export-backup-btn" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export Data</span>
+          </button>
+          <button id="import-backup-btn" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>Import Data</span>
+          </button>
+          <input type="file" id="import-file-input" accept=".json" class="hidden">
+        </div>
+      </div>
+
       <button id="save-settings" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-sm transition">
         Done
       </button>
@@ -339,6 +355,61 @@
   <script>
     lucide.createIcons();
 
+    // High-Capacity IndexedDB Image Engine
+    const DB_NAME = 'FaveroAppDB';
+    const DB_VERSION = 1;
+    let db;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('images')) {
+            database.createObjectStore('images');
+          }
+        };
+        request.onsuccess = (e) => {
+          db = e.target.result;
+          resolve(db);
+        };
+        request.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    function saveImageToDB(key, dataUrl) {
+      return new Promise((resolve, reject) => {
+        if (!db) return resolve();
+        const tx = db.transaction('images', 'readwrite');
+        const store = tx.objectStore('images');
+        const req = store.put(dataUrl, key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function getImageFromDB(key) {
+      return new Promise((resolve) => {
+        if (!db) return resolve(null);
+        const tx = db.transaction('images', 'readonly');
+        const store = tx.objectStore('images');
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    function deleteImageFromDB(key) {
+      return new Promise((resolve) => {
+        if (!db) return resolve();
+        const tx = db.transaction('images', 'readwrite');
+        const store = tx.objectStore('images');
+        const req = store.delete(key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => resolve();
+      });
+    }
+
     // App State
     let appTitle = localStorage.getItem('sitter_app_title') || 'Favero Family Sitter Tracker';
     let appSubtitle = localStorage.getItem('sitter_app_subtitle') || 'Hours & Pay Log';
@@ -347,8 +418,8 @@
       { id: '1', name: 'Primary Sitter', rate: 20, venmo: '', paypal: '', avatar: '' }
     ];
     let shifts = JSON.parse(localStorage.getItem('sitter_shifts')) || [];
-    let customIcon = localStorage.getItem('sitter_custom_icon') || '';
-    let landingImage = localStorage.getItem('sitter_landing_image') || '';
+    let customIcon = '';
+    let landingImage = '';
     let selectedShiftIds = new Set();
     let currentSitterAvatarTemp = '';
 
@@ -429,6 +500,10 @@
     const uploadLandingImageBtn = document.getElementById('upload-landing-image-btn');
     const removeLandingImageBtn = document.getElementById('remove-landing-image-btn');
 
+    const exportBackupBtn = document.getElementById('export-backup-btn');
+    const importBackupBtn = document.getElementById('import-backup-btn');
+    const importFileInput = document.getElementById('import-file-input');
+
     shiftDateInput.value = new Date().toISOString().split('T')[0];
 
     // Page View Toggle
@@ -486,26 +561,24 @@
       }
       updateLandingGraphic();
     }
-    
-    applyCustomIcon(customIcon);
 
     uploadLandingImageBtn.onclick = () => landingImageFileInput.click();
     landingImageFileInput.onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           landingImage = event.target.result;
-          localStorage.setItem('sitter_landing_image', landingImage);
+          await saveImageToDB('landing_image', landingImage);
           updateLandingGraphic();
         };
         reader.readAsDataURL(file);
       }
     };
 
-    removeLandingImageBtn.onclick = () => {
+    removeLandingImageBtn.onclick = async () => {
       landingImage = '';
-      localStorage.removeItem('sitter_landing_image');
+      await deleteImageFromDB('landing_image');
       updateLandingGraphic();
     };
 
@@ -514,18 +587,18 @@
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           customIcon = event.target.result;
-          localStorage.setItem('sitter_custom_icon', customIcon);
+          await saveImageToDB('custom_icon', customIcon);
           applyCustomIcon(customIcon);
         };
         reader.readAsDataURL(file);
       }
     };
 
-    removeHeaderImageBtn.onclick = () => {
+    removeHeaderImageBtn.onclick = async () => {
       customIcon = '';
-      localStorage.removeItem('sitter_custom_icon');
+      await deleteImageFromDB('custom_icon');
       applyCustomIcon('');
     };
 
@@ -647,7 +720,7 @@
 
     cancelSitterEditBtn.onclick = resetSitterForm;
 
-    saveSitterBtn.onclick = () => {
+    saveSitterBtn.onclick = async () => {
       const name = sitterNameInput.value.trim();
       const rate = parseFloat(sitterRateInput.value) || 20;
       let venmo = sitterVenmoInput.value.trim().replace(/^@/, '');
@@ -699,6 +772,73 @@
       }
       updateTitleDisplay();
       settingsModal.classList.add('hidden');
+    };
+
+    // Backup Export / Import
+    exportBackupBtn.onclick = async () => {
+      const backupData = {
+        appTitle,
+        appSubtitle,
+        sitters,
+        shifts,
+        customIcon: await getImageFromDB('custom_icon'),
+        landingImage: await getImageFromDB('landing_image')
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `SitterTracker_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    };
+
+    importBackupBtn.onclick = () => importFileInput.click();
+    importFileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.appTitle) {
+              appTitle = data.appTitle;
+              localStorage.setItem('sitter_app_title', appTitle);
+            }
+            if (data.appSubtitle) {
+              appSubtitle = data.appSubtitle;
+              localStorage.setItem('sitter_app_subtitle', appSubtitle);
+            }
+            if (data.sitters) {
+              sitters = data.sitters;
+              localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
+            }
+            if (data.shifts) {
+              shifts = data.shifts;
+              localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+            }
+            if (data.customIcon) {
+              customIcon = data.customIcon;
+              await saveImageToDB('custom_icon', customIcon);
+            }
+            if (data.landingImage) {
+              landingImage = data.landingImage;
+              await saveImageToDB('landing_image', landingImage);
+            }
+
+            updateTitleDisplay();
+            applyCustomIcon(customIcon);
+            populateSitterSelect();
+            renderShifts();
+            alert("Backup restored successfully!");
+            settingsModal.classList.add('hidden');
+          } catch (err) {
+            alert("Failed to restore backup file.");
+          }
+        };
+        reader.readAsText(file);
+      }
     };
 
     // Form Submission
@@ -1026,8 +1166,18 @@
       lucide.createIcons();
     }
 
-    populateSitterSelect();
-    renderShifts();
+    // App Initialization
+    async function initApp() {
+      await initDB();
+      customIcon = await getImageFromDB('custom_icon');
+      landingImage = await getImageFromDB('landing_image');
+
+      applyCustomIcon(customIcon);
+      populateSitterSelect();
+      renderShifts();
+    }
+
+    initApp();
   </script>
 </body>
 </html>
