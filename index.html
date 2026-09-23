@@ -27,131 +27,176 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-28">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
 
-  <!-- Header Section -->
-  <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-20 px-4 py-3 space-y-2 shadow-lg">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 id="app-title-display" class="text-xl font-bold tracking-tight text-white leading-tight">Favero Family Sitter Tracker</h1>
-        <p id="app-subtitle-display" class="text-xs text-slate-400 font-medium">Hours & Pay Log</p>
+  <!-- LANDING PAGE VIEW -->
+  <div id="landing-page" class="min-h-screen flex flex-col items-center justify-between p-6 max-w-md mx-auto text-center">
+    <div class="w-full my-auto space-y-6">
+      
+      <!-- Logo / Graphic Container -->
+      <div class="relative w-full rounded-3xl overflow-hidden bg-slate-800 border-2 border-slate-700 shadow-2xl p-4 flex flex-col items-center justify-center min-h-[220px]">
+        <img id="landing-hero-img" class="hidden w-full max-h-52 object-contain rounded-2xl shadow-md mb-2" alt="Family Logo">
+        <div id="landing-hero-default" class="flex flex-col items-center space-y-3 py-6 text-blue-400">
+          <div class="w-20 h-20 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center text-blue-400">
+            <i data-lucide="baby" class="w-10 h-10"></i>
+          </div>
+          <span class="text-xs uppercase tracking-widest text-slate-400 font-bold">Childcare Management</span>
+        </div>
       </div>
-      <button id="open-settings" class="p-2.5 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50 flex-shrink-0">
-        <i data-lucide="settings" class="w-5 h-5"></i>
-      </button>
+
+      <!-- App Title & Subtitle -->
+      <div class="space-y-2">
+        <h1 id="landing-app-title" class="text-2xl font-black text-white tracking-tight">Favero Family Sitter Tracker</h1>
+        <p id="landing-app-subtitle" class="text-sm font-medium text-slate-400">Hours, Expenses & Direct Payments</p>
+      </div>
+
+      <!-- Quick Action Button -->
+      <div class="pt-4">
+        <button id="enter-app-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-lg">
+          <span>Enter Tracker</span>
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </button>
+      </div>
     </div>
 
-    <!-- Prominent Full-Width Family Banner Artwork -->
-    <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-2xl border border-slate-700/70 p-2 flex items-center justify-center overflow-hidden shadow-inner min-h-[50px]">
-      <div id="header-default-icon" class="py-2 flex items-center space-x-2 text-blue-400">
-        <i data-lucide="users" class="w-6 h-6"></i>
-        <span class="text-xs font-semibold text-slate-300">Family Account</span>
-      </div>
-      <img id="header-custom-img" class="hidden w-full max-h-36 object-contain rounded-xl" alt="Family Logo">
+    <!-- Footer Credit / Branding -->
+    <div class="py-4 text-xs text-slate-500">
+      Favero Family Sitter App • Version 2.0
     </div>
-  </header>
+  </div>
 
-  <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
+  <!-- MAIN APP VIEW (Hidden by default) -->
+  <div id="main-app" class="hidden min-h-screen pb-28">
 
-    <!-- Shift Log Form -->
-    <section class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+    <!-- Sticky App Header -->
+    <header class="bg-slate-800/95 backdrop-blur-md border-b border-slate-700 sticky top-0 z-20 px-4 py-3 space-y-2 shadow-lg">
+      <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <i id="form-icon" data-lucide="plus-circle" class="w-5 h-5 text-blue-400"></i>
-          <h2 id="form-title" class="text-lg font-semibold text-slate-100">Log Shift</h2>
+          <button id="back-to-landing" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
+            <i data-lucide="home" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <h1 id="app-title-display" class="text-base font-bold text-white leading-tight">Favero Family Sitter Tracker</h1>
+            <p id="app-subtitle-display" class="text-[11px] text-slate-400 font-medium">Hours & Pay Log</p>
+          </div>
         </div>
-        <button id="cancel-edit-btn" class="hidden text-xs bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg border border-amber-500/20 font-medium hover:bg-amber-500/20 transition">
-          Cancel Edit
+        <button id="open-settings" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50 flex-shrink-0">
+          <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form id="shift-form" class="space-y-4">
-        <input type="hidden" id="edit-shift-id" value="">
+      <!-- Header Family Banner Image -->
+      <div id="header-avatar-container" class="w-full bg-slate-900/90 rounded-xl border border-slate-700/70 p-1.5 flex items-center justify-center overflow-hidden shadow-inner min-h-[40px]">
+        <div id="header-default-icon" class="py-1 flex items-center space-x-2 text-blue-400">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span class="text-xs font-semibold text-slate-300">Family Account</span>
+        </div>
+        <img id="header-custom-img" class="hidden w-full max-h-28 object-contain rounded-lg" alt="Family Logo">
+      </div>
+    </header>
 
-        <!-- Sitter Selection with Live Avatar Preview -->
-        <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Select Sitter</label>
-          <div class="flex items-center space-x-3">
-            <div id="selected-sitter-avatar" class="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden border border-slate-600">
-              S
+    <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
+
+      <!-- Shift Log Form -->
+      <section class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+          <div class="flex items-center space-x-2">
+            <i id="form-icon" data-lucide="plus-circle" class="w-5 h-5 text-blue-400"></i>
+            <h2 id="form-title" class="text-lg font-semibold text-slate-100">Log Shift</h2>
+          </div>
+          <button id="cancel-edit-btn" class="hidden text-xs bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg border border-amber-500/20 font-medium hover:bg-amber-500/20 transition">
+            Cancel Edit
+          </button>
+        </div>
+
+        <form id="shift-form" class="space-y-4">
+          <input type="hidden" id="edit-shift-id" value="">
+
+          <!-- Sitter Selection with Dynamic Avatar Preview -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Select Sitter</label>
+            <div class="flex items-center space-x-3">
+              <div id="selected-sitter-avatar" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden border-2 border-slate-600 shadow-md">
+                S
+              </div>
+              <select id="sitter-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+                <!-- Dynamically Populated -->
+              </select>
             </div>
-            <select id="sitter-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-              <!-- Dynamically Populated -->
-            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
+            <input type="date" id="shift-date" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Start Time</label>
+              <input type="time" id="start-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">End Time</label>
+              <input type="time" id="end-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Hourly Rate ($)</label>
+              <input type="number" id="hourly-rate" step="0.5" min="0" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Unpaid Break (mins)</label>
+              <input type="number" id="unpaid-break" min="0" value="0" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Reimbursable Expenses ($)</label>
+            <input type="number" id="expenses" step="0.01" min="0" value="0.00" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-semibold">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Notes / Description</label>
+            <input type="text" id="shift-notes" placeholder="e.g., Pizza, snacks, gas" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium placeholder-slate-500">
+          </div>
+
+          <button type="submit" id="save-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-base">
+            <i data-lucide="save" class="w-5 h-5"></i>
+            <span id="save-btn-text">Save Shift</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Shift History Section -->
+      <section class="space-y-3">
+        <div class="flex items-center justify-between px-1">
+          <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Shift History</h2>
+          <div class="flex items-center space-x-3 text-xs">
+            <button id="toggle-select-all" class="text-blue-400 hover:underline font-medium">Select Unpaid</button>
+            <button id="clear-history" class="text-rose-400 hover:underline font-medium">Clear All</button>
           </div>
         </div>
 
+        <div id="shifts-list" class="space-y-3">
+          <!-- Dynamic Shift Cards Inserted Here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Sticky Batch Payment Action Bar -->
+    <div id="batch-bar" class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-4 shadow-2xl z-30 transition-transform duration-300 translate-y-full">
+      <div class="max-w-md mx-auto flex items-center justify-between">
         <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
-          <input type="date" id="shift-date" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
+          <span id="selected-count" class="text-xs text-slate-400 font-medium">0 shifts selected</span>
+          <div id="selected-total" class="text-xl font-black text-emerald-400">$0.00</div>
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Start Time</label>
-            <input type="time" id="start-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">End Time</label>
-            <input type="time" id="end-time" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Hourly Rate ($)</label>
-            <input type="number" id="hourly-rate" step="0.5" min="0" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Unpaid Break (mins)</label>
-            <input type="number" id="unpaid-break" min="0" value="0" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Reimbursable Expenses ($)</label>
-          <input type="number" id="expenses" step="0.01" min="0" value="0.00" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium">
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Notes / Description</label>
-          <input type="text" id="shift-notes" placeholder="e.g., Pizza, snacks, gas" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 text-base font-medium placeholder-slate-500">
-        </div>
-
-        <button type="submit" id="save-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] transition text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-base">
-          <i data-lucide="save" class="w-5 h-5"></i>
-          <span id="save-btn-text">Save Shift</span>
+        <button id="pay-selected-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition">
+          <span>Pay Selected</span>
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
         </button>
-      </form>
-    </section>
-
-    <!-- Shift History & Selection Controls -->
-    <section class="space-y-3">
-      <div class="flex items-center justify-between px-1">
-        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Shift History</h2>
-        <div class="flex items-center space-x-3 text-xs">
-          <button id="toggle-select-all" class="text-blue-400 hover:underline font-medium">Select Unpaid</button>
-          <button id="clear-history" class="text-rose-400 hover:underline font-medium">Clear All</button>
-        </div>
       </div>
-
-      <div id="shifts-list" class="space-y-3">
-        <!-- Dynamic Shift Cards Inserted Here -->
-      </div>
-    </section>
-  </main>
-
-  <!-- Sticky Batch Checkout Action Bar -->
-  <div id="batch-bar" class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur-md border-t border-slate-700 p-4 shadow-2xl z-30 transition-transform duration-300 translate-y-full">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div>
-        <span id="selected-count" class="text-xs text-slate-400 font-medium">0 shifts selected</span>
-        <div id="selected-total" class="text-xl font-black text-emerald-400">$0.00</div>
-      </div>
-      <button id="pay-selected-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition">
-        <span>Pay Selected</span>
-        <i data-lucide="chevron-right" class="w-4 h-4"></i>
-      </button>
     </div>
   </div>
 
@@ -168,7 +213,7 @@
       <p class="text-xs text-slate-400">Review selected shifts and choose your payment method:</p>
 
       <div id="checkout-shifts-summary" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-        <!-- Items inserted dynamically -->
+        <!-- Dynamic Summary Inserted Here -->
       </div>
 
       <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex items-center justify-between">
@@ -187,7 +232,7 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
+  <!-- Settings & Customization Modal -->
   <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
@@ -218,7 +263,7 @@
           <!-- Sitters listed here dynamically -->
         </div>
 
-        <!-- Add/Edit Sitter Sub-Form -->
+        <!-- Add/Edit Sitter Form -->
         <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-3">
           <p id="sitter-form-heading" class="text-xs font-semibold text-slate-300">Add New Sitter Profile</p>
           <input type="hidden" id="editing-sitter-id" value="">
@@ -255,7 +300,7 @@
         </div>
       </div>
 
-      <!-- App Header Image Customization -->
+      <!-- App Header Banner Graphic Customization -->
       <div class="border-t border-slate-700/60 pt-3 space-y-2">
         <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider">Family Banner Logo Graphic</label>
         <input type="file" id="icon-file-input" accept="image/*" class="hidden">
@@ -274,7 +319,7 @@
   <script>
     lucide.createIcons();
 
-    // App State
+    // App State Variables
     let appTitle = localStorage.getItem('sitter_app_title') || 'Favero Family Sitter Tracker';
     let appSubtitle = localStorage.getItem('sitter_app_subtitle') || 'Hours & Pay Log';
 
@@ -286,7 +331,18 @@
     let selectedShiftIds = new Set();
     let currentSitterAvatarTemp = '';
 
-    // Elements
+    // Navigation Elements
+    const landingPage = document.getElementById('landing-page');
+    const mainApp = document.getElementById('main-app');
+    const enterAppBtn = document.getElementById('enter-app-btn');
+    const backToLandingBtn = document.getElementById('back-to-landing');
+
+    const landingAppTitle = document.getElementById('landing-app-title');
+    const landingAppSubtitle = document.getElementById('landing-app-subtitle');
+    const landingHeroImg = document.getElementById('landing-hero-img');
+    const landingHeroDefault = document.getElementById('landing-hero-default');
+
+    // Form & List Elements
     const shiftForm = document.getElementById('shift-form');
     const formTitle = document.getElementById('form-title');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
@@ -309,7 +365,7 @@
     const appTitleDisplay = document.getElementById('app-title-display');
     const appSubtitleDisplay = document.getElementById('app-subtitle-display');
 
-    // Batch Bar & Modal
+    // Batch Payment & Modals
     const batchBar = document.getElementById('batch-bar');
     const selectedCountEl = document.getElementById('selected-count');
     const selectedTotalEl = document.getElementById('selected-total');
@@ -323,7 +379,7 @@
     const payBatchVenmoBtn = document.getElementById('pay-batch-venmo');
     const payBatchPaypalBtn = document.getElementById('pay-batch-paypal');
 
-    // Settings Modal & Sitter Management
+    // Settings Modal
     const settingsModal = document.getElementById('settings-modal');
     const openSettingsBtn = document.getElementById('open-settings');
     const closeSettingsBtn = document.getElementById('close-settings');
@@ -349,9 +405,24 @@
 
     shiftDateInput.value = new Date().toISOString().split('T')[0];
 
+    // Page Switching Logic
+    enterAppBtn.onclick = () => {
+      landingPage.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    };
+
+    backToLandingBtn.onclick = () => {
+      mainApp.classList.add('hidden');
+      landingPage.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    };
+
     function updateTitleDisplay() {
       appTitleDisplay.textContent = appTitle;
       appSubtitleDisplay.textContent = appSubtitle;
+      landingAppTitle.textContent = appTitle;
+      landingAppSubtitle.textContent = appSubtitle;
     }
     updateTitleDisplay();
 
@@ -359,9 +430,14 @@
       if (iconData) {
         document.getElementById('app-favicon').href = iconData;
         document.getElementById('app-apple-icon').href = iconData;
+        
         headerCustomImg.src = iconData;
         headerCustomImg.classList.remove('hidden');
         headerDefaultIcon.classList.add('hidden');
+
+        landingHeroImg.src = iconData;
+        landingHeroImg.classList.remove('hidden');
+        landingHeroDefault.classList.add('hidden');
       }
     }
     if (customIcon) applyCustomIcon(customIcon);
@@ -377,7 +453,7 @@
     function updateSelectedSitterAvatar() {
       const selected = sitters.find(s => s.id === sitterSelect.value);
       if (selected) {
-        selectedSitterAvatar.innerHTML = renderAvatarHTML(selected.avatar, selected.name, "w-11 h-11 text-sm");
+        selectedSitterAvatar.innerHTML = renderAvatarHTML(selected.avatar, selected.name, "w-12 h-12 text-base");
       }
     }
 
@@ -552,7 +628,7 @@
       }
     };
 
-    // Form Submission
+    // Shift Form Submission
     shiftForm.onsubmit = (e) => {
       e.preventDefault();
 
@@ -757,7 +833,6 @@
         }
       }
 
-      // Mark shifts as Paid
       shifts = shifts.map(s => selectedShiftIds.has(s.id) ? { ...s, paid: true } : s);
       localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
       selectedShiftIds.clear();
@@ -815,8 +890,13 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between border-b border-slate-700/50 pb-2.5">
+            
+            <!-- Explicit Checkbox Label -->
             <div class="flex items-center space-x-3">
-              <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleShiftSelection('${shift.id}')" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-0">
+              <label class="flex items-center space-x-1.5 cursor-pointer bg-slate-900/80 hover:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-700/80 transition">
+                <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleShiftSelection('${shift.id}')" class="w-4 h-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer">
+                <span class="text-[11px] font-bold tracking-wide uppercase ${isSelected ? 'text-emerald-400' : 'text-slate-400'}">Select</span>
+              </label>
               
               <div class="flex items-center space-x-2">
                 ${renderAvatarHTML(sitter ? sitter.avatar : '', sitterDisplayName, "w-8 h-8 text-[11px]")}
@@ -856,7 +936,7 @@
             </div>
           </div>
 
-          <!-- Quick Pay Actions for Individual Shift -->
+          <!-- Quick Actions -->
           <div class="pt-2 border-t border-slate-700/40 flex items-center justify-between text-xs">
             <span class="text-[11px] font-medium text-slate-400">Quick Pay:</span>
             <div class="flex items-center space-x-2">
