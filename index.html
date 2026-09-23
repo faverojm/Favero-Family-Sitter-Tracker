@@ -50,8 +50,14 @@
         <p id="landing-app-subtitle" class="text-sm font-medium text-slate-400">Hours, Expenses & Direct Payments</p>
       </div>
 
+      <!-- Cloud Sync Status Indicator -->
+      <div id="sync-status" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 inline-flex items-center space-x-2">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-blue-400"></i>
+        <span>Connecting to cloud storage...</span>
+      </div>
+
       <!-- Enter App Button -->
-      <div class="pt-4">
+      <div class="pt-2">
         <button id="enter-app-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 text-lg">
           <span>Enter Tracker</span>
           <i data-lucide="arrow-right" class="w-5 h-5"></i>
@@ -61,7 +67,7 @@
 
     <!-- Footer Credit -->
     <div class="py-4 text-xs text-slate-500">
-      Favero Family Sitter App • Version 4.0 (Google Sheets Sync)
+      Favero Family Sitter App • Version 4.1 (Persistent Cloud Sync)
     </div>
   </div>
 
@@ -80,9 +86,14 @@
             <p id="app-subtitle-display" class="text-[11px] text-slate-400 font-medium">Hours & Pay Log</p>
           </div>
         </div>
-        <button id="open-settings" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50 flex-shrink-0">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-        </button>
+        <div class="flex items-center space-x-2">
+          <button id="refresh-data-btn" title="Refresh Data from Sheets" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+          <button id="open-settings" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-700/40 hover:bg-slate-700 transition border border-slate-700/50">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Header Banner Graphic Container -->
@@ -362,8 +373,8 @@
   <script>
     lucide.createIcons();
 
-    // High-Capacity IndexedDB Image Engine
-    const DB_NAME = 'FaveroAppDB';
+    // High-Capacity IndexedDB Engine (Persists Data & Images directly on device memory)
+    const DB_NAME = 'FaveroAppDB_v2';
     const DB_VERSION = 1;
     let db;
 
@@ -372,8 +383,8 @@
         const request = indexedDB.open(DB_NAME, DB_VERSION);
         request.onupgradeneeded = (e) => {
           const database = e.target.result;
-          if (!database.objectStoreNames.contains('images')) {
-            database.createObjectStore('images');
+          if (!database.objectStoreNames.contains('store')) {
+            database.createObjectStore('store');
           }
         };
         request.onsuccess = (e) => {
@@ -384,36 +395,22 @@
       });
     }
 
-    function saveImageToDB(key, dataUrl) {
-      return new Promise((resolve, reject) => {
+    function setValDB(key, val) {
+      return new Promise((resolve) => {
         if (!db) return resolve();
-        const tx = db.transaction('images', 'readwrite');
-        const store = tx.objectStore('images');
-        const req = store.put(dataUrl, key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
+        const tx = db.transaction('store', 'readwrite');
+        tx.objectStore('store').put(val, key);
+        tx.oncomplete = () => resolve();
       });
     }
 
-    function getImageFromDB(key) {
+    function getValDB(key) {
       return new Promise((resolve) => {
         if (!db) return resolve(null);
-        const tx = db.transaction('images', 'readonly');
-        const store = tx.objectStore('images');
-        const req = store.get(key);
+        const tx = db.transaction('store', 'readonly');
+        const req = tx.objectStore('store').get(key);
         req.onsuccess = () => resolve(req.result || null);
         req.onerror = () => resolve(null);
-      });
-    }
-
-    function deleteImageFromDB(key) {
-      return new Promise((resolve) => {
-        if (!db) return resolve();
-        const tx = db.transaction('images', 'readwrite');
-        const store = tx.objectStore('images');
-        const req = store.delete(key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => resolve();
       });
     }
 
@@ -431,7 +428,27 @@
     let selectedShiftIds = new Set();
     let currentSitterAvatarTemp = '';
 
-    // Google Sheets Sync Helper Function
+    const syncStatusEl = document.getElementById('sync-status');
+
+    function updateSyncStatus(msg, isSuccess = true) {
+      if (!syncStatusEl) return;
+      if (isSuccess) {
+        syncStatusEl.innerHTML = `<i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i><span>${msg}</span>`;
+      } else {
+        syncStatusEl.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-400"></i><span>${msg}</span>`;
+      }
+      lucide.createIcons();
+    }
+
+    // Save Data Locally to both localStorage and IndexedDB
+    async function persistLocalState() {
+      localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
+      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      await setValDB('sitter_profiles', sitters);
+      await setValDB('sitter_shifts', shifts);
+    }
+
+    // Push Shift to Google Sheets
     function syncShiftToSheets(shiftData) {
       if (!googleSheetsUrl) return;
       try {
@@ -439,25 +456,54 @@
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(shiftData)
+          body: JSON.stringify({ action: 'save', shift: shiftData })
         });
       } catch (err) {
         console.warn('Google Sheets sync skipped or offline:', err);
       }
     }
 
-    // Page Elements
+    // Pull All Data directly from Google Sheets on Launch
+    async function fetchFromSheets() {
+      if (!googleSheetsUrl) {
+        updateSyncStatus("Local storage active (No Cloud URL)");
+        return;
+      }
+
+      updateSyncStatus("Syncing with Google Sheets...");
+
+      try {
+        const response = await fetch(googleSheetsUrl + "?action=get");
+        if (response.ok) {
+          const remoteShifts = await response.json();
+          if (Array.isArray(remoteShifts) && remoteShifts.length > 0) {
+            shifts = remoteShifts;
+            await persistLocalState();
+            renderShifts();
+            updateSyncStatus("Cloud Sync Active");
+          } else {
+            updateSyncStatus("Cloud Sync Active");
+          }
+        } else {
+          updateSyncStatus("Loaded from local storage");
+        }
+      } catch (err) {
+        updateSyncStatus("Offline mode (Local storage)");
+      }
+    }
+
+    // Elements
     const landingPage = document.getElementById('landing-page');
     const mainApp = document.getElementById('main-app');
     const enterAppBtn = document.getElementById('enter-app-btn');
     const backToLandingBtn = document.getElementById('back-to-landing');
+    const refreshDataBtn = document.getElementById('refresh-data-btn');
 
     const landingAppTitle = document.getElementById('landing-app-title');
     const landingAppSubtitle = document.getElementById('landing-app-subtitle');
     const landingHeroImg = document.getElementById('landing-hero-img');
     const landingHeroDefault = document.getElementById('landing-hero-default');
 
-    // Forms & Lists
     const shiftForm = document.getElementById('shift-form');
     const formTitle = document.getElementById('form-title');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
@@ -474,13 +520,11 @@
     const saveBtnText = document.getElementById('save-btn-text');
     const shiftsList = document.getElementById('shifts-list');
 
-    // Header Display
     const headerDefaultIcon = document.getElementById('header-default-icon');
     const headerCustomImg = document.getElementById('header-custom-img');
     const appTitleDisplay = document.getElementById('app-title-display');
     const appSubtitleDisplay = document.getElementById('app-subtitle-display');
 
-    // Batch Pay & Modals
     const batchBar = document.getElementById('batch-bar');
     const selectedCountEl = document.getElementById('selected-count');
     const selectedTotalEl = document.getElementById('selected-total');
@@ -494,7 +538,6 @@
     const payBatchVenmoBtn = document.getElementById('pay-batch-venmo');
     const payBatchPaypalBtn = document.getElementById('pay-batch-paypal');
 
-    // Settings
     const settingsModal = document.getElementById('settings-modal');
     const openSettingsBtn = document.getElementById('open-settings');
     const closeSettingsBtn = document.getElementById('close-settings');
@@ -530,7 +573,6 @@
 
     shiftDateInput.value = new Date().toISOString().split('T')[0];
 
-    // Page View Toggle
     enterAppBtn.onclick = () => {
       landingPage.classList.add('hidden');
       mainApp.classList.remove('hidden');
@@ -541,6 +583,10 @@
       mainApp.classList.add('hidden');
       landingPage.classList.remove('hidden');
       window.scrollTo(0, 0);
+    };
+
+    refreshDataBtn.onclick = () => {
+      fetchFromSheets();
     };
 
     function updateTitleDisplay() {
@@ -593,7 +639,7 @@
         const reader = new FileReader();
         reader.onload = async (event) => {
           landingImage = event.target.result;
-          await saveImageToDB('landing_image', landingImage);
+          await setValDB('landing_image', landingImage);
           updateLandingGraphic();
         };
         reader.readAsDataURL(file);
@@ -602,7 +648,7 @@
 
     removeLandingImageBtn.onclick = async () => {
       landingImage = '';
-      await deleteImageFromDB('landing_image');
+      await setValDB('landing_image', '');
       updateLandingGraphic();
     };
 
@@ -613,7 +659,7 @@
         const reader = new FileReader();
         reader.onload = async (event) => {
           customIcon = event.target.result;
-          await saveImageToDB('custom_icon', customIcon);
+          await setValDB('custom_icon', customIcon);
           applyCustomIcon(customIcon);
         };
         reader.readAsDataURL(file);
@@ -622,7 +668,7 @@
 
     removeHeaderImageBtn.onclick = async () => {
       customIcon = '';
-      await deleteImageFromDB('custom_icon');
+      await setValDB('custom_icon', '');
       applyCustomIcon('');
     };
 
@@ -758,18 +804,18 @@
         sitters.push({ id: Date.now().toString(), name, rate, venmo, paypal, avatar: currentSitterAvatarTemp });
       }
 
-      localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
+      await persistLocalState();
       resetSitterForm();
       renderSitterMgmt();
       populateSitterSelect();
       renderShifts();
     };
 
-    window.removeSitter = function(id) {
+    window.removeSitter = async function(id) {
       if (sitters.length <= 1) return;
       if (confirm("Delete this sitter profile?")) {
         sitters = sitters.filter(s => s.id !== id);
-        localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
+        await persistLocalState();
         renderSitterMgmt();
         populateSitterSelect();
         renderShifts();
@@ -799,10 +845,10 @@
       localStorage.setItem('sitter_sheets_url', googleSheetsUrl);
 
       updateTitleDisplay();
+      fetchFromSheets();
       settingsModal.classList.add('hidden');
     };
 
-    // Backup Export / Import
     exportBackupBtn.onclick = async () => {
       const backupData = {
         appTitle,
@@ -810,8 +856,8 @@
         googleSheetsUrl,
         sitters,
         shifts,
-        customIcon: await getImageFromDB('custom_icon'),
-        landingImage: await getImageFromDB('landing_image')
+        customIcon: await getValDB('custom_icon'),
+        landingImage: await getValDB('landing_image')
       };
 
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
@@ -843,21 +889,18 @@
               googleSheetsUrl = data.googleSheetsUrl;
               localStorage.setItem('sitter_sheets_url', googleSheetsUrl);
             }
-            if (data.sitters) {
-              sitters = data.sitters;
-              localStorage.setItem('sitter_profiles', JSON.stringify(sitters));
-            }
-            if (data.shifts) {
-              shifts = data.shifts;
-              localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
-            }
+            if (data.sitters) sitters = data.sitters;
+            if (data.shifts) shifts = data.shifts;
+            
+            await persistLocalState();
+
             if (data.customIcon) {
               customIcon = data.customIcon;
-              await saveImageToDB('custom_icon', customIcon);
+              await setValDB('custom_icon', customIcon);
             }
             if (data.landingImage) {
               landingImage = data.landingImage;
-              await saveImageToDB('landing_image', landingImage);
+              await setValDB('landing_image', landingImage);
             }
 
             updateTitleDisplay();
@@ -875,7 +918,7 @@
     };
 
     // Form Submission
-    shiftForm.onsubmit = (e) => {
+    shiftForm.onsubmit = async (e) => {
       e.preventDefault();
 
       const sitterId = sitterSelect.value;
@@ -921,7 +964,7 @@
         shifts.unshift(shiftData);
       }
 
-      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      await persistLocalState();
       syncShiftToSheets(shiftData);
       resetForm();
       renderShifts();
@@ -963,18 +1006,18 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    window.deleteShift = function(id) {
+    window.deleteShift = async function(id) {
       if (confirm("Delete this shift record?")) {
         shifts = shifts.filter(s => s.id !== id);
         selectedShiftIds.delete(id);
-        localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+        await persistLocalState();
         renderShifts();
       }
     };
 
-    window.toggleShiftPaid = function(id) {
+    window.toggleShiftPaid = async function(id) {
       shifts = shifts.map(s => s.id === id ? { ...s, paid: !s.paid } : s);
-      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      await persistLocalState();
       renderShifts();
     };
 
@@ -1048,7 +1091,7 @@
 
     closeCheckoutBtn.onclick = () => checkoutModal.classList.add('hidden');
 
-    function executeBatchPayment(type) {
+    async function executeBatchPayment(type) {
       const selectedList = shifts.filter(s => selectedShiftIds.has(s.id));
       if (selectedList.length === 0) return;
 
@@ -1081,7 +1124,7 @@
       }
 
       shifts = shifts.map(s => selectedShiftIds.has(s.id) ? { ...s, paid: true } : s);
-      localStorage.setItem('sitter_shifts', JSON.stringify(shifts));
+      await persistLocalState();
       selectedShiftIds.clear();
       updateBatchBar();
       checkoutModal.classList.add('hidden');
@@ -1103,11 +1146,11 @@
       executeBatchPayment('paypal');
     };
 
-    document.getElementById('clear-history').onclick = () => {
+    document.getElementById('clear-history').onclick = async () => {
       if (confirm("Clear all shift records?")) {
         shifts = [];
         selectedShiftIds.clear();
-        localStorage.removeItem('sitter_shifts');
+        await persistLocalState();
         updateBatchBar();
         renderShifts();
       }
@@ -1203,12 +1246,23 @@
     // App Initialization
     async function initApp() {
       await initDB();
-      customIcon = await getImageFromDB('custom_icon');
-      landingImage = await getImageFromDB('landing_image');
+
+      // Retrieve local persistent state
+      const dbSitters = await getValDB('sitter_profiles');
+      if (dbSitters) sitters = dbSitters;
+
+      const dbShifts = await getValDB('sitter_shifts');
+      if (dbShifts) shifts = dbShifts;
+
+      customIcon = await getValDB('custom_icon');
+      landingImage = await getValDB('landing_image');
 
       applyCustomIcon(customIcon);
       populateSitterSelect();
       renderShifts();
+
+      // Sync latest shifts from Google Sheets on launch
+      await fetchFromSheets();
     }
 
     initApp();
