@@ -456,6 +456,32 @@
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    // Explicitly bind openEditSitterModal to window to guarantee clickability
+    window.openEditSitterModal = function(idx) {
+      const list = getStoredSitters();
+      const sitter = list[idx];
+      if (!sitter) return;
+
+      document.getElementById('edit-s-idx').value = idx;
+      document.getElementById('edit-s-name').value = sitter.name || '';
+      document.getElementById('edit-s-rate').value = sitter.rate || 20;
+      document.getElementById('edit-s-venmo').value = sitter.venmo || '';
+      document.getElementById('edit-s-paypal').value = sitter.paypal || '';
+      document.getElementById('edit-s-avatar-base64').value = sitter.avatar || '';
+      document.getElementById('edit-s-avatar-label').textContent = sitter.avatar ? '✓ Photo Retained' : '📷 Update Photo';
+
+      document.getElementById('edit-sitter-modal').style.display = 'flex';
+    };
+
+    window.deleteSitter = function(idx) {
+      if (confirm('Delete sitter profile?')) {
+        const list = getStoredSitters();
+        list.splice(idx, 1);
+        saveStoredSitters(list);
+        renderSittersList();
+      }
+    };
+
     document.getElementById('date').valueAsDate = new Date();
 
     function initData() {
@@ -508,9 +534,10 @@
 
     function renderSittersList() {
       const container = document.getElementById('sitter-list-container');
-      if (!sittersCache.length) { container.innerHTML = '<p style="color:var(--muted)">No sitters added yet.</p>'; return; }
+      const list = getStoredSitters();
+      if (!list.length) { container.innerHTML = '<p style="color:var(--muted)">No sitters added yet.</p>'; return; }
       
-      container.innerHTML = sittersCache.map((s, idx) => `
+      container.innerHTML = list.map((s, idx) => `
         <div style="background:#2a2a2a; padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
           <div style="display:flex; align-items:center; gap:10px;">
             ${s.avatar ? `<img src="${s.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : ''}
@@ -520,8 +547,8 @@
             </div>
           </div>
           <div style="display:flex; gap:6px;">
-            <button onclick="openEditSitterModal(${idx})" style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Edit</button>
-            <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Delete</button>
+            <button type="button" onclick="window.openEditSitterModal(${idx})" style="background:#3b82f6; color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Edit</button>
+            <button type="button" onclick="window.deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Delete</button>
           </div>
         </div>
       `).join('');
@@ -544,21 +571,6 @@
       renderSittersList();
     });
 
-    function openEditSitterModal(idx) {
-      const sitter = sittersCache[idx];
-      if (!sitter) return;
-
-      document.getElementById('edit-s-idx').value = idx;
-      document.getElementById('edit-s-name').value = sitter.name || '';
-      document.getElementById('edit-s-rate').value = sitter.rate || 20;
-      document.getElementById('edit-s-venmo').value = sitter.venmo || '';
-      document.getElementById('edit-s-paypal').value = sitter.paypal || '';
-      document.getElementById('edit-s-avatar-base64').value = sitter.avatar || '';
-      document.getElementById('edit-s-avatar-label').textContent = sitter.avatar ? '✓ Photo Retained' : '📷 Update Photo';
-
-      document.getElementById('edit-sitter-modal').style.display = 'flex';
-    }
-
     document.getElementById('edit-sitter-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const idx = parseInt(document.getElementById('edit-s-idx').value, 10);
@@ -577,15 +589,6 @@
         loadShifts();
       }
     });
-
-    function deleteSitter(idx) {
-      if (confirm('Delete sitter profile?')) {
-        const list = getStoredSitters();
-        list.splice(idx, 1);
-        saveStoredSitters(list);
-        renderSittersList();
-      }
-    }
 
     function autoCalcPay() {
       const start = document.getElementById('start-time').value;
