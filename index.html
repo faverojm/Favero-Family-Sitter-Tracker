@@ -57,6 +57,8 @@
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     .form-group { margin-bottom: 12px; }
+    .form-row { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
     label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
     input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], select, textarea {
       width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
@@ -154,16 +156,21 @@
     <!-- Shift Entry Card -->
     <div class="card">
       <form id="shift-form">
-        <div class="form-row">
+        <!-- STEP 1: Select Sitter First -->
+        <div class="form-group">
+          <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent);">1. Choose Sitter</label>
+          <select id="sitter-select" onchange="autoCalcPay()" required>
+            <option value="">Select Sitter...</option>
+          </select>
+        </div>
+
+        <!-- STEP 2: Select Date & Times -->
+        <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 14px;">2. Shift Details</label>
+        
+        <div class="form-row" style="margin-top: 6px;">
           <div class="form-group">
             <label>Date</label>
             <input type="date" id="date" required>
-          </div>
-          <div class="form-group">
-            <label>Sitter</label>
-            <select id="sitter-select" onchange="autoCalcPay()" required>
-              <option value="">Select Sitter...</option>
-            </select>
           </div>
         </div>
 
@@ -193,7 +200,7 @@
           <label>Notes (optional)</label>
           <textarea id="notes" rows="2" placeholder="Date night, tip included, etc."></textarea>
         </div>
-        <button type="submit" class="submit-btn">Log Shift</button>
+        <button type="submit" id="submit-shift-btn" class="submit-btn">Log Shift</button>
       </form>
     </div>
 
@@ -210,9 +217,7 @@
       </div>
       <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.85rem;">Mark Paid</button>
     </div>
-    <div class="batch-actions" id="batch-pay-links">
-      <!-- Dynamic Venmo/PayPal buttons rendered here -->
-    </div>
+    <div class="batch-actions" id="batch-pay-links"></div>
   </div>
 
   <!-- Sitters Management Modal -->
@@ -284,7 +289,7 @@
 
     let sittersCache = [];
     let shiftsCache = [];
-    let selectedShifts = new Map(); // id -> shift object
+    let selectedShifts = new Map();
     let currentPin = '';
 
     const headers = {
@@ -449,7 +454,7 @@
         }
 
         container.innerHTML = shiftsCache.map(shift => {
-          const name = shift.sitterName || shift.sittername || 'Sitter';
+          const name = shift.sitterName || shift.sittername || shift.sitter || 'Sitter';
           const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase()) || {};
           const isChecked = selectedShifts.has(shift.id);
 
@@ -496,18 +501,42 @@
 
     document.getElementById('shift-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = document.getElementById('submit-shift-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging...';
+
       const sitterVal = document.getElementById('sitter-select').value;
       const hoursVal = parseFloat(document.getElementById('hours').value);
       const payVal = parseFloat(document.getElementById('pay').value);
       const dateVal = document.getElementById('date').value;
       const notesVal = document.getElementById('notes').value;
 
-      const payload = { date: dateVal, sittername: sitterVal, hours: hoursVal, pay: payVal, notes: notesVal, paid: false };
-      await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
+      const payload = {
+        date: dateVal,
+        sitterName: sitterVal,
+        sittername: sitterVal,
+        hours: hoursVal,
+        pay: payVal,
+        notes: notesVal,
+        paid: false
+      };
 
-      document.getElementById('shift-form').reset();
-      document.getElementById('date').valueAsDate = new Date();
-      loadShifts();
+      try {
+        const response = await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
+        if (!response.ok) {
+          const errText = await response.text();
+          alert('Error logging shift: ' + errText);
+        } else {
+          document.getElementById('shift-form').reset();
+          document.getElementById('date').valueAsDate = new Date();
+          await loadShifts();
+        }
+      } catch (err) {
+        alert('Failed to connect: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Shift';
+      }
     });
 
     async function togglePaid(id, currentStatus) {
@@ -517,7 +546,6 @@
       loadShifts();
     }
 
-    // Consolidated Batch Pay Logic
     function toggleSelect(id, isChecked) {
       const shift = shiftsCache.find(s => s.id === id);
       if (isChecked && shift) {
@@ -542,7 +570,7 @@
 
       selectedShifts.forEach(shift => {
         totalPay += (shift.pay || 0);
-        const name = shift.sitterName || shift.sittername || '';
+        const name = shift.sitterName || shift.sittername || shift.sitter || '';
         const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase());
         if (profile) selectedProfiles.add(profile);
       });
@@ -550,7 +578,6 @@
       document.getElementById('batch-count').textContent = selectedShifts.size;
       document.getElementById('batch-total').textContent = `$${totalPay}`;
 
-      // Build consolidated payment links
       let linksHtml = '';
       if (selectedProfiles.size === 1) {
         const sitter = Array.from(selectedProfiles)[0];
