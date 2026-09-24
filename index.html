@@ -275,6 +275,46 @@
     </div>
   </div>
 
+  <!-- Edit Sitter Modal -->
+  <div class="modal" id="edit-sitter-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem;">Edit Sitter Profile</h3>
+        <button onclick="closeModal('edit-sitter-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form id="edit-sitter-form">
+        <input type="hidden" id="edit-s-idx">
+        <div class="form-group">
+          <label>Sitter Full Name</label>
+          <input type="text" id="edit-s-name" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hourly Rate ($)</label>
+            <input type="number" id="edit-s-rate" required>
+          </div>
+          <div class="form-group">
+            <label>Photo / Avatar Image</label>
+            <label class="file-upload-btn" for="edit-s-avatar-file" id="edit-s-avatar-label">📷 Update Photo</label>
+            <input type="file" id="edit-s-avatar-file" accept="image/*" onchange="handleImageFile(this, 'edit-s-avatar-base64', 'edit-s-avatar-label')">
+            <input type="hidden" id="edit-s-avatar-base64">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Venmo Handle</label>
+            <input type="text" id="edit-s-venmo" placeholder="@username">
+          </div>
+          <div class="form-group">
+            <label>PayPal Link / Handle</label>
+            <input type="text" id="edit-s-paypal" placeholder="paypal.me/username">
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" style="background:#2563eb;">Save Sitter Profile</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Sitters Modal -->
   <div class="modal" id="sitters-modal">
     <div class="modal-card">
@@ -310,7 +350,7 @@
             <input type="text" id="s-paypal" placeholder="paypal.me/username">
           </div>
         </div>
-        <button type="submit" class="submit-btn" style="background:#2563eb;">Save Sitter Profile</button>
+        <button type="submit" class="submit-btn" style="background:#2563eb;">Add Sitter Profile</button>
       </form>
 
       <h4 style="font-size:0.9rem; color:var(--muted); margin-bottom:8px;">Saved Sitters</h4>
@@ -479,7 +519,10 @@
               <div style="font-size:0.8rem; color:var(--muted);">Venmo: ${s.venmo || 'N/A'} | PayPal: ${s.paypal || 'N/A'}</div>
             </div>
           </div>
-          <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Delete</button>
+          <div style="display:flex; gap:6px;">
+            <button onclick="openEditSitterModal(${idx})" style="background:#3b82f6; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Edit</button>
+            <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Delete</button>
+          </div>
         </div>
       `).join('');
     }
@@ -499,6 +542,40 @@
       document.getElementById('sitter-form').reset();
       document.getElementById('s-avatar-label').textContent = "📷 Upload Photo";
       renderSittersList();
+    });
+
+    function openEditSitterModal(idx) {
+      const sitter = sittersCache[idx];
+      if (!sitter) return;
+
+      document.getElementById('edit-s-idx').value = idx;
+      document.getElementById('edit-s-name').value = sitter.name || '';
+      document.getElementById('edit-s-rate').value = sitter.rate || 20;
+      document.getElementById('edit-s-venmo').value = sitter.venmo || '';
+      document.getElementById('edit-s-paypal').value = sitter.paypal || '';
+      document.getElementById('edit-s-avatar-base64').value = sitter.avatar || '';
+      document.getElementById('edit-s-avatar-label').textContent = sitter.avatar ? '✓ Photo Retained' : '📷 Update Photo';
+
+      document.getElementById('edit-sitter-modal').style.display = 'flex';
+    }
+
+    document.getElementById('edit-sitter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('edit-s-idx').value, 10);
+      const list = getStoredSitters();
+      if (idx >= 0 && idx < list.length) {
+        list[idx] = {
+          name: document.getElementById('edit-s-name').value,
+          rate: parseFloat(document.getElementById('edit-s-rate').value),
+          avatar: document.getElementById('edit-s-avatar-base64').value,
+          venmo: document.getElementById('edit-s-venmo').value,
+          paypal: document.getElementById('edit-s-paypal').value
+        };
+        saveStoredSitters(list);
+        closeModal('edit-sitter-modal');
+        renderSittersList();
+        loadShifts();
+      }
     });
 
     function deleteSitter(idx) {
