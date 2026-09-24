@@ -19,7 +19,7 @@
       overflow-x: hidden;
     }
 
-    /* --- PIN LANDING SCREEN (FULL SCREEN OVERLAY) --- */
+    /* --- PIN LANDING SCREEN OVERLAY --- */
     #pin-overlay {
       position: fixed;
       top: 0;
@@ -32,7 +32,7 @@
       z-index: 9999;
     }
 
-    /* Top 50%: Image Banner */
+    /* Top 50%: Hero Image */
     .hero-section {
       height: 50dvh;
       width: 100%;
@@ -84,9 +84,25 @@
       align-items: center;
       padding: 1rem;
       background-color: #0f172a;
-      gap: 1.5rem;
+      gap: 1rem;
     }
 
+    /* Error Message Feedback */
+    .error-message {
+      height: 20px;
+      color: #ef4444;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .error-message.visible {
+      opacity: 1;
+    }
+
+    /* PIN Dots Display */
     .pin-display {
       display: flex;
       gap: 1rem;
@@ -111,8 +127,10 @@
     .dot.error {
       border-color: #ef4444;
       background-color: #ef4444;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
     }
 
+    /* Keypad Grid */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -165,9 +183,9 @@
       fill: currentColor;
     }
 
-    /* --- MAIN APP DASHBOARD STYLING --- */
+    /* --- MAIN TRACKER DASHBOARD --- */
     #tracker-dashboard {
-      display: none; /* Hidden until valid PIN is entered */
+      display: none;
       min-height: 100vh;
       padding: 1.5rem;
       color: #f8fafc;
@@ -201,9 +219,9 @@
 </head>
 <body>
 
-  <!-- 1. PIN OVERLAY (Visible by default) -->
+  <!-- 1. PIN OVERLAY -->
   <div id="pin-overlay">
-    <!-- Top 50%: Hero Image Header -->
+    <!-- Top 50%: Hero Image Banner -->
     <div class="hero-section">
       <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Landing Header" />
       <div class="hero-overlay">
@@ -214,6 +232,10 @@
 
     <!-- Bottom 50%: PIN Pad -->
     <div class="pin-section">
+      <!-- Error Message Space -->
+      <div class="error-message" id="error-msg">Incorrect PIN. Try again.</div>
+
+      <!-- Masked Indicators -->
       <div class="pin-display">
         <div class="dot" id="dot-0"></div>
         <div class="dot" id="dot-1"></div>
@@ -221,6 +243,7 @@
         <div class="dot" id="dot-3"></div>
       </div>
 
+      <!-- Keypad -->
       <div class="keypad">
         <button class="key" onclick="pressKey('1')">1</button>
         <button class="key" onclick="pressKey('2')">2</button>
@@ -246,14 +269,13 @@
     </div>
   </div>
 
-  <!-- 2. MAIN BABYSITTER TRACKER APP (Revealed on PIN success) -->
+  <!-- 2. MAIN TRACKER DASHBOARD -->
   <div id="tracker-dashboard">
     <div class="dashboard-header">
       <h2>Childcare Tracker</h2>
       <button class="btn-lock" onclick="lockApp()">Lock App</button>
     </div>
 
-    <!-- YOUR EXISTING DASHBOARD FORMS / LOGS / PAYMENTS GO HERE -->
     <p>Welcome! Sitter arrival times, hours logged, and payment links will display here.</p>
   </div>
 
@@ -261,10 +283,11 @@
     let currentPin = [];
     const maxLen = 4;
     
-    // Set your target PIN here
-    const correctPin = "1234"; 
+    // Set your access PIN here
+    const correctPin = "1234";
 
     function pressKey(num) {
+      hideError(); // Clear error text when user starts typing
       if (currentPin.length < maxLen) {
         currentPin.push(num);
         updateUI();
@@ -276,6 +299,7 @@
     }
 
     function pressBack() {
+      hideError();
       if (currentPin.length > 0) {
         currentPin.pop();
         updateUI();
@@ -283,6 +307,7 @@
     }
 
     function clearAll() {
+      hideError();
       currentPin = [];
       updateUI();
     }
@@ -291,19 +316,32 @@
       const enteredPin = currentPin.join("");
       
       if (enteredPin === correctPin) {
-        // Unlock access: Hide PIN overlay and display the tracker dashboard
+        // Unlock access
+        hideError();
         document.getElementById("pin-overlay").style.display = "none";
         document.getElementById("tracker-dashboard").style.display = "block";
       } else {
-        // Flash red dots on incorrect entry and reset
-        const dots = document.querySelectorAll(".dot");
-        dots.forEach(dot => dot.classList.add("error"));
-
-        setTimeout(() => {
-          dots.forEach(dot => dot.classList.remove("error"));
-          clearAll();
-        }, 500);
+        // Display incorrect PIN feedback
+        showError();
       }
+    }
+
+    function showError() {
+      const errorMsg = document.getElementById("error-msg");
+      errorMsg.classList.add("visible");
+
+      const dots = document.querySelectorAll(".dot");
+      dots.forEach(dot => dot.classList.add("error"));
+
+      setTimeout(() => {
+        dots.forEach(dot => dot.classList.remove("error"));
+        clearAll();
+      }, 600);
+    }
+
+    function hideError() {
+      const errorMsg = document.getElementById("error-msg");
+      errorMsg.classList.remove("visible");
     }
 
     function lockApp() {
