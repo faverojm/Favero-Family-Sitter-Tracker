@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>PIN Landing Screen</title>
   <style>
     * {
@@ -12,40 +12,28 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    body {
-      background-color: #0f172a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .app-container {
+    html, body {
       width: 100%;
-      max-width: 414px;
       height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      background: #0f172a; /* Dark background */
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      background-color: #0f172a;
       overflow: hidden;
     }
 
-    /* Views toggle */
-    .view {
+    /* Full-screen mobile shell */
+    .app-container {
       width: 100%;
-      height: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: #0f172a;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    /* --- TOP HALF: HERO / LANDING IMAGE --- */
+    /* --- TOP HALF: 50% HERO BANNER --- */
     .hero-section {
-      flex: 1;
+      height: 50dvh;
+      width: 100%;
       position: relative;
-      background: linear-gradient(135deg, #1e293b, #0f172a);
+      background: #1e293b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -59,7 +47,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      opacity: 0.75;
+      opacity: 0.7;
     }
 
     .hero-overlay {
@@ -68,35 +56,37 @@
       text-align: center;
       color: #f8fafc;
       padding: 1rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     }
 
     .hero-overlay h1 {
-      font-size: 1.75rem;
+      font-size: 1.85rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
     .hero-overlay p {
       font-size: 0.95rem;
-      color: #94a3b8;
+      color: #cbd5e1;
     }
 
-    /* --- BOTTOM HALF: DARK PIN PAD AREA --- */
+    /* --- BOTTOM HALF: 50% PIN PAD --- */
     .pin-section {
-      flex: 1;
+      height: 50dvh;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      padding: 1.5rem 2rem;
-      background-color: #0f172a; /* Dark mode color scheme */
+      padding: 1rem;
+      background-color: #0f172a;
+      gap: 1.5rem;
     }
 
     /* PIN Dots Display */
     .pin-display {
       display: flex;
       gap: 1rem;
-      margin-top: 0.5rem;
     }
 
     .dot {
@@ -120,23 +110,22 @@
       background-color: #ef4444;
     }
 
-    /* Keypad Grid with Square Keyboard Buttons */
+    /* Square Keypad Grid */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
       width: 100%;
-      max-width: 280px;
-      margin-bottom: 0.5rem;
+      max-width: 290px;
     }
 
     .key {
-      height: 52px;
-      border-radius: 8px; /* Square button layout */
+      height: 56px;
+      border-radius: 10px;
       border: 1px solid #334155;
       background-color: #1e293b;
       color: #f8fafc;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 600;
       display: flex;
       justify-content: center;
@@ -144,18 +133,17 @@
       cursor: pointer;
       user-select: none;
       touch-action: manipulation;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.1s, transform 0.05s, border-color 0.1s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      transition: background-color 0.1s, transform 0.05s;
     }
 
     .key:active {
       background-color: #334155;
-      border-color: #475569;
       transform: translateY(1px);
     }
 
     .key.action-key {
-      background-color: #1a2332;
+      background-color: #162032;
       border-color: #273549;
       color: #94a3b8;
     }
@@ -174,99 +162,62 @@
       height: 22px;
       fill: currentColor;
     }
-
-    /* Target Screen view */
-    .app-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      color: #f8fafc;
-      text-align: center;
-    }
-
-    .app-screen h2 {
-      font-size: 1.75rem;
-      margin-bottom: 1rem;
-      color: #38bdf8;
-    }
-
-    .btn-logout {
-      margin-top: 2rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      border: none;
-      background-color: #334155;
-      color: #f8fafc;
-      font-weight: 600;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- VIEW 1: PIN ENTRY PAGE -->
-    <div id="pin-view" class="view">
-      <!-- Top 50%: Hero Image Header -->
-      <div class="hero-section">
-        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Landing Header" />
-        <div class="hero-overlay">
-          <h1>Welcome Back</h1>
-          <p>Enter your PIN to continue</p>
-        </div>
-      </div>
-
-      <!-- Bottom 50%: Dark PIN Pad -->
-      <div class="pin-section">
-        <!-- Masked Indicators -->
-        <div class="pin-display">
-          <div class="dot" id="dot-0"></div>
-          <div class="dot" id="dot-1"></div>
-          <div class="dot" id="dot-2"></div>
-          <div class="dot" id="dot-3"></div>
-        </div>
-
-        <!-- Square Keypad -->
-        <div class="keypad">
-          <button class="key" onclick="pressKey('1')">1</button>
-          <button class="key" onclick="pressKey('2')">2</button>
-          <button class="key" onclick="pressKey('3')">3</button>
-          
-          <button class="key" onclick="pressKey('4')">4</button>
-          <button class="key" onclick="pressKey('5')">5</button>
-          <button class="key" onclick="pressKey('6')">6</button>
-          
-          <button class="key" onclick="pressKey('7')">7</button>
-          <button class="key" onclick="pressKey('8')">8</button>
-          <button class="key" onclick="pressKey('9')">9</button>
-          
-          <button class="key action-key" onclick="clearAll()">C</button>
-          <button class="key" onclick="pressKey('0')">0</button>
-          
-          <!-- Back Arrow Button -->
-          <button class="key action-key disabled" id="back-btn" onclick="pressBack()" aria-label="Delete last digit">
-            <svg viewBox="0 0 24 24">
-              <path d="M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12L19,15.59Z"/>
-            </svg>
-          </button>
-        </div>
+    <!-- Top 50%: Hero Image -->
+    <div class="hero-section">
+      <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Landing Header" />
+      <div class="hero-overlay">
+        <h1>Welcome Back</h1>
+        <p>Enter your PIN to continue</p>
       </div>
     </div>
 
-    <!-- VIEW 2: MAIN APP SCREEN (Shown upon correct PIN) -->
-    <div id="main-app-view" class="view app-screen hidden">
-      <h2>Access Granted</h2>
-      <p>Welcome inside the app!</p>
-      <button class="btn-logout" onclick="lockApp()">Lock App</button>
+    <!-- Bottom 50%: PIN Pad -->
+    <div class="pin-section">
+      <!-- Masked Dots -->
+      <div class="pin-display">
+        <div class="dot" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+        <div class="dot" id="dot-3"></div>
+      </div>
+
+      <!-- Keypad -->
+      <div class="keypad">
+        <button class="key" onclick="pressKey('1')">1</button>
+        <button class="key" onclick="pressKey('2')">2</button>
+        <button class="key" onclick="pressKey('3')">3</button>
+        
+        <button class="key" onclick="pressKey('4')">4</button>
+        <button class="key" onclick="pressKey('5')">5</button>
+        <button class="key" onclick="pressKey('6')">6</button>
+        
+        <button class="key" onclick="pressKey('7')">7</button>
+        <button class="key" onclick="pressKey('8')">8</button>
+        <button class="key" onclick="pressKey('9')">9</button>
+        
+        <button class="key action-key" onclick="clearAll()">C</button>
+        <button class="key" onclick="pressKey('0')">0</button>
+        
+        <button class="key action-key disabled" id="back-btn" onclick="pressBack()" aria-label="Delete last digit">
+          <svg viewBox="0 0 24 24">
+            <path d="M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12L19,15.59Z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
     let currentPin = [];
     const maxLen = 4;
-    const correctPin = "1234"; // Set your target access PIN here
+    
+    // Set your desired access PIN here
+    const correctPin = "1234";
 
     function pressKey(num) {
       if (currentPin.length < maxLen) {
@@ -295,11 +246,14 @@
       const enteredPin = currentPin.join("");
       
       if (enteredPin === correctPin) {
-        // Unlock access to the main application
-        document.getElementById("pin-view").classList.add("hidden");
-        document.getElementById("main-app-view").classList.remove("hidden");
+        // Option A: If your main page is a separate file (e.g. dashboard.html or app.html),
+        // update the filename below to match your repo:
+        // window.location.href = "dashboard.html";
+
+        // Option B: Inline notification for testing
+        alert("Access Granted! Redirecting...");
       } else {
-        // Flash red dots on incorrect entry, then reset
+        // Flash red dots on wrong entry
         const dots = document.querySelectorAll(".dot");
         dots.forEach(dot => dot.classList.add("error"));
 
@@ -308,12 +262,6 @@
           clearAll();
         }, 500);
       }
-    }
-
-    function lockApp() {
-      clearAll();
-      document.getElementById("main-app-view").classList.add("hidden");
-      document.getElementById("pin-view").classList.remove("hidden");
     }
 
     function updateUI() {
