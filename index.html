@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PIN Landing Screen</title>
+  <title>Childcare & Babysitter Tracker</title>
   <style>
     * {
       box-sizing: border-box;
@@ -16,19 +16,23 @@
       width: 100%;
       height: 100dvh;
       background-color: #0f172a;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
-    /* Full-screen mobile shell */
-    .app-container {
+    /* --- PIN LANDING SCREEN (FULL SCREEN OVERLAY) --- */
+    #pin-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100dvh;
       display: flex;
       flex-direction: column;
       background: #0f172a;
+      z-index: 9999;
     }
 
-    /* --- TOP HALF: 50% HERO BANNER --- */
+    /* Top 50%: Image Banner */
     .hero-section {
       height: 50dvh;
       width: 100%;
@@ -70,7 +74,7 @@
       color: #cbd5e1;
     }
 
-    /* --- BOTTOM HALF: 50% PIN PAD --- */
+    /* Bottom 50%: PIN Pad Area */
     .pin-section {
       height: 50dvh;
       width: 100%;
@@ -83,7 +87,6 @@
       gap: 1.5rem;
     }
 
-    /* PIN Dots Display */
     .pin-display {
       display: flex;
       gap: 1rem;
@@ -110,7 +113,6 @@
       background-color: #ef4444;
     }
 
-    /* Square Keypad Grid */
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -162,12 +164,46 @@
       height: 22px;
       fill: currentColor;
     }
+
+    /* --- MAIN APP DASHBOARD STYLING --- */
+    #tracker-dashboard {
+      display: none; /* Hidden until valid PIN is entered */
+      min-height: 100vh;
+      padding: 1.5rem;
+      color: #f8fafc;
+      background-color: #0f172a;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 1.5rem;
+    }
+
+    .dashboard-header h2 {
+      font-size: 1.5rem;
+      color: #38bdf8;
+    }
+
+    .btn-lock {
+      padding: 0.5rem 1rem;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Top 50%: Hero Image -->
+  <!-- 1. PIN OVERLAY (Visible by default) -->
+  <div id="pin-overlay">
+    <!-- Top 50%: Hero Image Header -->
     <div class="hero-section">
       <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Landing Header" />
       <div class="hero-overlay">
@@ -178,7 +214,6 @@
 
     <!-- Bottom 50%: PIN Pad -->
     <div class="pin-section">
-      <!-- Masked Dots -->
       <div class="pin-display">
         <div class="dot" id="dot-0"></div>
         <div class="dot" id="dot-1"></div>
@@ -186,7 +221,6 @@
         <div class="dot" id="dot-3"></div>
       </div>
 
-      <!-- Keypad -->
       <div class="keypad">
         <button class="key" onclick="pressKey('1')">1</button>
         <button class="key" onclick="pressKey('2')">2</button>
@@ -212,12 +246,23 @@
     </div>
   </div>
 
+  <!-- 2. MAIN BABYSITTER TRACKER APP (Revealed on PIN success) -->
+  <div id="tracker-dashboard">
+    <div class="dashboard-header">
+      <h2>Childcare Tracker</h2>
+      <button class="btn-lock" onclick="lockApp()">Lock App</button>
+    </div>
+
+    <!-- YOUR EXISTING DASHBOARD FORMS / LOGS / PAYMENTS GO HERE -->
+    <p>Welcome! Sitter arrival times, hours logged, and payment links will display here.</p>
+  </div>
+
   <script>
     let currentPin = [];
     const maxLen = 4;
     
-    // Set your desired access PIN here
-    const correctPin = "1234";
+    // Set your target PIN here
+    const correctPin = "1234"; 
 
     function pressKey(num) {
       if (currentPin.length < maxLen) {
@@ -246,14 +291,11 @@
       const enteredPin = currentPin.join("");
       
       if (enteredPin === correctPin) {
-        // Option A: If your main page is a separate file (e.g. dashboard.html or app.html),
-        // update the filename below to match your repo:
-        // window.location.href = "dashboard.html";
-
-        // Option B: Inline notification for testing
-        alert("Access Granted! Redirecting...");
+        // Unlock access: Hide PIN overlay and display the tracker dashboard
+        document.getElementById("pin-overlay").style.display = "none";
+        document.getElementById("tracker-dashboard").style.display = "block";
       } else {
-        // Flash red dots on wrong entry
+        // Flash red dots on incorrect entry and reset
         const dots = document.querySelectorAll(".dot");
         dots.forEach(dot => dot.classList.add("error"));
 
@@ -262,6 +304,12 @@
           clearAll();
         }, 500);
       }
+    }
+
+    function lockApp() {
+      clearAll();
+      document.getElementById("tracker-dashboard").style.display = "none";
+      document.getElementById("pin-overlay").style.display = "flex";
     }
 
     function updateUI() {
