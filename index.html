@@ -511,10 +511,10 @@
       const dateVal = document.getElementById('date').value;
       const notesVal = document.getElementById('notes').value;
 
+      // Clean payload strictly matching Supabase table columns
       const payload = {
         date: dateVal,
         sitterName: sitterVal,
-        sittername: sitterVal,
         hours: hoursVal,
         pay: payVal,
         notes: notesVal,
