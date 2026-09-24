@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +25,71 @@
       align-items: center;
     }
 
+    /* --- PIN LANDING SCREEN OVERLAY --- */
+    #pin-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: #0f172a;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .pin-card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .pin-card h2 {
+      color: #38bdf8;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .pin-card p {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pin-input {
+      width: 100%;
+      font-size: 1.75rem;
+      letter-spacing: 0.5rem;
+      text-align: center;
+      padding: 0.75rem;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 0.5rem;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+
+    .pin-input:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    .pin-error {
+      color: #f87171;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* --- MAIN APP CONTAINER --- */
     .container {
       width: 100%;
       max-width: 600px;
@@ -36,10 +102,13 @@
       text-align: center;
       padding: 1rem 0;
       border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     header h1 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: #38bdf8;
     }
 
@@ -112,14 +181,6 @@
       background-color: #475569;
     }
 
-    .btn-danger {
-      background-color: #dc2626;
-    }
-
-    .btn-danger:hover {
-      background-color: #b91c1c;
-    }
-
     .sitter-list, .shift-list {
       list-style: none;
       display: flex;
@@ -153,15 +214,11 @@
       color: #94a3b8;
     }
 
-    .action-btns {
-      display: flex;
-      gap: 0.5rem;
-    }
-
     .sm-btn {
       padding: 0.35rem 0.65rem;
       font-size: 0.8rem;
       border-radius: 0.35rem;
+      width: auto;
     }
 
     /* Modal Styling */
@@ -195,9 +252,22 @@
 </head>
 <body>
 
+  <!-- PIN Protection Overlay -->
+  <div id="pin-overlay">
+    <div class="pin-card">
+      <h2>Favero Tracker</h2>
+      <p>Enter 4-digit passcode</p>
+      <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus />
+      <button class="btn" onclick="validatePin()">Unlock</button>
+      <div id="pin-error" class="pin-error">Incorrect Passcode</div>
+    </div>
+  </div>
+
+  <!-- Main Application UI -->
   <div class="container">
     <header>
       <h1>Favero Sitter Tracker</h1>
+      <button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
     </header>
 
     <!-- Shift Logging Card -->
@@ -236,17 +306,13 @@
         Sitters
         <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button>
       </h2>
-      <ul id="sitter-list" class="sitter-list">
-        <!-- Dynamically Populated -->
-      </ul>
+      <ul id="sitter-list" class="sitter-list"></ul>
     </div>
 
     <!-- Shift Logs Card -->
     <div class="card">
       <h2>Recent Shifts</h2>
-      <ul id="shift-list" class="shift-list">
-        <!-- Dynamically Populated -->
-      </ul>
+      <ul id="shift-list" class="shift-list"></ul>
     </div>
   </div>
 
@@ -277,17 +343,42 @@
   </div>
 
   <script>
-    // --- Supabase & Application State Setup ---
-    const SUPABASE_URL = 'https://xyzcompany.supabase.co'; // Preserved project connection
-    const SUPABASE_KEY = 'public-anon-key';
-    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    // --- PIN Protection Logic ---
+    const APP_PIN = "1234";
 
+    function validatePin() {
+      const input = document.getElementById('pin-input').value;
+      if (input === APP_PIN) {
+        document.getElementById('pin-overlay').style.display = 'none';
+        document.getElementById('pin-error').style.display = 'none';
+        sessionStorage.setItem('favero_unlocked', 'true');
+      } else {
+        document.getElementById('pin-error').style.display = 'block';
+        document.getElementById('pin-input').value = '';
+      }
+    }
+
+    function lockApp() {
+      sessionStorage.removeItem('favero_unlocked');
+      document.getElementById('pin-input').value = '';
+      document.getElementById('pin-overlay').style.display = 'flex';
+    }
+
+    if (sessionStorage.getItem('favero_unlocked') === 'true') {
+      document.getElementById('pin-overlay').style.display = 'none';
+    }
+
+    document.getElementById('pin-input').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') validatePin();
+      if (this.value.length === 4) validatePin();
+    });
+
+    // --- Application State & Logic ---
     let sitters = JSON.parse(localStorage.getItem('favero_sitters')) || [
       { name: 'Sample Sitter', rate: 15.00, venmo: '@sitter' }
     ];
     let shifts = JSON.parse(localStorage.getItem('favero_shifts')) || [];
 
-    // --- Core Rendering Logic ---
     function renderSitters() {
       const listEl = document.getElementById('sitter-list');
       const selectEl = document.getElementById('shift-sitter');
@@ -295,13 +386,11 @@
       selectEl.innerHTML = '<option value="">Select Sitter...</option>';
 
       sitters.forEach((sitter, idx) => {
-        // Select dropdown options
         const opt = document.createElement('option');
         opt.value = idx;
         opt.textContent = `${sitter.name} ($${sitter.rate}/hr)`;
         selectEl.appendChild(opt);
 
-        // List display items
         const li = document.createElement('li');
         li.className = 'list-item';
         li.innerHTML = `
@@ -309,9 +398,7 @@
             <span class="list-item-title">${sitter.name}</span>
             <span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
           </div>
-          <div class="action-btns">
-            <button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
-          </div>
+          <button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
         `;
         listEl.appendChild(li);
       });
@@ -342,7 +429,6 @@
       localStorage.setItem('favero_shifts', JSON.stringify(shifts));
     }
 
-    // --- Sitter Profile Handlers ---
     window.openAddSitterModal = function() {
       document.getElementById('sitter-modal-title').textContent = 'Add Sitter Profile';
       document.getElementById('edit-s-idx').value = '-1';
@@ -384,7 +470,6 @@
       closeModal('sitter-modal');
     });
 
-    // --- Shift Submission Logic ---
     document.getElementById('shift-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const sitterIdx = document.getElementById('shift-sitter').value;
@@ -396,15 +481,14 @@
       if (sitterIdx === "") return;
       const sitter = sitters[sitterIdx];
 
-      // Calculate hours
       const startTime = new Date(`${date}T${start}`);
       const endTime = new Date(`${date}T${end}`);
       let diffMs = endTime - startTime;
-      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000; // overnight shift check
+      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
       const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
       const totalPay = (hours * sitter.rate).toFixed(2);
 
-      const shiftData = {
+      shifts.unshift({
         sitterName: sitter.name,
         date,
         start,
@@ -412,14 +496,12 @@
         hours,
         totalPay,
         notes
-      };
+      });
 
-      shifts.unshift(shiftData);
       renderShifts();
       this.reset();
     });
 
-    // Initial Initialization
     renderSitters();
     renderShifts();
   </script>
