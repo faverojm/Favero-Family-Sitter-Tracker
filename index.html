@@ -7,13 +7,71 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; display: flex; flex-direction: column; align-items: center; }
-#pin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0f172a; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; }
-.pin-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
-.pin-card h2 { color: #38bdf8; font-size: 1.4rem; margin-bottom: 0.5rem; }
-.pin-card p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.5rem; }
-.pin-input { width: 100%; font-size: 1.75rem; letter-spacing: 0.5rem; text-align: center; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #38bdf8; margin-bottom: 1rem; }
+
+/* --- SPLIT PIN LANDING SCREEN --- */
+#pin-overlay {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100vh;
+background-color: #0f172a;
+z-index: 999;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 1.5rem;
+}
+
+.pin-card-split {
+background-color: #1e293b;
+border: 1px solid #334155;
+border-radius: 1rem;
+padding: 2rem;
+width: 100%;
+max-width: 550px;
+display: flex;
+flex-direction: row;
+gap: 1.5rem;
+align-items: center;
+box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.pin-left {
+flex: 1;
+text-align: left;
+border-right: 1px solid #334155;
+padding-right: 1.5rem;
+}
+
+.pin-right {
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+
+.pin-left h2 { color: #38bdf8; font-size: 1.5rem; margin-bottom: 0.5rem; }
+.pin-left p { color: #94a3b8; font-size: 0.9rem; line-height: 1.4; }
+
+.pin-input {
+width: 100%;
+font-size: 1.5rem;
+letter-spacing: 0.5rem;
+text-align: center;
+padding: 0.65rem;
+background-color: #0f172a;
+border: 1px solid #334155;
+border-radius: 0.5rem;
+color: #38bdf8;
+}
+
 .pin-input:focus { outline: none; border-color: #38bdf8; }
-.pin-error { color: #f87171; font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+.pin-error { color: #f87171; font-size: 0.8rem; display: none; text-align: center; }
+
+@media (max-width: 480px) {
+.pin-card-split { flex-direction: column; text-align: center; }
+.pin-left { border-right: none; border-bottom: 1px solid #334155; padding-right: 0; padding-bottom: 1rem; text-align: center; }
+}
+
+/* --- MAIN LAYOUT --- */
 .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.25rem; }
 header { text-align: center; padding: 1rem 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
 header h1 { font-size: 1.4rem; color: #38bdf8; }
@@ -25,11 +83,13 @@ input, select, textarea { background-color: #0f172a; border: 1px solid #334155; 
 input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; }
 .btn { background-color: #0284c7; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem; }
 .btn-secondary { background-color: #334155; }
+.btn-danger { background-color: #991b1b; }
 .sitter-list, .shift-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
 .list-item { background-color: #0f172a; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
 .list-item-info { display: flex; flex-direction: column; gap: 0.2rem; }
 .list-item-title { font-weight: 600; color: #f8fafc; }
 .list-item-sub { font-size: 0.8rem; color: #94a3b8; }
+.action-btns { display: flex; gap: 0.35rem; }
 .sm-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 0.35rem; width: auto; }
 .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
 .modal-overlay.active { display: flex; }
@@ -37,13 +97,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8
 </style>
 </head>
 <body>
+
+<!-- PIN Split Overlay -->
 <div id="pin-overlay">
-<div class="pin-card">
-<h2>Favero Tracker</h2>
-<p>Enter 4-digit passcode</p>
+<div class="pin-card-split">
+<div class="pin-left">
+<h2>Favero Sitter Tracker</h2>
+<p>Family management dashboard. Enter 4-digit passcode to unlock.</p>
+</div>
+<div class="pin-right">
 <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus />
 <button class="btn" onclick="validatePin()">Unlock</button>
 <div id="pin-error" class="pin-error">Incorrect Passcode</div>
+</div>
 </div>
 </div>
 
@@ -53,6 +119,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8
 <button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
 </header>
 
+<!-- Shift Entry -->
 <div class="card">
 <h2>Log New Shift</h2>
 <form id="shift-form">
@@ -80,22 +147,25 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8
 </form>
 </div>
 
+<!-- Sitters Section -->
 <div class="card">
 <h2>Sitters <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button></h2>
 <ul id="sitter-list" class="sitter-list"></ul>
 </div>
 
+<!-- Shifts Section -->
 <div class="card">
 <h2>Recent Shifts</h2>
 <ul id="shift-list" class="shift-list"></ul>
 </div>
 </div>
 
+<!-- Sitter Add/Edit Modal -->
 <div id="sitter-modal" class="modal-overlay">
 <div class="modal">
 <h2 id="sitter-modal-title" style="margin-bottom:1rem;">Add Sitter Profile</h2>
 <form id="sitter-form">
-<input type="hidden" id="edit-s-id" value="" />
+<input type="hidden" id="edit-s-id" value="-1" />
 <div class="form-group">
 <label for="edit-s-name">Sitter Name</label>
 <input type="text" id="edit-s-name" required />
@@ -117,7 +187,8 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8
 </div>
 
 <script>
-const APP_PIN = "1234";
+// Set to your custom PIN
+const APP_PIN = "1313";
 
 function validatePin() {
 const input = document.getElementById('pin-input').value;
@@ -173,7 +244,10 @@ li.innerHTML = `
 <span class="list-item-title">${sitter.name}</span>
 <span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
 </div>
+<div class="action-btns">
 <button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
+<button class="btn btn-danger sm-btn" onclick="deleteSitter(${idx})">Delete</button>
+</div>
 `;
 listEl.appendChild(li);
 });
@@ -222,6 +296,14 @@ document.getElementById('edit-s-venmo').value = sitter.venmo || '';
 document.getElementById('sitter-modal').classList.add('active');
 };
 
+window.deleteSitter = function(idx) {
+if (confirm(`Are you sure you want to delete ${sitters[idx].name}?`)) {
+sitters.splice(idx, 1);
+localStorage.setItem('favero_sitters', JSON.stringify(sitters));
+renderSitters();
+}
+};
+
 window.closeModal = function(id) {
 document.getElementById(id).classList.remove('active');
 };
@@ -233,8 +315,11 @@ const name = document.getElementById('edit-s-name').value;
 const rate = parseFloat(document.getElementById('edit-s-rate').value);
 const venmo = document.getElementById('edit-s-venmo').value;
 
-if (idx >= 0) { sitters[idx] = { name, rate, venmo }; }
-else { sitters.push({ name, rate, venmo }); }
+if (idx >= 0) {
+sitters[idx] = { name, rate, venmo };
+} else {
+sitters.push({ name, rate, venmo });
+}
 
 localStorage.setItem('favero_sitters', JSON.stringify(sitters));
 renderSitters();
