@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon.png">
   <title>Sitter Tracker</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg: #121212;
@@ -135,11 +134,9 @@
   <div id="shift-list">Loading shifts...</div>
 
   <script>
-    const SUPABASE_URL = 'https://mvwmpoofylsrmkdfzat.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12d21wb29meWxzcmhta2RmemF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTc3NzAsImV4cCI6MjEwNTczMzc3MH0.RXaqF8nRHLUNoDqGlQkORHpASRxcwJmyckBGxRWnkPg';
+    const API_URL = 'https://mvwmpoofylsrmkdfzat.supabase.co/rest/v1/shifts';
+    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12d21wb29meWxzcmhta2RmemF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTc3NzAsImV4cCI6MjEwNTczMzc3MH0.RXaqF8nRHLUNoDqGlQkORHpASRxcwJmyckBGxRWnkPg';
     const CORRECT_PIN = '1313';
-
-    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentPin = '';
     
@@ -177,48 +174,54 @@
     }
 
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        lockApp();
-      }
+      if (document.visibilityState === 'hidden') lockApp();
     });
 
     document.getElementById('date').valueAsDate = new Date();
 
+    const headers = {
+      'apikey': API_KEY,
+      'Authorization': 'Bearer ' + API_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    };
+
     async function loadShifts() {
-      const { data, error } = await db.from('shifts').select('*').order('created_at', { ascending: false });
       const container = document.getElementById('shift-list');
-      
-      if (error) {
-        container.innerHTML = '<p style="color:#ef4444">Error loading shifts: ' + error.message + '</p>';
-        return;
-      }
+      try {
+        const res = await fetch(`${API_URL}?select=*&order=created_at.desc`, { headers });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const data = await res.json();
 
-      if (!data || data.length === 0) {
-        container.innerHTML = '<p style="color:var(--muted)">No shifts logged yet.</p>';
-        return;
-      }
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p style="color:var(--muted)">No shifts logged yet.</p>';
+          return;
+        }
 
-      container.innerHTML = data.map(shift => {
-        const name = shift.sitterName || shift.sittername || 'Sitter';
-        return `
-          <div class="shift-card">
-            <div class="shift-header">
-              <span class="shift-name">${name}</span>
-              <span class="shift-pay">$${shift.pay}</span>
+        container.innerHTML = data.map(shift => {
+          const name = shift.sitterName || shift.sittername || 'Sitter';
+          return `
+            <div class="shift-card">
+              <div class="shift-header">
+                <span class="shift-name">${name}</span>
+                <span class="shift-pay">$${shift.pay}</span>
+              </div>
+              <div class="shift-meta">
+                <span>📅 ${shift.date}</span>
+                <span>⏱ ${shift.hours} hrs</span>
+              </div>
+              ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
+              <div style="margin-top:6px;">
+                <span class="status-badge ${shift.paid ? 'badge-paid' : 'badge-unpaid'}" onclick="togglePaid('${shift.id}', ${shift.paid})">
+                  ${shift.paid ? '✓ Paid' : 'Unpaid (Tap to mark Paid)'}
+                </span>
+              </div>
             </div>
-            <div class="shift-meta">
-              <span>📅 ${shift.date}</span>
-              <span>⏱ ${shift.hours} hrs</span>
-            </div>
-            ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
-            <div style="margin-top:6px;">
-              <span class="status-badge ${shift.paid ? 'badge-paid' : 'badge-unpaid'}" onclick="togglePaid('${shift.id}', ${shift.paid})">
-                ${shift.paid ? '✓ Paid' : 'Unpaid (Tap to mark Paid)'}
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = `<p style="color:#ef4444">Connection Error: ${err.message}</p>`;
+      }
     }
 
     document.getElementById('shift-form').addEventListener('submit', async (e) => {
@@ -226,39 +229,39 @@
       const sitterVal = document.getElementById('sittername').value;
       const hoursVal = parseFloat(document.getElementById('hours').value);
       const payVal = parseFloat(document.getElementById('pay').value);
-      
-      let res = await db.from('shifts').insert([{
-        date: document.getElementById('date').value,
-        sittername: sitterVal,
-        hours: hoursVal,
-        pay: payVal,
-        notes: document.getElementById('notes').value,
-        paid: false
-      }]);
+      const dateVal = document.getElementById('date').value;
+      const notesVal = document.getElementById('notes').value;
 
-      if (res.error) {
-        res = await db.from('shifts').insert([{
-          date: document.getElementById('date').value,
-          sitterName: sitterVal,
-          hours: hoursVal,
-          pay: payVal,
-          notes: document.getElementById('notes').value,
-          paid: false
-        }]);
-      }
+      let payload = { date: dateVal, sittername: sitterVal, hours: hoursVal, pay: payVal, notes: notesVal, paid: false };
 
-      if (res.error) {
-        alert('Save Error: ' + res.error.message);
-      } else {
+      try {
+        let res = await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
+        if (!res.ok) {
+          payload = { date: dateVal, sitterName: sitterVal, hours: hoursVal, pay: payVal, notes: notesVal, paid: false };
+          res = await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
+        }
+
+        if (!res.ok) throw new Error('Could not save shift.');
+        
         document.getElementById('shift-form').reset();
         document.getElementById('date').valueAsDate = new Date();
         loadShifts();
+      } catch (err) {
+        alert('Save Failed: ' + err.message);
       }
     });
 
     async function togglePaid(id, currentStatus) {
-      const { error } = await db.from('shifts').update({ paid: !currentStatus }).eq('id', id);
-      if (!error) loadShifts();
+      try {
+        await fetch(`${API_URL}?id=eq.${id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ paid: !currentStatus })
+        });
+        loadShifts();
+      } catch (err) {
+        alert('Update failed');
+      }
     }
   </script>
 </body>
