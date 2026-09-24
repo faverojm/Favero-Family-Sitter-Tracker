@@ -29,20 +29,28 @@
       position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(18,18,18,0.9));
       display: flex; justify-content: space-between; align-items: flex-end; padding: 16px;
     }
+    .banner-title-group { display: flex; flex-direction: column; }
     .banner-title { font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    .banner-subtitle { font-size: 0.85rem; color: var(--muted); text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
     .header-btns { display: flex; gap: 10px; align-items: center; }
     .icon-btn { background: rgba(30,30,30,0.85); border: 1px solid var(--border); color: #fff; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; }
 
     .main-content { padding: 16px; }
 
-    /* PIN Modal */
+    /* PIN / Landing Page Modal */
     #pin-modal {
       position: fixed; inset: 0; background: var(--bg); z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+      background-size: cover; background-position: center;
     }
-    .pin-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; }
+    .pin-card-overlay {
+      background: rgba(18, 18, 18, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      padding: 24px 20px; border-radius: 18px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 320px;
+    }
+    .pin-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; text-align: center; }
     .pin-display { font-size: 2rem; letter-spacing: 12px; margin-bottom: 24px; height: 40px; }
-    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 280px; }
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
     .pin-btn {
       aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border);
       background: var(--card); color: var(--text); font-size: 1.5rem; font-weight: 600;
@@ -57,8 +65,9 @@
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     .form-group { margin-bottom: 12px; }
-    .form-row { display: flex; gap: 10px; }
-    .form-row .form-group { flex: 1; }
+    
+    .form-row { display: flex; gap: 10px; align-items: flex-end; }
+    .form-row .form-group { flex: 1; margin-bottom: 12px; }
     label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
     input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], select, textarea {
       width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
@@ -120,30 +129,35 @@
 </head>
 <body>
 
-  <!-- PIN Modal -->
+  <!-- Landing / PIN Lock Screen Modal -->
   <div id="pin-modal">
-    <div class="pin-title">Enter Favero Family PIN</div>
-    <div class="pin-display" id="pin-dots">••••</div>
-    <div class="pin-pad">
-      <div class="pin-btn" onclick="pressPin('1')">1</div>
-      <div class="pin-btn" onclick="pressPin('2')">2</div>
-      <div class="pin-btn" onclick="pressPin('3')">3</div>
-      <div class="pin-btn" onclick="pressPin('4')">4</div>
-      <div class="pin-btn" onclick="pressPin('5')">5</div>
-      <div class="pin-btn" onclick="pressPin('6')">6</div>
-      <div class="pin-btn" onclick="pressPin('7')">7</div>
-      <div class="pin-btn" onclick="pressPin('8')">8</div>
-      <div class="pin-btn" onclick="pressPin('9')">9</div>
-      <div class="pin-btn" onclick="clearPin()">C</div>
-      <div class="pin-btn" onclick="pressPin('0')">0</div>
-      <div class="pin-btn" onclick="checkPin()">✓</div>
+    <div class="pin-card-overlay">
+      <div class="pin-title" id="lock-screen-title">Favero Sitter Tracker</div>
+      <div class="pin-display" id="pin-dots">••••</div>
+      <div class="pin-pad">
+        <div class="pin-btn" onclick="pressPin('1')">1</div>
+        <div class="pin-btn" onclick="pressPin('2')">2</div>
+        <div class="pin-btn" onclick="pressPin('3')">3</div>
+        <div class="pin-btn" onclick="pressPin('4')">4</div>
+        <div class="pin-btn" onclick="pressPin('5')">5</div>
+        <div class="pin-btn" onclick="pressPin('6')">6</div>
+        <div class="pin-btn" onclick="pressPin('7')">7</div>
+        <div class="pin-btn" onclick="pressPin('8')">8</div>
+        <div class="pin-btn" onclick="pressPin('9')">9</div>
+        <div class="pin-btn" onclick="clearPin()">C</div>
+        <div class="pin-btn" onclick="pressPin('0')">0</div>
+        <div class="pin-btn" onclick="checkPin()">✓</div>
+      </div>
     </div>
   </div>
 
   <!-- Header Banner -->
   <div class="banner-container" id="app-banner">
     <div class="banner-overlay">
-      <div class="banner-title">Sitter Tracker</div>
+      <div class="banner-title-group">
+        <div class="banner-title" id="app-title-display">Sitter Tracker</div>
+        <div class="banner-subtitle" id="app-subtitle-display"></div>
+      </div>
       <div class="header-btns">
         <button class="icon-btn" onclick="openSittersModal()" title="Manage Sitters">👤</button>
         <button class="icon-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
@@ -156,7 +170,6 @@
     <!-- Shift Entry Card -->
     <div class="card">
       <form id="shift-form">
-        <!-- STEP 1: Select Sitter First -->
         <div class="form-group">
           <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent);">1. Choose Sitter</label>
           <select id="sitter-select" onchange="autoCalcPay()" required>
@@ -164,8 +177,7 @@
           </select>
         </div>
 
-        <!-- STEP 2: Select Date & Times -->
-        <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 14px;">2. Shift Details</label>
+        <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 14px; display:block;">2. Shift Details</label>
         
         <div class="form-row" style="margin-top: 6px;">
           <div class="form-group">
@@ -191,8 +203,8 @@
             <input type="number" step="0.1" id="hours" placeholder="4.5" required readonly>
           </div>
           <div class="form-group">
-            <label>Extra Expenses ($)</label>
-            <input type="number" step="0.5" id="expenses" placeholder="Gas, food, tip..." value="0" oninput="autoCalcPay()">
+            <label>Extra ($)</label>
+            <input type="number" step="0.5" id="expenses" placeholder="Gas, food..." value="0" oninput="autoCalcPay()">
           </div>
           <div class="form-group">
             <label>Total Pay ($)</label>
@@ -202,7 +214,7 @@
 
         <div class="form-group">
           <label>Notes (optional)</label>
-          <textarea id="notes" rows="2" placeholder="Date night, $10 gas money, etc."></textarea>
+          <textarea id="notes" rows="2" placeholder="Date night, etc."></textarea>
         </div>
         <button type="submit" id="submit-shift-btn" class="submit-btn">Log Shift</button>
       </form>
@@ -271,17 +283,31 @@
   <div class="modal" id="settings-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 style="font-size:1.1rem;">App & Banner Settings</h3>
+        <h3 style="font-size:1.1rem;">App & Appearance Settings</h3>
         <button onclick="closeModal('settings-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem;">✕</button>
       </div>
       <form id="settings-form">
         <div class="form-group">
-          <label>Upload Banner Image from Photo Library / Files</label>
-          <label class="file-upload-btn" for="banner-file" id="banner-file-label">🖼️ Choose Header Image</label>
+          <label>App Title</label>
+          <input type="text" id="cfg-app-title" placeholder="Sitter Tracker">
+        </div>
+        <div class="form-group">
+          <label>App Subtitle (optional)</label>
+          <input type="text" id="cfg-app-subtitle" placeholder="Favero Family">
+        </div>
+        <div class="form-group">
+          <label>Header Banner Photo</label>
+          <label class="file-upload-btn" for="banner-file" id="banner-file-label">🖼️ Choose Header Banner</label>
           <input type="file" id="banner-file" accept="image/*" onchange="handleImageFile(this, 'banner-base64', 'banner-file-label')">
           <input type="hidden" id="banner-base64">
         </div>
-        <button type="submit" class="submit-btn">Save Banner</button>
+        <div class="form-group">
+          <label>Landing / Lock Screen Background Photo</label>
+          <label class="file-upload-btn" for="landing-file" id="landing-file-label">🔒 Choose Lock Screen Photo</label>
+          <input type="file" id="landing-file" accept="image/*" onchange="handleImageFile(this, 'landing-base64', 'landing-file-label')">
+          <input type="hidden" id="landing-base64">
+        </div>
+        <button type="submit" class="submit-btn">Save Settings</button>
       </form>
     </div>
   </div>
@@ -344,7 +370,11 @@
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockApp(); });
 
     function openSittersModal() { document.getElementById('sitters-modal').style.display = 'flex'; renderSittersList(); }
-    function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; }
+    function openSettingsModal() { 
+      document.getElementById('cfg-app-title').value = localStorage.getItem('favero_title') || 'Sitter Tracker';
+      document.getElementById('cfg-app-subtitle').value = localStorage.getItem('favero_subtitle') || '';
+      document.getElementById('settings-modal').style.display = 'flex'; 
+    }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     document.getElementById('date').valueAsDate = new Date();
@@ -352,25 +382,43 @@
     function initData() {
       sittersCache = getStoredSitters();
       updateSitterDropdown();
-      loadBanner();
+      loadAppSettings();
       loadShifts();
       autoCalcPay();
     }
 
-    function loadBanner() {
+    function loadAppSettings() {
+      const savedTitle = localStorage.getItem('favero_title') || 'Sitter Tracker';
+      const savedSubtitle = localStorage.getItem('favero_subtitle') || '';
       const savedBanner = localStorage.getItem('favero_banner');
+      const savedLanding = localStorage.getItem('favero_landing');
+
+      document.getElementById('app-title-display').textContent = savedTitle;
+      document.getElementById('lock-screen-title').textContent = savedTitle;
+      document.getElementById('app-subtitle-display').textContent = savedSubtitle;
+      document.title = savedTitle;
+
       if (savedBanner) {
         document.getElementById('app-banner').style.backgroundImage = `url('${savedBanner}')`;
+      }
+      if (savedLanding) {
+        document.getElementById('pin-modal').style.backgroundImage = `url('${savedLanding}')`;
       }
     }
 
     document.getElementById('settings-form').addEventListener('submit', (e) => {
       e.preventDefault();
+      const titleVal = document.getElementById('cfg-app-title').value.trim();
+      const subtitleVal = document.getElementById('cfg-app-subtitle').value.trim();
       const banner_data = document.getElementById('banner-base64').value;
-      if (banner_data) {
-        localStorage.setItem('favero_banner', banner_data);
-        loadBanner();
-      }
+      const landing_data = document.getElementById('landing-base64').value;
+
+      if (titleVal) localStorage.setItem('favero_title', titleVal);
+      localStorage.setItem('favero_subtitle', subtitleVal);
+      if (banner_data) localStorage.setItem('favero_banner', banner_data);
+      if (landing_data) localStorage.setItem('favero_landing', landing_data);
+
+      loadAppSettings();
       closeModal('settings-modal');
     });
 
@@ -487,7 +535,6 @@
                 <div class="shift-meta">
                   <span>📅 ${shift.date}</span>
                   <span>⏱ ${shift.hours} hrs</span>
-                  ${shift.expenses ? `<span style="color:#60a5fa;">+$${shift.expenses} extra</span>` : ''}
                 </div>
                 ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
                 
@@ -517,13 +564,17 @@
       const expensesVal = parseFloat(document.getElementById('expenses').value || 0);
       const payVal = parseFloat(document.getElementById('pay').value);
       const dateVal = document.getElementById('date').value;
-      const notesVal = document.getElementById('notes').value;
+      let notesVal = document.getElementById('notes').value.trim();
+
+      if (expensesVal > 0) {
+        const expenseStr = `[Extra Expense: $${expensesVal}]`;
+        notesVal = notesVal ? `${expenseStr} ${notesVal}` : expenseStr;
+      }
 
       const payload = {
         date: dateVal,
         sitterName: sitterVal,
         hours: hoursVal,
-        expenses: expensesVal,
         pay: payVal,
         notes: notesVal,
         paid: false
@@ -616,6 +667,9 @@
       updateBatchToolbar();
       loadShifts();
     }
+
+    // Apply settings on initial page load for lock screen
+    loadAppSettings();
   </script>
 </body>
 </html>
