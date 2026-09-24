@@ -18,9 +18,9 @@
       --green: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 120px; }
 
-    /* Custom Banner Header */
+    /* Header Banner */
     .banner-container {
       position: relative; width: 100%; height: 140px; background: #252525;
       background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
@@ -37,7 +37,7 @@
 
     .main-content { padding: 16px; }
 
-    /* PIN / Landing Page Modal */
+    /* PIN Lock Screen */
     #pin-modal {
       position: fixed; inset: 0; background: var(--bg); z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
@@ -65,11 +65,10 @@
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     .form-group { margin-bottom: 12px; }
-    
     .form-row { display: flex; gap: 10px; align-items: flex-end; }
     .form-row .form-group { flex: 1; margin-bottom: 12px; }
     label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
-    input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], select, textarea {
+    input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
       width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
       padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; appearance: none; -webkit-appearance: none;
     }
@@ -84,23 +83,17 @@
       padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 8px;
     }
 
-    /* Shift Card Layout */
+    /* Shift Cards */
     .shift-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
       padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
     }
     .shift-top-row { display: flex; justify-content: space-between; align-items: center; }
     .select-label {
-      display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem;
-      color: var(--muted); cursor: pointer; user-select: none; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem;
+      color: var(--muted); cursor: pointer; user-select: none; font-weight: 600;
     }
-    .shift-select {
-      appearance: none; -webkit-appearance: none;
-      width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px;
-      background: #2a2a2a; cursor: pointer; display: grid; place-content: center;
-    }
-    .shift-select:checked { background: var(--accent); border-color: var(--accent); }
-    .shift-select:checked::before { content: "✓"; color: white; font-size: 12px; font-weight: bold; }
+    .shift-checkbox { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
 
     .shift-body { min-width: 0; }
     .shift-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -111,25 +104,26 @@
     .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2px; }
     .shift-notes { font-size: 0.85rem; color: #d1d5db; margin-top: 6px; }
 
-    .pay-links { display: flex; gap: 8px; }
-    .pay-link { font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; display: inline-block; }
+    .pay-links { display: flex; gap: 8px; margin-top: 10px; }
+    .pay-link { font-size: 0.8rem; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; display: inline-block; }
     .venmo-btn { background: #008CFF; color: white; }
     .paypal-btn { background: #003087; color: white; }
 
-    /* Multi Pay Toolbar */
+    /* Fixed Batch Payment Bar */
     .batch-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; background: #1a2332; border-top: 1px solid var(--accent);
-      padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 7000;
-      transform: translateY(100%); transition: transform 0.2s ease;
+      position: fixed; bottom: 0; left: 0; right: 0; background: #1a2332; border-top: 2px solid var(--accent);
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 9000;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
     }
-    .batch-bar.visible { transform: translateY(0); }
+    .batch-bar.hidden { display: none !important; }
     .batch-bar-top { display: flex; justify-content: space-between; align-items: center; }
-    .batch-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+    .batch-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+    .batch-warning { font-size: 0.8rem; color: #f87171; background: rgba(239,68,68,0.15); padding: 8px; border-radius: 6px; }
   </style>
 </head>
 <body>
 
-  <!-- Landing / PIN Lock Screen Modal -->
+  <!-- Landing / PIN Lock Screen -->
   <div id="pin-modal">
     <div class="pin-card-overlay">
       <div class="pin-title" id="lock-screen-title">Favero Sitter Tracker</div>
@@ -167,7 +161,7 @@
   </div>
 
   <div class="main-content">
-    <!-- Shift Entry Card -->
+    <!-- Log Shift Form -->
     <div class="card">
       <form id="shift-form">
         <div class="form-group">
@@ -224,30 +218,31 @@
     <div id="shift-list">Loading shifts...</div>
   </div>
 
-  <!-- Multi-Shift Batch Toolbar with Payment Links -->
-  <div class="batch-bar" id="batch-bar">
+  <!-- Multi-Shift Batch Toolbar -->
+  <div class="batch-bar hidden" id="batch-bar">
     <div class="batch-bar-top">
       <div>
-        <span id="batch-count">0</span> shifts selected
-        <strong id="batch-total" style="color:var(--green); margin-left: 8px;">$0</strong>
+        <span id="batch-count" style="font-weight:600;">0 shifts selected</span>
+        <strong id="batch-total" style="color:var(--green); margin-left: 8px; font-size:1.1rem;">$0</strong>
       </div>
-      <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.85rem;">Mark Paid</button>
+      <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.85rem; cursor:pointer;">Mark Paid</button>
     </div>
     <div class="batch-actions" id="batch-pay-links"></div>
+    <div class="batch-warning hidden" id="batch-warning">⚠️ Select shifts for a single sitter to show consolidated payment options.</div>
   </div>
 
-  <!-- Sitters Management Modal -->
+  <!-- Sitters Modal -->
   <div class="modal" id="sitters-modal">
     <div class="modal-card">
       <div class="modal-header">
         <h3 style="font-size:1.1rem;">Manage Sitter Profiles</h3>
-        <button onclick="closeModal('sitters-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem;">✕</button>
+        <button onclick="closeModal('sitters-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
 
       <form id="sitter-form" style="margin-bottom: 20px;">
         <div class="form-group">
           <label>Sitter Full Name</label>
-          <input type="text" id="s-name" required placeholder="e.g. Sarah Jenkins">
+          <input type="text" id="s-name" required placeholder="e.g. Sarah Hudson">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -279,12 +274,12 @@
     </div>
   </div>
 
-  <!-- App Settings Modal -->
+  <!-- Settings Modal -->
   <div class="modal" id="settings-modal">
     <div class="modal-card">
       <div class="modal-header">
         <h3 style="font-size:1.1rem;">App & Appearance Settings</h3>
-        <button onclick="closeModal('settings-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem;">✕</button>
+        <button onclick="closeModal('settings-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
       <form id="settings-form">
         <div class="form-group">
@@ -319,7 +314,7 @@
 
     let sittersCache = [];
     let shiftsCache = [];
-    let selectedShifts = new Map();
+    let selectedShiftIds = new Set();
     let currentPin = '';
 
     const headers = {
@@ -398,12 +393,8 @@
       document.getElementById('app-subtitle-display').textContent = savedSubtitle;
       document.title = savedTitle;
 
-      if (savedBanner) {
-        document.getElementById('app-banner').style.backgroundImage = `url('${savedBanner}')`;
-      }
-      if (savedLanding) {
-        document.getElementById('pin-modal').style.backgroundImage = `url('${savedLanding}')`;
-      }
+      if (savedBanner) document.getElementById('app-banner').style.backgroundImage = `url('${savedBanner}')`;
+      if (savedLanding) document.getElementById('pin-modal').style.backgroundImage = `url('${savedLanding}')`;
     }
 
     document.getElementById('settings-form').addEventListener('submit', (e) => {
@@ -441,7 +432,7 @@
               <div style="font-size:0.8rem; color:var(--muted);">Venmo: ${s.venmo || 'N/A'} | PayPal: ${s.paypal || 'N/A'}</div>
             </div>
           </div>
-          <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem;">Delete</button>
+          <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Delete</button>
         </div>
       `).join('');
     }
@@ -510,13 +501,13 @@
         container.innerHTML = shiftsCache.map(shift => {
           const name = shift.sitterName || shift.sittername || shift.sitter || 'Sitter';
           const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase()) || {};
-          const isChecked = selectedShifts.has(shift.id);
+          const isChecked = selectedShiftIds.has(String(shift.id));
 
           return `
             <div class="shift-card">
               <div class="shift-top-row">
                 <label class="select-label">
-                  <input type="checkbox" class="shift-select" ${isChecked ? 'checked' : ''} onchange="toggleSelect('${shift.id}', this.checked)">
+                  <input type="checkbox" class="shift-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectShift('${shift.id}', this.checked)">
                   <span>Select</span>
                 </label>
                 <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
@@ -539,7 +530,7 @@
                 ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
                 
                 ${!shift.paid && (profile.venmo || profile.paypal) ? `
-                  <div class="pay-links" style="margin-top:10px;">
+                  <div class="pay-links">
                     ${profile.venmo ? `<a href="https://venmo.com/${profile.venmo.replace('@','')}?txn=pay&amount=${shift.pay}&note=Babysitting" target="_blank" class="pay-link venmo-btn">Pay $${shift.pay} via Venmo</a>` : ''}
                     ${profile.paypal ? `<a href="https://${profile.paypal.replace('https://','')}/${shift.pay}" target="_blank" class="pay-link paypal-btn">Pay $${shift.pay} via PayPal</a>` : ''}
                   </div>
@@ -548,6 +539,8 @@
             </div>
           `;
         }).join('');
+
+        updateBatchToolbar();
       } catch (err) {
         container.innerHTML = `<p style="color:#ef4444">Connection Error: ${err.message}</p>`;
       }
@@ -606,12 +599,12 @@
       loadShifts();
     }
 
-    function toggleSelect(id, isChecked) {
-      const shift = shiftsCache.find(s => s.id === id);
-      if (isChecked && shift) {
-        selectedShifts.set(id, shift);
+    function toggleSelectShift(id, isChecked) {
+      const strId = String(id);
+      if (isChecked) {
+        selectedShiftIds.add(strId);
       } else {
-        selectedShifts.delete(id);
+        selectedShiftIds.delete(strId);
       }
       updateBatchToolbar();
     }
@@ -619,56 +612,67 @@
     function updateBatchToolbar() {
       const bar = document.getElementById('batch-bar');
       const payLinksContainer = document.getElementById('batch-pay-links');
+      const warningElem = document.getElementById('batch-warning');
       
-      if (selectedShifts.size === 0) {
-        bar.classList.remove('visible');
+      if (selectedShiftIds.size === 0) {
+        bar.classList.add('hidden');
         return;
       }
 
       let totalPay = 0;
-      let selectedProfiles = new Set();
+      let selectedSitters = new Set();
+      let selectedShifts = [];
 
-      selectedShifts.forEach(shift => {
-        totalPay += (shift.pay || 0);
-        const name = shift.sitterName || shift.sittername || shift.sitter || '';
-        const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase());
-        if (profile) selectedProfiles.add(profile);
+      selectedShiftIds.forEach(id => {
+        const shift = shiftsCache.find(s => String(s.id) === id);
+        if (shift) {
+          totalPay += parseFloat(shift.pay || 0);
+          const name = shift.sitterName || shift.sittername || shift.sitter || 'Sitter';
+          selectedSitters.add(name.toLowerCase());
+          selectedShifts.push(shift);
+        }
       });
 
-      document.getElementById('batch-count').textContent = selectedShifts.size;
+      document.getElementById('batch-count').textContent = `${selectedShiftIds.size} shift${selectedShiftIds.size > 1 ? 's' : ''} selected`;
       document.getElementById('batch-total').textContent = `$${totalPay}`;
 
-      let linksHtml = '';
-      if (selectedProfiles.size === 1) {
-        const sitter = Array.from(selectedProfiles)[0];
-        if (sitter.venmo) {
-          const venmoUrl = `https://venmo.com/${sitter.venmo.replace('@','')}?txn=pay&amount=${totalPay}&note=Babysitting%20(${selectedShifts.size}%20shifts)`;
+      if (selectedSitters.size === 1) {
+        warningElem.classList.add('hidden');
+        const firstName = selectedShifts[0].sitterName || selectedShifts[0].sittername || selectedShifts[0].sitter;
+        const profile = sittersCache.find(s => s.name.toLowerCase() === firstName.toLowerCase()) || {};
+
+        let linksHtml = '';
+        if (profile.venmo) {
+          const venmoUrl = `https://venmo.com/${profile.venmo.replace('@','')}?txn=pay&amount=${totalPay}&note=Babysitting%20(${selectedShiftIds.size}%20shifts)`;
           linksHtml += `<a href="${venmoUrl}" target="_blank" class="pay-link venmo-btn" style="flex:1;">Pay $${totalPay} via Venmo</a>`;
         }
-        if (sitter.paypal) {
-          const paypalUrl = `https://${sitter.paypal.replace('https://','')}/${totalPay}`;
+        if (profile.paypal) {
+          const paypalUrl = `https://${profile.paypal.replace('https://','')}/${totalPay}`;
           linksHtml += `<a href="${paypalUrl}" target="_blank" class="pay-link paypal-btn" style="flex:1;">Pay $${totalPay} via PayPal</a>`;
         }
-      } else if (selectedProfiles.size > 1) {
-        linksHtml = `<span style="font-size:0.75rem; color:var(--muted)">Select shifts for a single sitter to use consolidated Venmo/PayPal</span>`;
+        if (!profile.venmo && !profile.paypal) {
+          linksHtml = `<span style="font-size:0.75rem; color:var(--muted)">No Venmo/PayPal handles set for ${firstName} in Sitter Profiles.</span>`;
+        }
+        payLinksContainer.innerHTML = linksHtml;
+      } else {
+        payLinksContainer.innerHTML = '';
+        warningElem.classList.remove('hidden');
       }
 
-      payLinksContainer.innerHTML = linksHtml;
-      bar.classList.add('visible');
+      bar.classList.remove('hidden');
     }
 
     async function batchMarkPaid() {
-      for (let id of selectedShifts.keys()) {
+      for (let id of selectedShiftIds) {
         await fetch(`${API_URL}?id=eq.${id}`, {
           method: 'PATCH', headers, body: JSON.stringify({ paid: true })
         });
       }
-      selectedShifts.clear();
+      selectedShiftIds.clear();
       updateBatchToolbar();
       loadShifts();
     }
 
-    // Apply settings on initial page load for lock screen
     loadAppSettings();
   </script>
 </body>
