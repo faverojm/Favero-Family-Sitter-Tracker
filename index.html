@@ -456,7 +456,6 @@
     }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Explicitly bind openEditSitterModal to window to guarantee clickability
     window.openEditSitterModal = function(idx) {
       const list = getStoredSitters();
       const sitter = list[idx];
