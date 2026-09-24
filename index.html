@@ -507,7 +507,7 @@
             <div class="shift-card">
               <div class="shift-top-row">
                 <label class="select-label">
-                  <input type="checkbox" class="shift-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectShift('${shift.id}', this.checked)">
+                  <input type="checkbox" class="shift-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectShift('${shift.id}', this.checked, event)">
                   <span>Select</span>
                 </label>
                 <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
@@ -599,9 +599,26 @@
       loadShifts();
     }
 
-    function toggleSelectShift(id, isChecked) {
+    function toggleSelectShift(id, isChecked, evt) {
       const strId = String(id);
+      const targetShift = shiftsCache.find(s => String(s.id) === strId);
+      if (!targetShift) return;
+
+      const targetSitter = (targetShift.sitterName || targetShift.sittername || targetShift.sitter || '').toLowerCase();
+
       if (isChecked) {
+        for (let selectedId of selectedShiftIds) {
+          const existingShift = shiftsCache.find(s => String(s.id) === selectedId);
+          if (existingShift) {
+            const existingSitter = (existingShift.sitterName || existingShift.sittername || existingShift.sitter || '').toLowerCase();
+            if (existingSitter !== targetSitter) {
+              const currentSitterName = existingShift.sitterName || existingShift.sittername || existingShift.sitter;
+              alert(`You can only select shifts for one sitter at a time. Uncheck ${currentSitterName}'s shifts first.`);
+              if (evt && evt.target) evt.target.checked = false;
+              return;
+            }
+          }
+        }
         selectedShiftIds.add(strId);
       } else {
         selectedShiftIds.delete(strId);
