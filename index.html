@@ -16,6 +16,7 @@
       --muted: #9ca3af;
       --border: #374151;
       --green: #10b981;
+      --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding-bottom: 120px; }
@@ -89,11 +90,18 @@
       padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
     }
     .shift-top-row { display: flex; justify-content: space-between; align-items: center; }
+    .shift-top-right { display: flex; align-items: center; gap: 8px; }
     .select-label {
       display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem;
       color: var(--muted); cursor: pointer; user-select: none; font-weight: 600;
     }
     .shift-checkbox { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+
+    .action-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: var(--muted);
+      border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
+    }
+    .action-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
 
     .shift-body { min-width: 0; }
     .shift-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -229,6 +237,42 @@
     </div>
     <div class="batch-actions" id="batch-pay-links"></div>
     <div class="batch-warning hidden" id="batch-warning">⚠️ Select shifts for a single sitter to show consolidated payment options.</div>
+  </div>
+
+  <!-- Edit Shift Modal -->
+  <div class="modal" id="edit-shift-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem;">Edit Shift</h3>
+        <button onclick="closeModal('edit-shift-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form id="edit-shift-form">
+        <input type="hidden" id="edit-shift-id">
+        <div class="form-group">
+          <label>Sitter</label>
+          <select id="edit-sitter-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="edit-date" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hours</label>
+            <input type="number" step="0.1" id="edit-hours" required>
+          </div>
+          <div class="form-group">
+            <label>Total Pay ($)</label>
+            <input type="number" step="1" id="edit-pay" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="edit-notes" rows="2"></textarea>
+        </div>
+        <button type="submit" id="save-edit-btn" class="submit-btn">Save Changes</button>
+      </form>
+    </div>
   </div>
 
   <!-- Sitters Modal -->
@@ -415,8 +459,11 @@
 
     function updateSitterDropdown() {
       const sel = document.getElementById('sitter-select');
-      sel.innerHTML = '<option value="">Select Sitter...</option>' + 
+      const editSel = document.getElementById('edit-sitter-select');
+      const options = '<option value="">Select Sitter...</option>' + 
         sittersCache.map(s => `<option value="${s.name}" data-rate="${s.rate}">${s.name} ($${s.rate}/hr)</option>`).join('');
+      sel.innerHTML = options;
+      editSel.innerHTML = options;
     }
 
     function renderSittersList() {
@@ -510,9 +557,13 @@
                   <input type="checkbox" class="shift-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectShift('${shift.id}', this.checked, event)">
                   <span>Select</span>
                 </label>
-                <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
-                  ${shift.paid ? '✓ Paid' : 'Unpaid'}
-                </span>
+                <div class="shift-top-right">
+                  <button class="action-btn" onclick="openEditShiftModal('${shift.id}')">✏️ Edit</button>
+                  <button class="action-btn" onclick="deleteShift('${shift.id}')" style="color:var(--red);">🗑️</button>
+                  <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
+                    ${shift.paid ? '✓ Paid' : 'Unpaid'}
+                  </span>
+                </div>
               </div>
 
               <div class="shift-body">
@@ -591,6 +642,74 @@
         submitBtn.textContent = 'Log Shift';
       }
     });
+
+    function openEditShiftModal(id) {
+      const shift = shiftsCache.find(s => String(s.id) === String(id));
+      if (!shift) return;
+
+      document.getElementById('edit-shift-id').value = shift.id;
+      document.getElementById('edit-sitter-select').value = shift.sitterName || shift.sittername || shift.sitter || '';
+      document.getElementById('edit-date').value = shift.date || '';
+      document.getElementById('edit-hours').value = shift.hours || '';
+      document.getElementById('edit-pay').value = shift.pay || '';
+      document.getElementById('edit-notes').value = shift.notes || '';
+
+      document.getElementById('edit-shift-modal').style.display = 'flex';
+    }
+
+    document.getElementById('edit-shift-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-edit-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const id = document.getElementById('edit-shift-id').value;
+      const payload = {
+        sitterName: document.getElementById('edit-sitter-select').value,
+        date: document.getElementById('edit-date').value,
+        hours: parseFloat(document.getElementById('edit-hours').value),
+        pay: parseFloat(document.getElementById('edit-pay').value),
+        notes: document.getElementById('edit-notes').value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API_URL}?id=eq.${id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          closeModal('edit-shift-modal');
+          loadShifts();
+        } else {
+          alert('Failed to update shift.');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    });
+
+    async function deleteShift(id) {
+      if (confirm('Are you sure you want to delete this shift record?')) {
+        try {
+          const res = await fetch(`${API_URL}?id=eq.${id}`, {
+            method: 'DELETE',
+            headers
+          });
+          if (res.ok) {
+            selectedShiftIds.delete(String(id));
+            loadShifts();
+          } else {
+            alert('Failed to delete shift.');
+          }
+        } catch (err) {
+          alert('Error deleting shift: ' + err.message);
+        }
+      }
+    }
 
     async function togglePaid(id, currentStatus) {
       await fetch(`${API_URL}?id=eq.${id}`, {
