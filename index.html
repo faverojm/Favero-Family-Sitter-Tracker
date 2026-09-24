@@ -18,7 +18,7 @@
       --green: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
 
     /* Custom Banner Header */
     .banner-container {
@@ -58,9 +58,9 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
     .form-group { margin-bottom: 12px; }
     label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
-    input, select, textarea {
+    input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], select, textarea {
       width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
-      padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none;
+      padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; appearance: none; -webkit-appearance: none;
     }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -69,18 +69,20 @@
       padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 8px;
     }
 
-    /* Shift Cards */
+    /* Fixed Shift Card Layout */
     .shift-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px;
     }
-    .shift-select { margin-top: 4px; transform: scale(1.2); }
-    .shift-body { flex: 1; }
-    .shift-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .shift-select {
+      width: 20px !important; height: 20px !important; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent);
+    }
+    .shift-body { flex: 1; min-width: 0; }
+    .shift-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
     .shift-name-area { display: flex; align-items: center; gap: 8px; }
-    .sitter-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #374151; }
-    .shift-name { font-weight: 600; font-size: 1.05rem; }
-    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.1rem; }
+    .sitter-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #374151; flex-shrink: 0; }
+    .shift-name { font-weight: 600; font-size: 1.05rem; word-break: break-word; }
+    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.1rem; flex-shrink: 0; margin-left: 8px; }
     .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
     .shift-notes { font-size: 0.85rem; color: #d1d5db; margin-top: 6px; }
 
@@ -267,17 +269,13 @@
       'Prefer': 'return=representation'
     };
 
-    // Local Storage Helpers for Sitters & Banner
-    function getStoredSitters() {
-      return JSON.parse(localStorage.getItem('favero_sitters') || '[]');
-    }
+    function getStoredSitters() { return JSON.parse(localStorage.getItem('favero_sitters') || '[]'); }
     function saveStoredSitters(arr) {
       localStorage.setItem('favero_sitters', JSON.stringify(arr));
       sittersCache = arr;
       updateSitterDropdown();
     }
 
-    // PIN Lock
     function pressPin(num) {
       if (currentPin.length < 4) {
         currentPin += num;
@@ -299,7 +297,6 @@
     function lockApp() { clearPin(); document.getElementById('pin-modal').style.display = 'flex'; }
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockApp(); });
 
-    // Modals
     function openSittersModal() { document.getElementById('sitters-modal').style.display = 'flex'; renderSittersList(); }
     function openSettingsModal() { document.getElementById('settings-modal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -314,7 +311,6 @@
       autoCalcPay();
     }
 
-    // Banner Settings
     function loadBanner() {
       const savedBanner = localStorage.getItem('favero_banner');
       if (savedBanner) {
@@ -331,7 +327,6 @@
       closeModal('settings-modal');
     });
 
-    // Sitters Management
     function updateSitterDropdown() {
       const sel = document.getElementById('sitter-select');
       sel.innerHTML = '<option value="">Select Sitter...</option>' + 
@@ -378,7 +373,6 @@
       }
     }
 
-    // Dynamic Pay Calculator
     function autoCalcPay() {
       const start = document.getElementById('start-time').value;
       const end = document.getElementById('end-time').value;
@@ -392,7 +386,7 @@
         
         let startMins = sH * 60 + sM;
         let endMins = eH * 60 + eM;
-        if (endMins < startMins) endMins += 24 * 60; // Overnight
+        if (endMins < startMins) endMins += 24 * 60;
         
         const diffHours = Math.max(0, (endMins - startMins) / 60);
         document.getElementById('hours').value = diffHours.toFixed(1);
@@ -400,7 +394,6 @@
       }
     }
 
-    // Shift History & Sync
     async function loadShifts() {
       const container = document.getElementById('shift-list');
       try {
@@ -434,8 +427,8 @@
                 </div>
                 ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
                 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                  <span class="status-badge" onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:3px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                  <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
                     ${shift.paid ? '✓ Paid' : 'Unpaid'}
                   </span>
 
@@ -478,7 +471,6 @@
       loadShifts();
     }
 
-    // Batch Select
     function toggleSelect(id, pay, isChecked) {
       if (isChecked) {
         selectedShifts.add(id);
@@ -508,4 +500,3 @@
   </script>
 </body>
 </html>
-   
