@@ -1,357 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Favero Family Sitter Tracker</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; display: flex; flex-direction: column; align-items: center; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Favero Family Sitter Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; display: flex; flex-direction: column; align-items: center; }
 
-/* --- SPLIT PIN LANDING SCREEN --- */
-#pin-overlay {
-position: fixed;
-top: 0; left: 0; width: 100%; height: 100vh;
-background-color: #0f172a;
-z-index: 999;
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 1.5rem;
-}
+    /* --- FULL SCREEN PIN LANDING SCREEN --- */
+    #pin-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      background-color: #0f172a;
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
 
-.pin-card-split {
-background-color: #1e293b;
-border: 1px solid #334155;
-border-radius: 1rem;
-padding: 2rem;
-width: 100%;
-max-width: 550px;
-display: flex;
-flex-direction: row;
-gap: 1.5rem;
-align-items: center;
-box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-}
+    .pin-card-split {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
 
-.pin-left {
-flex: 1;
-text-align: left;
-border-right: 1px solid #334155;
-padding-right: 1.5rem;
-}
+    .pin-header { text-align: center; }
+    .pin-header h2 { color: #38bdf8; font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .pin-header p { color: #94a3b8; font-size: 0.9rem; }
 
-.pin-right {
-flex: 1;
-display: flex;
-flex-direction: column;
-gap: 0.75rem;
-}
+    .pin-display-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-.pin-left h2 { color: #38bdf8; font-size: 1.5rem; margin-bottom: 0.5rem; }
-.pin-left p { color: #94a3b8; font-size: 0.9rem; line-height: 1.4; }
+    .pin-input {
+      width: 100%;
+      max-width: 280px;
+      font-size: 1.8rem;
+      letter-spacing: 0.6rem;
+      text-align: center;
+      padding: 0.65rem;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 0.5rem;
+      color: #38bdf8;
+    }
 
-.pin-input {
-width: 100%;
-font-size: 1.5rem;
-letter-spacing: 0.5rem;
-text-align: center;
-padding: 0.65rem;
-background-color: #0f172a;
-border: 1px solid #334155;
-border-radius: 0.5rem;
-color: #38bdf8;
-}
+    /* KEYPAD GRID FOR PIN */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 280px;
+      margin-top: 0.5rem;
+    }
 
-.pin-input:focus { outline: none; border-color: #38bdf8; }
-.pin-error { color: #f87171; font-size: 0.8rem; display: none; text-align: center; }
+    .pin-key {
+      background-color: #334155;
+      color: #f8fafc;
+      border: none;
+      font-size: 1.4rem;
+      font-weight: 600;
+      padding: 1rem 0;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.15s ease;
+    }
 
-@media (max-width: 480px) {
-.pin-card-split { flex-direction: column; text-align: center; }
-.pin-left { border-right: none; border-bottom: 1px solid #334155; padding-right: 0; padding-bottom: 1rem; text-align: center; }
-}
+    .pin-key:active {
+      background-color: #0284c7;
+    }
 
-/* --- MAIN LAYOUT --- */
-.container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.25rem; }
-header { text-align: center; padding: 1rem 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-header h1 { font-size: 1.4rem; color: #38bdf8; }
-.card { background-color: #1e293b; border-radius: 0.75rem; padding: 1.25rem; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-.card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-.form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; }
-label { font-size: 0.85rem; color: #94a3b8; }
-input, select, textarea { background-color: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 0.65rem; border-radius: 0.5rem; font-size: 0.95rem; width: 100%; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; }
-.btn { background-color: #0284c7; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem; }
-.btn-secondary { background-color: #334155; }
-.btn-danger { background-color: #991b1b; }
-.sitter-list, .shift-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-.list-item { background-color: #0f172a; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-.list-item-info { display: flex; flex-direction: column; gap: 0.2rem; }
-.list-item-title { font-weight: 600; color: #f8fafc; }
-.list-item-sub { font-size: 0.8rem; color: #94a3b8; }
-.action-btns { display: flex; gap: 0.35rem; }
-.sm-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 0.35rem; width: auto; }
-.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
-.modal-overlay.active { display: flex; }
-.modal { background-color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; width: 100%; max-width: 500px; border: 1px solid #334155; }
-</style>
+    .pin-key-action {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      font-size: 1rem;
+      color: #94a3b8;
+    }
+
+    .pin-error { color: #f87171; font-size: 0.85rem; display: none; text-align: center; margin-top: 0.5rem; }
+
+    /* --- DASHBOARD MAIN LAYOUT --- */
+    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.25rem; }
+    header { text-align: center; padding: 1rem 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.4rem; color: #38bdf8; }
+    
+    .card { background-color: #1e293b; border-radius: 0.75rem; padding: 1.25rem; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; }
+    label { font-size: 0.85rem; color: #94a3b8; }
+    input, select, textarea { background-color: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 0.65rem; border-radius: 0.5rem; font-size: 0.95rem; width: 100%; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; }
+    
+    .btn { background-color: #0284c7; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem; }
+    .btn-secondary { background-color: #334155; }
+    .btn-danger { background-color: #991b1b; }
+    
+    .sitter-list, .shift-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .list-item { background-color: #0f172a; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .list-item-info { display: flex; flex-direction: column; gap: 0.2rem; }
+    .list-item-title { font-weight: 600; color: #f8fafc; }
+    .list-item-sub { font-size: 0.8rem; color: #94a3b8; }
+    .action-btns { display: flex; gap: 0.35rem; }
+    .sm-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 0.35rem; width: auto; }
+    
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
+    .modal-overlay.active { display: flex; }
+    .modal { background-color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; width: 100%; max-width: 500px; border: 1px solid #334155; }
+  </style>
 </head>
 <body>
 
-<!-- PIN Split Overlay -->
-<div id="pin-overlay">
-<div class="pin-card-split">
-<div class="pin-left">
-<h2>Favero Sitter Tracker</h2>
-<p>Family management dashboard. Enter 4-digit passcode to unlock.</p>
-</div>
-<div class="pin-right">
-<input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus />
-<button class="btn" onclick="validatePin()">Unlock</button>
-<div id="pin-error" class="pin-error">Incorrect Passcode</div>
-</div>
-</div>
-</div>
+  <!-- KEYPAD PIN LANDING SCREEN -->
+  <div id="pin-overlay">
+    <div class="pin-card-split">
+      <div class="pin-header">
+        <h2>Favero Sitter Tracker</h2>
+        <p>Enter 4-digit passcode to unlock</p>
+      </div>
+      
+      <div class="pin-display-wrapper">
+        <input type="password" id="pin-input" class="pin-input" maxlength="4" readonly placeholder="••••" />
+        <div id="pin-error" class="pin-error">Incorrect Passcode</div>
+        
+        <div class="keypad-grid">
+          <button class="pin-key" onclick="pressKey('1')">1</button>
+          <button class="pin-key" onclick="pressKey('2')">2</button>
+          <button class="pin-key" onclick="pressKey('3')">3</button>
+          <button class="pin-key" onclick="pressKey('4')">4</button>
+          <button class="pin-key" onclick="pressKey('5')">5</button>
+          <button class="pin-key" onclick="pressKey('6')">6</button>
+          <button class="pin-key" onclick="pressKey('7')">7</button>
+          <button class="pin-key" onclick="pressKey('8')">8</button>
+          <button class="pin-key" onclick="pressKey('9')">9</button>
+          <button class="pin-key pin-key-action" onclick="clearKey()">C</button>
+          <button class="pin-key" onclick="pressKey('0')">0</button>
+          <button class="pin-key pin-key-action" onclick="deleteKey()">⌫</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="container">
-<header>
-<h1>Favero Sitter Tracker</h1>
-<button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
-</header>
+  <div class="container">
+    <header>
+      <h1>Favero Sitter Tracker</h1>
+      <button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
+    </header>
 
-<!-- Shift Entry -->
-<div class="card">
-<h2>Log New Shift</h2>
-<form id="shift-form">
-<div class="form-group">
-<label for="shift-sitter">Select Sitter</label>
-<select id="shift-sitter" required><option value="">Select Sitter...</option></select>
-</div>
-<div class="form-group">
-<label for="shift-date">Date</label>
-<input type="date" id="shift-date" required />
-</div>
-<div class="form-group">
-<label for="shift-start">Start Time</label>
-<input type="time" id="shift-start" required />
-</div>
-<div class="form-group">
-<label for="shift-end">End Time</label>
-<input type="time" id="shift-end" required />
-</div>
-<div class="form-group">
-<label for="shift-notes">Notes / Adjustments</label>
-<textarea id="shift-notes" rows="2" placeholder="Optional notes..."></textarea>
-</div>
-<button type="submit" class="btn">Save Shift</button>
-</form>
-</div>
+    <!-- Shift Entry Form -->
+    <div class="card">
+      <h2>Log New Shift</h2>
+      <form id="shift-form">
+        <div class="form-group">
+          <label for="shift-sitter">Select Sitter</label>
+          <select id="shift-sitter" required><option value="">Select Sitter...</option></select>
+        </div>
+        <div class="form-group">
+          <label for="shift-date">Date</label>
+          <input type="date" id="shift-date" required />
+        </div>
+        <div class="form-group">
+          <label for="shift-start">Start Time</label>
+          <input type="time" id="shift-start" required />
+        </div>
+        <div class="form-group">
+          <label for="shift-end">End Time</label>
+          <input type="time" id="shift-end" required />
+        </div>
+        <div class="form-group">
+          <label for="shift-notes">Notes / Adjustments</label>
+          <textarea id="shift-notes" rows="2" placeholder="Optional notes..."></textarea>
+        </div>
+        <button type="submit" class="btn">Save Shift</button>
+      </form>
+    </div>
 
-<!-- Sitters Section -->
-<div class="card">
-<h2>Sitters <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button></h2>
-<ul id="sitter-list" class="sitter-list"></ul>
-</div>
+    <!-- Sitters Section -->
+    <div class="card">
+      <h2>Sitters <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button></h2>
+      <ul id="sitter-list" class="sitter-list"></ul>
+    </div>
 
-<!-- Shifts Section -->
-<div class="card">
-<h2>Recent Shifts</h2>
-<ul id="shift-list" class="shift-list"></ul>
-</div>
-</div>
+    <!-- Recent Shifts Section -->
+    <div class="card">
+      <h2>Recent Shifts</h2>
+      <ul id="shift-list" class="shift-list"></ul>
+    </div>
+  </div>
 
-<!-- Sitter Add/Edit Modal -->
-<div id="sitter-modal" class="modal-overlay">
-<div class="modal">
-<h2 id="sitter-modal-title" style="margin-bottom:1rem;">Add Sitter Profile</h2>
-<form id="sitter-form">
-<input type="hidden" id="edit-s-id" value="-1" />
-<div class="form-group">
-<label for="edit-s-name">Sitter Name</label>
-<input type="text" id="edit-s-name" required />
-</div>
-<div class="form-group">
-<label for="edit-s-rate">Hourly Rate ($)</label>
-<input type="number" step="0.50" id="edit-s-rate" required />
-</div>
-<div class="form-group">
-<label for="edit-s-venmo">Venmo / Payment Info</label>
-<input type="text" id="edit-s-venmo" placeholder="@username or phone" />
-</div>
-<div style="display:flex; gap:0.5rem; margin-top:1rem;">
-<button type="button" class="btn btn-secondary" onclick="closeModal('sitter-modal')">Cancel</button>
-<button type="submit" class="btn">Save Profile</button>
-</div>
-</form>
-</div>
-</div>
+  <!-- Sitter Add/Edit Modal -->
+  <div id="sitter-modal" class="modal-overlay">
+    <div class="modal">
+      <h2 id="sitter-modal-title" style="margin-bottom:1rem;">Add Sitter Profile</h2>
+      <form id="sitter-form">
+        <input type="hidden" id="edit-s-id" value="-1" />
+        <div class="form-group">
+          <label for="edit-s-name">Sitter Name</label>
+          <input type="text" id="edit-s-name" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-s-rate">Hourly Rate ($)</label>
+          <input type="number" step="0.50" id="edit-s-rate" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-s-venmo">Venmo / Payment Info</label>
+          <input type="text" id="edit-s-venmo" placeholder="@username or phone" />
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('sitter-modal')">Cancel</button>
+          <button type="submit" class="btn">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<script>
-// Set to your custom PIN
-const APP_PIN = "1313";
+  <script>
+    const APP_PIN = "1313";
+    let currentPinInput = "";
 
-function validatePin() {
-const input = document.getElementById('pin-input').value;
-if (input === APP_PIN) {
-document.getElementById('pin-overlay').style.display = 'none';
-document.getElementById('pin-error').style.display = 'none';
-sessionStorage.setItem('favero_unlocked', 'true');
-} else {
-document.getElementById('pin-error').style.display = 'block';
-document.getElementById('pin-input').value = '';
-}
-}
+    function pressKey(num) {
+      if (currentPinInput.length < 4) {
+        currentPinInput += num;
+        updatePinDisplay();
+        if (currentPinInput.length === 4) {
+          setTimeout(validatePin, 150);
+        }
+      }
+    }
 
-function lockApp() {
-sessionStorage.removeItem('favero_unlocked');
-document.getElementById('pin-input').value = '';
-document.getElementById('pin-overlay').style.display = 'flex';
-}
+    function deleteKey() {
+      currentPinInput = currentPinInput.slice(0, -1);
+      updatePinDisplay();
+    }
 
-if (sessionStorage.getItem('favero_unlocked') === 'true') {
-document.getElementById('pin-overlay').style.display = 'none';
-}
+    function clearKey() {
+      currentPinInput = "";
+      updatePinDisplay();
+    }
 
-document.getElementById('pin-input').addEventListener('keyup', function(e) {
-if (e.key === 'Enter') validatePin();
-if (this.value.length === 4) validatePin();
-});
+    function updatePinDisplay() {
+      document.getElementById('pin-input').value = currentPinInput;
+    }
 
-let sitters = JSON.parse(localStorage.getItem('favero_sitters')) || [];
-let shifts = JSON.parse(localStorage.getItem('favero_shifts')) || [];
+    function validatePin() {
+      if (currentPinInput === APP_PIN) {
+        document.getElementById('pin-overlay').style.display = 'none';
+        document.getElementById('pin-error').style.display = 'none';
+        sessionStorage.setItem('favero_unlocked', 'true');
+      } else {
+        document.getElementById('pin-error').style.display = 'block';
+        clearKey();
+      }
+    }
 
-function renderSitters() {
-const listEl = document.getElementById('sitter-list');
-const selectEl = document.getElementById('shift-sitter');
-listEl.innerHTML = '';
-selectEl.innerHTML = '<option value="">Select Sitter...</option>';
+    function lockApp() {
+      sessionStorage.removeItem('favero_unlocked');
+      clearKey();
+      document.getElementById('pin-overlay').style.display = 'flex';
+    }
 
-if (sitters.length === 0) {
-listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No sitters added yet.</span></li>';
-return;
-}
+    if (sessionStorage.getItem('favero_unlocked') === 'true') {
+      document.getElementById('pin-overlay').style.display = 'none';
+    }
 
-sitters.forEach((sitter, idx) => {
-const opt = document.createElement('option');
-opt.value = idx;
-opt.textContent = `${sitter.name} ($${sitter.rate}/hr)`;
-selectEl.appendChild(opt);
+    let sitters = JSON.parse(localStorage.getItem('favero_sitters')) || [];
+    let shifts = JSON.parse(localStorage.getItem('favero_shifts')) || [];
 
-const li = document.createElement('li');
-li.className = 'list-item';
-li.innerHTML = `
-<div class="list-item-info">
-<span class="list-item-title">${sitter.name}</span>
-<span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
-</div>
-<div class="action-btns">
-<button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
-<button class="btn btn-danger sm-btn" onclick="deleteSitter(${idx})">Delete</button>
-</div>
-`;
-listEl.appendChild(li);
-});
-}
+    function renderSitters() {
+      const listEl = document.getElementById('sitter-list');
+      const selectEl = document.getElementById('shift-sitter');
+      listEl.innerHTML = '';
+      selectEl.innerHTML = '<option value="">Select Sitter...</option>';
 
-function renderShifts() {
-const listEl = document.getElementById('shift-list');
-listEl.innerHTML = '';
+      if (sitters.length === 0) {
+        listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No sitters added yet.</span></li>';
+        return;
+      }
 
-if (shifts.length === 0) {
-listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No logged shifts yet.</span></li>';
-return;
-}
+      sitters.forEach((sitter, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `${sitter.name} ($${sitter.rate}/hr)`;
+        selectEl.appendChild(opt);
 
-shifts.forEach((shift) => {
-const li = document.createElement('li');
-li.className = 'list-item';
-li.innerHTML = `
-<div class="list-item-info">
-<span class="list-item-title">${shift.sitterName} - $${shift.totalPay}</span>
-<span class="list-item-sub">${shift.date} | ${shift.start} - ${shift.end} (${shift.hours} hrs)</span>
-${shift.notes ? `<span class="list-item-sub">Notes: ${shift.notes}</span>` : ''}
-</div>
-`;
-listEl.appendChild(li);
-});
-}
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.innerHTML = `
+          <div class="list-item-info">
+            <span class="list-item-title">${sitter.name}</span>
+            <span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
+          </div>
+          <div class="action-btns">
+            <button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
+            <button class="btn btn-danger sm-btn" onclick="deleteSitter(${idx})">Delete</button>
+          </div>
+        `;
+        listEl.appendChild(li);
+      });
+    }
 
-window.openAddSitterModal = function() {
-document.getElementById('sitter-modal-title').textContent = 'Add Sitter Profile';
-document.getElementById('edit-s-id').value = '-1';
-document.getElementById('edit-s-name').value = '';
-document.getElementById('edit-s-rate').value = '';
-document.getElementById('edit-s-venmo').value = '';
-document.getElementById('sitter-modal').classList.add('active');
-};
+    function renderShifts() {
+      const listEl = document.getElementById('shift-list');
+      listEl.innerHTML = '';
 
-window.openEditSitterModal = function(idx) {
-const sitter = sitters[idx];
-if (!sitter) return;
-document.getElementById('sitter-modal-title').textContent = 'Edit Sitter Profile';
-document.getElementById('edit-s-id').value = idx;
-document.getElementById('edit-s-name').value = sitter.name;
-document.getElementById('edit-s-rate').value = sitter.rate;
-document.getElementById('edit-s-venmo').value = sitter.venmo || '';
-document.getElementById('sitter-modal').classList.add('active');
-};
+      if (shifts.length === 0) {
+        listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No logged shifts yet.</span></li>';
+        return;
+      }
 
-window.deleteSitter = function(idx) {
-if (confirm(`Are you sure you want to delete ${sitters[idx].name}?`)) {
-sitters.splice(idx, 1);
-localStorage.setItem('favero_sitters', JSON.stringify(sitters));
-renderSitters();
-}
-};
+      shifts.forEach((shift) => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.innerHTML = `
+          <div class="list-item-info">
+            <span class="list-item-title">${shift.sitterName} - $${shift.totalPay}</span>
+            <span class="list-item-sub">${shift.date} | ${shift.start} - ${shift.end} (${shift.hours} hrs)</span>
+            ${shift.notes ? `<span class="list-item-sub">Notes: ${shift.notes}</span>` : ''}
+          </div>
+        `;
+        listEl.appendChild(li);
+      });
+    }
 
-window.closeModal = function(id) {
-document.getElementById(id).classList.remove('active');
-};
+    window.openAddSitterModal = function() {
+      document.getElementById('sitter-modal-title').textContent = 'Add Sitter Profile';
+      document.getElementById('edit-s-id').value = '-1';
+      document.getElementById('edit-s-name').value = '';
+      document.getElementById('edit-s-rate').value = '';
+      document.getElementById('edit-s-venmo').value = '';
+      document.getElementById('sitter-modal').classList.add('active');
+    };
 
-document.getElementById('sitter-form').addEventListener('submit', function(e) {
-e.preventDefault();
-const idx = parseInt(document.getElementById('edit-s-id').value, 10);
-const name = document.getElementById('edit-s-name').value;
-const rate = parseFloat(document.getElementById('edit-s-rate').value);
-const venmo = document.getElementById('edit-s-venmo').value;
+    window.openEditSitterModal = function(idx) {
+      const sitter = sitters[idx];
+      if (!sitter) return;
+      document.getElementById('sitter-modal-title').textContent = 'Edit Sitter Profile';
+      document.getElementById('edit-s-id').value = idx;
+      document.getElementById('edit-s-name').value = sitter.name;
+      document.getElementById('edit-s-rate').value = sitter.rate;
+      document.getElementById('edit-s-venmo').value = sitter.venmo || '';
+      document.getElementById('sitter-modal').classList.add('active');
+    };
 
-if (idx >= 0) {
-sitters[idx] = { name, rate, venmo };
-} else {
-sitters.push({ name, rate, venmo });
-}
+    window.deleteSitter = function(idx) {
+      if (confirm(`Are you sure you want to delete ${sitters[idx].name}?`)) {
+        sitters.splice(idx, 1);
+        localStorage.setItem('favero_sitters', JSON.stringify(sitters));
+        renderSitters();
+      }
+    };
 
-localStorage.setItem('favero_sitters', JSON.stringify(sitters));
-renderSitters();
-closeModal('sitter-modal');
-});
+    window.closeModal = function(id) {
+      document.getElementById(id).classList.remove('active');
+    };
 
-document.getElementById('shift-form').addEventListener('submit', function(e) {
-e.preventDefault();
-const sitterIdx = document.getElementById('shift-sitter').value;
-const date = document.getElementById('shift-date').value;
-const start = document.getElementById('shift-start').value;
-const end = document.getElementById('shift-end').value;
-const notes = document.getElementById('shift-notes').value;
+    document.getElementById('sitter-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('edit-s-id').value, 10);
+      const name = document.getElementById('edit-s-name').value;
+      const rate = parseFloat(document.getElementById('edit-s-rate').value);
+      const venmo = document.getElementById('edit-s-venmo').value;
 
-if (sitterIdx === "") return;
-const sitter = sitters[sitterIdx];
+      if (idx >= 0) {
+        sitters[idx] = { name, rate, venmo };
+      } else {
+        sitters.push({ name, rate, venmo });
+      }
 
-const startTime = new Date(`${date}T${start}`);
-const endTime = new Date(`${date}T${end}`);
-let diffMs = endTime - startTime;
-if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
-const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
-const totalPay = (hours * sitter.rate).toFixed(2);
+      localStorage.setItem('favero_sitters', JSON.stringify(sitters));
+      renderSitters();
+      closeModal('sitter-modal');
+    });
 
-shifts.unshift({ sitterName: sitter.name, date, start, end, hours, totalPay, notes });
-localStorage.setItem('favero_shifts', JSON.stringify(shifts));
-renderShifts();
-this.reset();
-});
+    document.getElementById('shift-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const sitterIdx = document.getElementById('shift-sitter').value;
+      const date = document.getElementById('shift-date').value;
+      const start = document.getElementById('shift-start').value;
+      const end = document.getElementById('shift-end').value;
+      const notes = document.getElementById('shift-notes').value;
 
-renderSitters();
-renderShifts();
-</script>
+      if (sitterIdx === "") return;
+      const sitter = sitters[sitterIdx];
+
+      const startTime = new Date(`${date}T${start}`);
+      const endTime = new Date(`${date}T${end}`);
+      let diffMs = endTime - startTime;
+      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+      const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
+      const totalPay = (hours * sitter.rate).toFixed(2);
+
+      shifts.unshift({ sitterName: sitter.name, date, start, end, hours, totalPay, notes });
+      localStorage.setItem('favero_shifts', JSON.stringify(shifts));
+      renderShifts();
+      this.reset();
+    });
+
+    renderSitters();
+    renderShifts();
+  </script>
 </body>
 </html>
