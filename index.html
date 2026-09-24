@@ -1,815 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icon.png">
-  <title>Sitter Tracker</title>
-  <style>
-    :root {
-      --bg: #121212;
-      --card: #1e1e1e;
-      --accent: #3b82f6;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --border: #374151;
-      --green: #10b981;
-      --red: #ef4444;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 120px; }
-
-    /* Header Banner */
-    .banner-container {
-      position: relative; width: 100%; height: 140px; background: #252525;
-      background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
-    }
-    .banner-overlay {
-      position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(18,18,18,0.9));
-      display: flex; justify-content: space-between; align-items: flex-end; padding: 16px;
-    }
-    .banner-title-group { display: flex; flex-direction: column; }
-    .banner-title { font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .banner-subtitle { font-size: 0.85rem; color: var(--muted); text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-    .header-btns { display: flex; gap: 10px; align-items: center; }
-    .icon-btn { background: rgba(30,30,30,0.85); border: 1px solid var(--border); color: #fff; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; }
-
-    .main-content { padding: 16px; }
-
-    /* PIN Lock Screen */
-    #pin-modal {
-      position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
-      background-size: cover; background-position: center;
-    }
-    .pin-card-overlay {
-      background: rgba(18, 18, 18, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      padding: 24px 20px; border-radius: 18px; border: 1px solid var(--border);
-      display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 320px;
-    }
-    .pin-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; text-align: center; }
-    .pin-display { font-size: 2rem; letter-spacing: 12px; margin-bottom: 24px; height: 40px; }
-    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
-    .pin-btn {
-      aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); font-size: 1.5rem; font-weight: 600;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .pin-btn:active { background: var(--border); }
-
-    /* Modals */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 8888; display: none; justify-content: center; align-items: center; padding: 16px; }
-    .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 480px; padding: 20px; max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-    .form-group { margin-bottom: 12px; }
-    .form-row { display: flex; gap: 10px; align-items: flex-end; }
-    .form-row .form-group { flex: 1; margin-bottom: 12px; }
-    label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
-    input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
-      width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
-      padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; appearance: none; -webkit-appearance: none;
-    }
-    input[type="file"] { display: none; }
-    .file-upload-btn {
-      display: inline-block; width: 100%; text-align: center; background: #2a2a2a; border: 1px dashed var(--border);
-      color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 500;
-    }
-
-    button.submit-btn {
-      width: 100%; background: var(--accent); color: white; border: none;
-      padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 8px;
-    }
-
-    /* Shift Cards */
-    .shift-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
-    }
-    .shift-top-row { display: flex; justify-content: space-between; align-items: center; }
-    .shift-top-right { display: flex; align-items: center; gap: 8px; }
-    .select-label {
-      display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem;
-      color: var(--muted); cursor: pointer; user-select: none; font-weight: 600;
-    }
-    .shift-checkbox { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
-
-    .action-btn {
-      background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: var(--muted);
-      border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
-    }
-    .action-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
-
-    .shift-body { min-width: 0; }
-    .shift-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .shift-name-area { display: flex; align-items: center; gap: 8px; }
-    .sitter-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #374151; flex-shrink: 0; }
-    .shift-name { font-weight: 600; font-size: 1.05rem; }
-    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.15rem; }
-    .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2px; }
-    .shift-notes { font-size: 0.85rem; color: #d1d5db; margin-top: 6px; }
-
-    .pay-links { display: flex; gap: 8px; margin-top: 10px; }
-    .pay-link { font-size: 0.8rem; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; display: inline-block; }
-    .venmo-btn { background: #008CFF; color: white; }
-    .paypal-btn { background: #003087; color: white; }
-
-    /* Fixed Batch Payment Bar */
-    .batch-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; background: #1a2332; border-top: 2px solid var(--accent);
-      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 9000;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
-    }
-    .batch-bar.hidden { display: none !important; }
-    .batch-bar-top { display: flex; justify-content: space-between; align-items: center; }
-    .batch-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
-    .batch-warning { font-size: 0.8rem; color: #f87171; background: rgba(239,68,68,0.15); padding: 8px; border-radius: 6px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Favero Family Sitter Tracker</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; display: flex; flex-direction: column; align-items: center; }
+#pin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0f172a; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; }
+.pin-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1rem; padding: 2rem; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
+.pin-card h2 { color: #38bdf8; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.pin-card p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.5rem; }
+.pin-input { width: 100%; font-size: 1.75rem; letter-spacing: 0.5rem; text-align: center; padding: 0.75rem; background-color: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; color: #38bdf8; margin-bottom: 1rem; }
+.pin-input:focus { outline: none; border-color: #38bdf8; }
+.pin-error { color: #f87171; font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+.container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.25rem; }
+header { text-align: center; padding: 1rem 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 1.4rem; color: #38bdf8; }
+.card { background-color: #1e293b; border-radius: 0.75rem; padding: 1.25rem; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+.card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; }
+label { font-size: 0.85rem; color: #94a3b8; }
+input, select, textarea { background-color: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 0.65rem; border-radius: 0.5rem; font-size: 0.95rem; width: 100%; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; }
+.btn { background-color: #0284c7; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem; }
+.btn-secondary { background-color: #334155; }
+.sitter-list, .shift-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.list-item { background-color: #0f172a; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+.list-item-info { display: flex; flex-direction: column; gap: 0.2rem; }
+.list-item-title { font-weight: 600; color: #f8fafc; }
+.list-item-sub { font-size: 0.8rem; color: #94a3b8; }
+.sm-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 0.35rem; width: auto; }
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
+.modal-overlay.active { display: flex; }
+.modal { background-color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; width: 100%; max-width: 500px; border: 1px solid #334155; }
+</style>
 </head>
 <body>
-
-  <!-- Landing / PIN Lock Screen -->
-  <div id="pin-modal">
-    <div class="pin-card-overlay">
-      <div class="pin-title" id="lock-screen-title">Favero Sitter Tracker</div>
-      <div class="pin-display" id="pin-dots">••••</div>
-      <div class="pin-pad">
-        <div class="pin-btn" onclick="pressPin('1')">1</div>
-        <div class="pin-btn" onclick="pressPin('2')">2</div>
-        <div class="pin-btn" onclick="pressPin('3')">3</div>
-        <div class="pin-btn" onclick="pressPin('4')">4</div>
-        <div class="pin-btn" onclick="pressPin('5')">5</div>
-        <div class="pin-btn" onclick="pressPin('6')">6</div>
-        <div class="pin-btn" onclick="pressPin('7')">7</div>
-        <div class="pin-btn" onclick="pressPin('8')">8</div>
-        <div class="pin-btn" onclick="pressPin('9')">9</div>
-        <div class="pin-btn" onclick="clearPin()">C</div>
-        <div class="pin-btn" onclick="pressPin('0')">0</div>
-        <div class="pin-btn" onclick="checkPin()">✓</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Header Banner -->
-  <div class="banner-container" id="app-banner">
-    <div class="banner-overlay">
-      <div class="banner-title-group">
-        <div class="banner-title" id="app-title-display">Sitter Tracker</div>
-        <div class="banner-subtitle" id="app-subtitle-display"></div>
-      </div>
-      <div class="header-btns">
-        <button class="icon-btn" onclick="openSittersModal()" title="Manage Sitters">👤</button>
-        <button class="icon-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
-        <button class="icon-btn" onclick="lockApp()" title="Lock">🔒</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-content">
-    <!-- Log Shift Form -->
-    <div class="card">
-      <form id="shift-form">
-        <div class="form-group">
-          <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent);">1. Choose Sitter</label>
-          <select id="sitter-select" onchange="autoCalcPay()" required>
-            <option value="">Select Sitter...</option>
-          </select>
-        </div>
-
-        <label style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 14px; display:block;">2. Shift Details</label>
-        
-        <div class="form-row" style="margin-top: 6px;">
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="date" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Start Time</label>
-            <input type="time" id="start-time" value="18:00" onchange="autoCalcPay()" required>
-          </div>
-          <div class="form-group">
-            <label>End Time</label>
-            <input type="time" id="end-time" value="22:30" onchange="autoCalcPay()" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Calculated Hours</label>
-            <input type="number" step="0.1" id="hours" placeholder="4.5" required readonly>
-          </div>
-          <div class="form-group">
-            <label>Extra ($)</label>
-            <input type="number" step="0.5" id="expenses" placeholder="Gas, food..." value="0" oninput="autoCalcPay()">
-          </div>
-          <div class="form-group">
-            <label>Total Pay ($)</label>
-            <input type="number" step="1" id="pay" placeholder="90" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Notes (optional)</label>
-          <textarea id="notes" rows="2" placeholder="Date night, etc."></textarea>
-        </div>
-        <button type="submit" id="submit-shift-btn" class="submit-btn">Log Shift</button>
-      </form>
-    </div>
-
-    <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--muted);">Shift History</h2>
-    <div id="shift-list">Loading shifts...</div>
-  </div>
-
-  <!-- Multi-Shift Batch Toolbar -->
-  <div class="batch-bar hidden" id="batch-bar">
-    <div class="batch-bar-top">
-      <div>
-        <span id="batch-count" style="font-weight:600;">0 shifts selected</span>
-        <strong id="batch-total" style="color:var(--green); margin-left: 8px; font-size:1.1rem;">$0</strong>
-      </div>
-      <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.85rem; cursor:pointer;">Mark Paid</button>
-    </div>
-    <div class="batch-actions" id="batch-pay-links"></div>
-    <div class="batch-warning hidden" id="batch-warning">⚠️ Select shifts for a single sitter to show consolidated payment options.</div>
-  </div>
-
-  <!-- Edit Shift Modal -->
-  <div class="modal" id="edit-shift-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="font-size:1.1rem;">Edit Shift</h3>
-        <button onclick="closeModal('edit-shift-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
-      </div>
-      <form id="edit-shift-form">
-        <input type="hidden" id="edit-shift-id">
-        <div class="form-group">
-          <label>Sitter</label>
-          <select id="edit-sitter-select" required></select>
-        </div>
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="edit-date" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Hours</label>
-            <input type="number" step="0.1" id="edit-hours" required>
-          </div>
-          <div class="form-group">
-            <label>Total Pay ($)</label>
-            <input type="number" step="1" id="edit-pay" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="edit-notes" rows="2"></textarea>
-        </div>
-        <button type="submit" id="save-edit-btn" class="submit-btn">Save Changes</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Sitters Modal -->
-  <div class="modal" id="sitters-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="font-size:1.1rem;">Manage Sitter Profiles</h3>
-        <button onclick="closeModal('sitters-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
-      </div>
-
-      <form id="sitter-form" style="margin-bottom: 20px;">
-        <div class="form-group">
-          <label>Sitter Full Name</label>
-          <input type="text" id="s-name" required placeholder="e.g. Sarah Hudson">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Hourly Rate ($)</label>
-            <input type="number" id="s-rate" value="20" required>
-          </div>
-          <div class="form-group">
-            <label>Photo / Avatar Image</label>
-            <label class="file-upload-btn" for="s-avatar-file" id="s-avatar-label">📷 Upload Photo</label>
-            <input type="file" id="s-avatar-file" accept="image/*" onchange="handleImageFile(this, 's-avatar-base64', 's-avatar-label')">
-            <input type="hidden" id="s-avatar-base64">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Venmo Handle</label>
-            <input type="text" id="s-venmo" placeholder="@username">
-          </div>
-          <div class="form-group">
-            <label>PayPal Link / Handle</label>
-            <input type="text" id="s-paypal" placeholder="paypal.me/username">
-          </div>
-        </div>
-        <button type="submit" class="submit-btn" style="background:#2563eb;">Save Sitter Profile</button>
-      </form>
-
-      <h4 style="font-size:0.9rem; color:var(--muted); margin-bottom:8px;">Saved Sitters</h4>
-      <div id="sitter-list-container">Loading...</div>
-    </div>
-  </div>
-
-  <!-- Settings Modal -->
-  <div class="modal" id="settings-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="font-size:1.1rem;">App & Appearance Settings</h3>
-        <button onclick="closeModal('settings-modal')" style="background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer;">✕</button>
-      </div>
-      <form id="settings-form">
-        <div class="form-group">
-          <label>App Title</label>
-          <input type="text" id="cfg-app-title" placeholder="Sitter Tracker">
-        </div>
-        <div class="form-group">
-          <label>App Subtitle (optional)</label>
-          <input type="text" id="cfg-app-subtitle" placeholder="Favero Family">
-        </div>
-        <div class="form-group">
-          <label>Header Banner Photo</label>
-          <label class="file-upload-btn" for="banner-file" id="banner-file-label">🖼️ Choose Header Banner</label>
-          <input type="file" id="banner-file" accept="image/*" onchange="handleImageFile(this, 'banner-base64', 'banner-file-label')">
-          <input type="hidden" id="banner-base64">
-        </div>
-        <div class="form-group">
-          <label>Landing / Lock Screen Background Photo</label>
-          <label class="file-upload-btn" for="landing-file" id="landing-file-label">🔒 Choose Lock Screen Photo</label>
-          <input type="file" id="landing-file" accept="image/*" onchange="handleImageFile(this, 'landing-base64', 'landing-file-label')">
-          <input type="hidden" id="landing-base64">
-        </div>
-        <button type="submit" class="submit-btn">Save Settings</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const API_URL = 'https://mvwmpoofylsrhmkdfzat.supabase.co/rest/v1/shifts';
-    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12d21wb29meWxzcmhta2RmemF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNTc3NzAsImV4cCI6MjEwNTczMzc3MH0.RXaqF8nRHLUNoDqGlQkORHpASRxcwJmyckBGxRWnkPg';
-    const CORRECT_PIN = '1313';
-
-    let sittersCache = [];
-    let shiftsCache = [];
-    let selectedShiftIds = new Set();
-    let currentPin = '';
-
-    const headers = {
-      'apikey': API_KEY,
-      'Authorization': 'Bearer ' + API_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    };
-
-    function handleImageFile(input, hiddenInputId, labelId) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          document.getElementById(hiddenInputId).value = e.target.result;
-          document.getElementById(labelId).textContent = "✓ Image Loaded";
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function getStoredSitters() { return JSON.parse(localStorage.getItem('favero_sitters') || '[]'); }
-    function saveStoredSitters(arr) {
-      localStorage.setItem('favero_sitters', JSON.stringify(arr));
-      sittersCache = arr;
-      updateSitterDropdown();
-    }
-
-    function pressPin(num) {
-      if (currentPin.length < 4) {
-        currentPin += num;
-        document.getElementById('pin-dots').textContent = '•'.repeat(currentPin.length);
-        if (currentPin.length === 4) setTimeout(checkPin, 150);
-      }
-    }
-    function clearPin() { currentPin = ''; document.getElementById('pin-dots').textContent = ''; }
-    function checkPin() {
-      if (currentPin === CORRECT_PIN) {
-        document.getElementById('pin-modal').style.display = 'none';
-        clearPin();
-        initData();
-      } else {
-        alert('Incorrect PIN');
-        clearPin();
-      }
-    }
-    function lockApp() { clearPin(); document.getElementById('pin-modal').style.display = 'flex'; }
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockApp(); });
-
-    function openSittersModal() { document.getElementById('sitters-modal').style.display = 'flex'; renderSittersList(); }
-    function openSettingsModal() { 
-      document.getElementById('cfg-app-title').value = localStorage.getItem('favero_title') || 'Sitter Tracker';
-      document.getElementById('cfg-app-subtitle').value = localStorage.getItem('favero_subtitle') || '';
-      document.getElementById('settings-modal').style.display = 'flex'; 
-    }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    document.getElementById('date').valueAsDate = new Date();
-
-    function initData() {
-      sittersCache = getStoredSitters();
-      updateSitterDropdown();
-      loadAppSettings();
-      loadShifts();
-      autoCalcPay();
-    }
-
-    function loadAppSettings() {
-      const savedTitle = localStorage.getItem('favero_title') || 'Sitter Tracker';
-      const savedSubtitle = localStorage.getItem('favero_subtitle') || '';
-      const savedBanner = localStorage.getItem('favero_banner');
-      const savedLanding = localStorage.getItem('favero_landing');
-
-      document.getElementById('app-title-display').textContent = savedTitle;
-      document.getElementById('lock-screen-title').textContent = savedTitle;
-      document.getElementById('app-subtitle-display').textContent = savedSubtitle;
-      document.title = savedTitle;
-
-      if (savedBanner) document.getElementById('app-banner').style.backgroundImage = `url('${savedBanner}')`;
-      if (savedLanding) document.getElementById('pin-modal').style.backgroundImage = `url('${savedLanding}')`;
-    }
-
-    document.getElementById('settings-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const titleVal = document.getElementById('cfg-app-title').value.trim();
-      const subtitleVal = document.getElementById('cfg-app-subtitle').value.trim();
-      const banner_data = document.getElementById('banner-base64').value;
-      const landing_data = document.getElementById('landing-base64').value;
-
-      if (titleVal) localStorage.setItem('favero_title', titleVal);
-      localStorage.setItem('favero_subtitle', subtitleVal);
-      if (banner_data) localStorage.setItem('favero_banner', banner_data);
-      if (landing_data) localStorage.setItem('favero_landing', landing_data);
-
-      loadAppSettings();
-      closeModal('settings-modal');
-    });
-
-    function updateSitterDropdown() {
-      const sel = document.getElementById('sitter-select');
-      const editSel = document.getElementById('edit-sitter-select');
-      const options = '<option value="">Select Sitter...</option>' + 
-        sittersCache.map(s => `<option value="${s.name}" data-rate="${s.rate}">${s.name} ($${s.rate}/hr)</option>`).join('');
-      sel.innerHTML = options;
-      editSel.innerHTML = options;
-    }
-
-    function renderSittersList() {
-      const container = document.getElementById('sitter-list-container');
-      if (!sittersCache.length) { container.innerHTML = '<p style="color:var(--muted)">No sitters added yet.</p>'; return; }
-      
-      container.innerHTML = sittersCache.map((s, idx) => `
-        <div style="background:#2a2a2a; padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            ${s.avatar ? `<img src="${s.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : ''}
-            <div>
-              <strong>${s.name}</strong> <span style="color:var(--green)">$${s.rate}/hr</span>
-              <div style="font-size:0.8rem; color:var(--muted);">Venmo: ${s.venmo || 'N/A'} | PayPal: ${s.paypal || 'N/A'}</div>
-            </div>
-          </div>
-          <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">Delete</button>
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('sitter-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newSitter = {
-        name: document.getElementById('s-name').value,
-        rate: parseFloat(document.getElementById('s-rate').value),
-        avatar: document.getElementById('s-avatar-base64').value,
-        venmo: document.getElementById('s-venmo').value,
-        paypal: document.getElementById('s-paypal').value
-      };
-      const list = getStoredSitters();
-      list.push(newSitter);
-      saveStoredSitters(list);
-      document.getElementById('sitter-form').reset();
-      document.getElementById('s-avatar-label').textContent = "📷 Upload Photo";
-      renderSittersList();
-    });
-
-    function deleteSitter(idx) {
-      if (confirm('Delete sitter profile?')) {
-        const list = getStoredSitters();
-        list.splice(idx, 1);
-        saveStoredSitters(list);
-        renderSittersList();
-      }
-    }
-
-    function autoCalcPay() {
-      const start = document.getElementById('start-time').value;
-      const end = document.getElementById('end-time').value;
-      const sitterSel = document.getElementById('sitter-select');
-      const selectedOpt = sitterSel.options[sitterSel.selectedIndex];
-      const rate = selectedOpt ? parseFloat(selectedOpt.getAttribute('data-rate') || 20) : 20;
-      const extra = parseFloat(document.getElementById('expenses').value || 0);
-
-      if (start && end) {
-        let [sH, sM] = start.split(':').map(Number);
-        let [eH, eM] = end.split(':').map(Number);
-        
-        let startMins = sH * 60 + sM;
-        let endMins = eH * 60 + eM;
-        if (endMins < startMins) endMins += 24 * 60;
-        
-        const diffHours = Math.max(0, (endMins - startMins) / 60);
-        document.getElementById('hours').value = diffHours.toFixed(1);
-        const basePay = diffHours * rate;
-        document.getElementById('pay').value = Math.round(basePay + extra);
-      }
-    }
-
-    async function loadShifts() {
-      const container = document.getElementById('shift-list');
-      try {
-        const res = await fetch(`${API_URL}?select=*&order=created_at.desc`, { headers });
-        const data = await res.json();
-        shiftsCache = data || [];
-
-        if (!shiftsCache || shiftsCache.length === 0) {
-          container.innerHTML = '<p style="color:var(--muted)">No shifts logged yet.</p>';
-          return;
-        }
-
-        container.innerHTML = shiftsCache.map(shift => {
-          const name = shift.sitterName || shift.sittername || shift.sitter || 'Sitter';
-          const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase()) || {};
-          const isChecked = selectedShiftIds.has(String(shift.id));
-
-          return `
-            <div class="shift-card">
-              <div class="shift-top-row">
-                <label class="select-label">
-                  <input type="checkbox" class="shift-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectShift('${shift.id}', this.checked, event)">
-                  <span>Select</span>
-                </label>
-                <div class="shift-top-right">
-                  <button class="action-btn" onclick="openEditShiftModal('${shift.id}')">✏️ Edit</button>
-                  <button class="action-btn" onclick="deleteShift('${shift.id}')" style="color:var(--red);">🗑️</button>
-                  <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
-                    ${shift.paid ? '✓ Paid' : 'Unpaid'}
-                  </span>
-                </div>
-              </div>
-
-              <div class="shift-body">
-                <div class="shift-header">
-                  <div class="shift-name-area">
-                    ${profile.avatar ? `<img src="${profile.avatar}" class="sitter-avatar">` : ''}
-                    <span class="shift-name">${name}</span>
-                  </div>
-                  <span class="shift-pay">$${shift.pay}</span>
-                </div>
-                <div class="shift-meta">
-                  <span>📅 ${shift.date}</span>
-                  <span>⏱ ${shift.hours} hrs</span>
-                </div>
-                ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
-                
-                ${!shift.paid && (profile.venmo || profile.paypal) ? `
-                  <div class="pay-links">
-                    ${profile.venmo ? `<a href="https://venmo.com/${profile.venmo.replace('@','')}?txn=pay&amount=${shift.pay}&note=Babysitting" target="_blank" class="pay-link venmo-btn">Pay $${shift.pay} via Venmo</a>` : ''}
-                    ${profile.paypal ? `<a href="https://${profile.paypal.replace('https://','')}/${shift.pay}" target="_blank" class="pay-link paypal-btn">Pay $${shift.pay} via PayPal</a>` : ''}
-                  </div>
-                ` : ''}
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        updateBatchToolbar();
-      } catch (err) {
-        container.innerHTML = `<p style="color:#ef4444">Connection Error: ${err.message}</p>`;
-      }
-    }
-
-    document.getElementById('shift-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('submit-shift-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Logging...';
-
-      const sitterVal = document.getElementById('sitter-select').value;
-      const hoursVal = parseFloat(document.getElementById('hours').value);
-      const expensesVal = parseFloat(document.getElementById('expenses').value || 0);
-      const payVal = parseFloat(document.getElementById('pay').value);
-      const dateVal = document.getElementById('date').value;
-      let notesVal = document.getElementById('notes').value.trim();
-
-      if (expensesVal > 0) {
-        const expenseStr = `[Extra Expense: $${expensesVal}]`;
-        notesVal = notesVal ? `${expenseStr} ${notesVal}` : expenseStr;
-      }
-
-      const payload = {
-        date: dateVal,
-        sitterName: sitterVal,
-        hours: hoursVal,
-        pay: payVal,
-        notes: notesVal,
-        paid: false
-      };
-
-      try {
-        const response = await fetch(API_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
-        if (!response.ok) {
-          const errText = await response.text();
-          alert('Error logging shift: ' + errText);
-        } else {
-          document.getElementById('shift-form').reset();
-          document.getElementById('date').valueAsDate = new Date();
-          document.getElementById('expenses').value = 0;
-          await loadShifts();
-        }
-      } catch (err) {
-        alert('Failed to connect: ' + err.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Log Shift';
-      }
-    });
-
-    function openEditShiftModal(id) {
-      const shift = shiftsCache.find(s => String(s.id) === String(id));
-      if (!shift) return;
-
-      document.getElementById('edit-shift-id').value = shift.id;
-      document.getElementById('edit-sitter-select').value = shift.sitterName || shift.sittername || shift.sitter || '';
-      document.getElementById('edit-date').value = shift.date || '';
-      document.getElementById('edit-hours').value = shift.hours || '';
-      document.getElementById('edit-pay').value = shift.pay || '';
-      document.getElementById('edit-notes').value = shift.notes || '';
-
-      document.getElementById('edit-shift-modal').style.display = 'flex';
-    }
-
-    document.getElementById('edit-shift-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById('save-edit-btn');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Saving...';
-
-      const id = document.getElementById('edit-shift-id').value;
-      const payload = {
-        sitterName: document.getElementById('edit-sitter-select').value,
-        date: document.getElementById('edit-date').value,
-        hours: parseFloat(document.getElementById('edit-hours').value),
-        pay: parseFloat(document.getElementById('edit-pay').value),
-        notes: document.getElementById('edit-notes').value.trim()
-      };
-
-      try {
-        const res = await fetch(`${API_URL}?id=eq.${id}`, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          closeModal('edit-shift-modal');
-          loadShifts();
-        } else {
-          alert('Failed to update shift.');
-        }
-      } catch (err) {
-        alert('Error: ' + err.message);
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Changes';
-      }
-    });
-
-    async function deleteShift(id) {
-      if (confirm('Are you sure you want to delete this shift record?')) {
-        try {
-          const res = await fetch(`${API_URL}?id=eq.${id}`, {
-            method: 'DELETE',
-            headers
-          });
-          if (res.ok) {
-            selectedShiftIds.delete(String(id));
-            loadShifts();
-          } else {
-            alert('Failed to delete shift.');
-          }
-        } catch (err) {
-          alert('Error deleting shift: ' + err.message);
-        }
-      }
-    }
-
-    async function togglePaid(id, currentStatus) {
-      await fetch(`${API_URL}?id=eq.${id}`, {
-        method: 'PATCH', headers, body: JSON.stringify({ paid: !currentStatus })
-      });
-      loadShifts();
-    }
-
-    function toggleSelectShift(id, isChecked, evt) {
-      const strId = String(id);
-      const targetShift = shiftsCache.find(s => String(s.id) === strId);
-      if (!targetShift) return;
-
-      const targetSitter = (targetShift.sitterName || targetShift.sittername || targetShift.sitter || '').toLowerCase();
-
-      if (isChecked) {
-        for (let selectedId of selectedShiftIds) {
-          const existingShift = shiftsCache.find(s => String(s.id) === selectedId);
-          if (existingShift) {
-            const existingSitter = (existingShift.sitterName || existingShift.sittername || existingShift.sitter || '').toLowerCase();
-            if (existingSitter !== targetSitter) {
-              const currentSitterName = existingShift.sitterName || existingShift.sittername || existingShift.sitter;
-              alert(`You can only select shifts for one sitter at a time. Uncheck ${currentSitterName}'s shifts first.`);
-              if (evt && evt.target) evt.target.checked = false;
-              return;
-            }
-          }
-        }
-        selectedShiftIds.add(strId);
-      } else {
-        selectedShiftIds.delete(strId);
-      }
-      updateBatchToolbar();
-    }
-
-    function updateBatchToolbar() {
-      const bar = document.getElementById('batch-bar');
-      const payLinksContainer = document.getElementById('batch-pay-links');
-      const warningElem = document.getElementById('batch-warning');
-      
-      if (selectedShiftIds.size === 0) {
-        bar.classList.add('hidden');
-        return;
-      }
-
-      let totalPay = 0;
-      let selectedSitters = new Set();
-      let selectedShifts = [];
-
-      selectedShiftIds.forEach(id => {
-        const shift = shiftsCache.find(s => String(s.id) === id);
-        if (shift) {
-          totalPay += parseFloat(shift.pay || 0);
-          const name = shift.sitterName || shift.sittername || shift.sitter || 'Sitter';
-          selectedSitters.add(name.toLowerCase());
-          selectedShifts.push(shift);
-        }
-      });
-
-      document.getElementById('batch-count').textContent = `${selectedShiftIds.size} shift${selectedShiftIds.size > 1 ? 's' : ''} selected`;
-      document.getElementById('batch-total').textContent = `$${totalPay}`;
-
-      if (selectedSitters.size === 1) {
-        warningElem.classList.add('hidden');
-        const firstName = selectedShifts[0].sitterName || selectedShifts[0].sittername || selectedShifts[0].sitter;
-        const profile = sittersCache.find(s => s.name.toLowerCase() === firstName.toLowerCase()) || {};
-
-        let linksHtml = '';
-        if (profile.venmo) {
-          const venmoUrl = `https://venmo.com/${profile.venmo.replace('@','')}?txn=pay&amount=${totalPay}&note=Babysitting%20(${selectedShiftIds.size}%20shifts)`;
-          linksHtml += `<a href="${venmoUrl}" target="_blank" class="pay-link venmo-btn" style="flex:1;">Pay $${totalPay} via Venmo</a>`;
-        }
-        if (profile.paypal) {
-          const paypalUrl = `https://${profile.paypal.replace('https://','')}/${totalPay}`;
-          linksHtml += `<a href="${paypalUrl}" target="_blank" class="pay-link paypal-btn" style="flex:1;">Pay $${totalPay} via PayPal</a>`;
-        }
-        if (!profile.venmo && !profile.paypal) {
-          linksHtml = `<span style="font-size:0.75rem; color:var(--muted)">No Venmo/PayPal handles set for ${firstName} in Sitter Profiles.</span>`;
-        }
-        payLinksContainer.innerHTML = linksHtml;
-      } else {
-        payLinksContainer.innerHTML = '';
-        warningElem.classList.remove('hidden');
-      }
-
-      bar.classList.remove('hidden');
-    }
-
-    async function batchMarkPaid() {
-      for (let id of selectedShiftIds) {
-        await fetch(`${API_URL}?id=eq.${id}`, {
-          method: 'PATCH', headers, body: JSON.stringify({ paid: true })
-        });
-      }
-      selectedShiftIds.clear();
-      updateBatchToolbar();
-      loadShifts();
-    }
-
-    loadAppSettings();
-  </script>
+<div id="pin-overlay">
+<div class="pin-card">
+<h2>Favero Tracker</h2>
+<p>Enter 4-digit passcode</p>
+<input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus />
+<button class="btn" onclick="validatePin()">Unlock</button>
+<div id="pin-error" class="pin-error">Incorrect Passcode</div>
+</div>
+</div>
+
+<div class="container">
+<header>
+<h1>Favero Sitter Tracker</h1>
+<button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
+</header>
+
+<div class="card">
+<h2>Log New Shift</h2>
+<form id="shift-form">
+<div class="form-group">
+<label for="shift-sitter">Select Sitter</label>
+<select id="shift-sitter" required><option value="">Select Sitter...</option></select>
+</div>
+<div class="form-group">
+<label for="shift-date">Date</label>
+<input type="date" id="shift-date" required />
+</div>
+<div class="form-group">
+<label for="shift-start">Start Time</label>
+<input type="time" id="shift-start" required />
+</div>
+<div class="form-group">
+<label for="shift-end">End Time</label>
+<input type="time" id="shift-end" required />
+</div>
+<div class="form-group">
+<label for="shift-notes">Notes / Adjustments</label>
+<textarea id="shift-notes" rows="2" placeholder="Optional notes..."></textarea>
+</div>
+<button type="submit" class="btn">Save Shift</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Sitters <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button></h2>
+<ul id="sitter-list" class="sitter-list"></ul>
+</div>
+
+<div class="card">
+<h2>Recent Shifts</h2>
+<ul id="shift-list" class="shift-list"></ul>
+</div>
+</div>
+
+<div id="sitter-modal" class="modal-overlay">
+<div class="modal">
+<h2 id="sitter-modal-title" style="margin-bottom:1rem;">Add Sitter Profile</h2>
+<form id="sitter-form">
+<input type="hidden" id="edit-s-id" value="" />
+<div class="form-group">
+<label for="edit-s-name">Sitter Name</label>
+<input type="text" id="edit-s-name" required />
+</div>
+<div class="form-group">
+<label for="edit-s-rate">Hourly Rate ($)</label>
+<input type="number" step="0.50" id="edit-s-rate" required />
+</div>
+<div class="form-group">
+<label for="edit-s-venmo">Venmo / Payment Info</label>
+<input type="text" id="edit-s-venmo" placeholder="@username or phone" />
+</div>
+<div style="display:flex; gap:0.5rem; margin-top:1rem;">
+<button type="button" class="btn btn-secondary" onclick="closeModal('sitter-modal')">Cancel</button>
+<button type="submit" class="btn">Save Profile</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+const APP_PIN = "1234";
+
+function validatePin() {
+const input = document.getElementById('pin-input').value;
+if (input === APP_PIN) {
+document.getElementById('pin-overlay').style.display = 'none';
+document.getElementById('pin-error').style.display = 'none';
+sessionStorage.setItem('favero_unlocked', 'true');
+} else {
+document.getElementById('pin-error').style.display = 'block';
+document.getElementById('pin-input').value = '';
+}
+}
+
+function lockApp() {
+sessionStorage.removeItem('favero_unlocked');
+document.getElementById('pin-input').value = '';
+document.getElementById('pin-overlay').style.display = 'flex';
+}
+
+if (sessionStorage.getItem('favero_unlocked') === 'true') {
+document.getElementById('pin-overlay').style.display = 'none';
+}
+
+document.getElementById('pin-input').addEventListener('keyup', function(e) {
+if (e.key === 'Enter') validatePin();
+if (this.value.length === 4) validatePin();
+});
+
+let sitters = JSON.parse(localStorage.getItem('favero_sitters')) || [];
+let shifts = JSON.parse(localStorage.getItem('favero_shifts')) || [];
+
+function renderSitters() {
+const listEl = document.getElementById('sitter-list');
+const selectEl = document.getElementById('shift-sitter');
+listEl.innerHTML = '';
+selectEl.innerHTML = '<option value="">Select Sitter...</option>';
+
+if (sitters.length === 0) {
+listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No sitters added yet.</span></li>';
+return;
+}
+
+sitters.forEach((sitter, idx) => {
+const opt = document.createElement('option');
+opt.value = idx;
+opt.textContent = `${sitter.name} ($${sitter.rate}/hr)`;
+selectEl.appendChild(opt);
+
+const li = document.createElement('li');
+li.className = 'list-item';
+li.innerHTML = `
+<div class="list-item-info">
+<span class="list-item-title">${sitter.name}</span>
+<span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
+</div>
+<button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
+`;
+listEl.appendChild(li);
+});
+}
+
+function renderShifts() {
+const listEl = document.getElementById('shift-list');
+listEl.innerHTML = '';
+
+if (shifts.length === 0) {
+listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No logged shifts yet.</span></li>';
+return;
+}
+
+shifts.forEach((shift) => {
+const li = document.createElement('li');
+li.className = 'list-item';
+li.innerHTML = `
+<div class="list-item-info">
+<span class="list-item-title">${shift.sitterName} - $${shift.totalPay}</span>
+<span class="list-item-sub">${shift.date} | ${shift.start} - ${shift.end} (${shift.hours} hrs)</span>
+${shift.notes ? `<span class="list-item-sub">Notes: ${shift.notes}</span>` : ''}
+</div>
+`;
+listEl.appendChild(li);
+});
+}
+
+window.openAddSitterModal = function() {
+document.getElementById('sitter-modal-title').textContent = 'Add Sitter Profile';
+document.getElementById('edit-s-id').value = '-1';
+document.getElementById('edit-s-name').value = '';
+document.getElementById('edit-s-rate').value = '';
+document.getElementById('edit-s-venmo').value = '';
+document.getElementById('sitter-modal').classList.add('active');
+};
+
+window.openEditSitterModal = function(idx) {
+const sitter = sitters[idx];
+if (!sitter) return;
+document.getElementById('sitter-modal-title').textContent = 'Edit Sitter Profile';
+document.getElementById('edit-s-id').value = idx;
+document.getElementById('edit-s-name').value = sitter.name;
+document.getElementById('edit-s-rate').value = sitter.rate;
+document.getElementById('edit-s-venmo').value = sitter.venmo || '';
+document.getElementById('sitter-modal').classList.add('active');
+};
+
+window.closeModal = function(id) {
+document.getElementById(id).classList.remove('active');
+};
+
+document.getElementById('sitter-form').addEventListener('submit', function(e) {
+e.preventDefault();
+const idx = parseInt(document.getElementById('edit-s-id').value, 10);
+const name = document.getElementById('edit-s-name').value;
+const rate = parseFloat(document.getElementById('edit-s-rate').value);
+const venmo = document.getElementById('edit-s-venmo').value;
+
+if (idx >= 0) { sitters[idx] = { name, rate, venmo }; }
+else { sitters.push({ name, rate, venmo }); }
+
+localStorage.setItem('favero_sitters', JSON.stringify(sitters));
+renderSitters();
+closeModal('sitter-modal');
+});
+
+document.getElementById('shift-form').addEventListener('submit', function(e) {
+e.preventDefault();
+const sitterIdx = document.getElementById('shift-sitter').value;
+const date = document.getElementById('shift-date').value;
+const start = document.getElementById('shift-start').value;
+const end = document.getElementById('shift-end').value;
+const notes = document.getElementById('shift-notes').value;
+
+if (sitterIdx === "") return;
+const sitter = sitters[sitterIdx];
+
+const startTime = new Date(`${date}T${start}`);
+const endTime = new Date(`${date}T${end}`);
+let diffMs = endTime - startTime;
+if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
+const totalPay = (hours * sitter.rate).toFixed(2);
+
+shifts.unshift({ sitterName: sitter.name, date, start, end, hours, totalPay, notes });
+localStorage.setItem('favero_shifts', JSON.stringify(shifts));
+renderShifts();
+this.reset();
+});
+
+renderSitters();
+renderShifts();
+</script>
 </body>
 </html>
