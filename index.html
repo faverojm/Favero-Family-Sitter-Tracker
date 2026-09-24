@@ -18,15 +18,15 @@
       --green: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
 
     /* Custom Banner Header */
     .banner-container {
-      position: relative; width: 100%; height: 130px; background: #252525;
+      position: relative; width: 100%; height: 140px; background: #252525;
       background-size: cover; background-position: center; border-bottom: 1px solid var(--border);
     }
     .banner-overlay {
-      position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(18,18,18,1));
+      position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(18,18,18,0.9));
       display: flex; justify-content: space-between; align-items: flex-end; padding: 16px;
     }
     .banner-title { font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -62,42 +62,58 @@
       width: 100%; background: #2a2a2a; border: 1px solid var(--border); color: #fff;
       padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; appearance: none; -webkit-appearance: none;
     }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input[type="file"] { display: none; }
+    .file-upload-btn {
+      display: inline-block; width: 100%; text-align: center; background: #2a2a2a; border: 1px dashed var(--border);
+      color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 500;
+    }
 
     button.submit-btn {
       width: 100%; background: var(--accent); color: white; border: none;
       padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 8px;
     }
 
-    /* Fixed Shift Card Layout */
+    /* Shift Card Layout */
     .shift-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .shift-top-row { display: flex; justify-content: space-between; align-items: center; }
+    .select-label {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem;
+      color: var(--muted); cursor: pointer; user-select: none; font-weight: 500;
     }
     .shift-select {
-      width: 20px !important; height: 20px !important; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent);
+      appearance: none; -webkit-appearance: none;
+      width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px;
+      background: #2a2a2a; cursor: pointer; display: grid; place-content: center;
     }
-    .shift-body { flex: 1; min-width: 0; }
-    .shift-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .shift-select:checked { background: var(--accent); border-color: var(--accent); }
+    .shift-select:checked::before { content: "✓"; color: white; font-size: 12px; font-weight: bold; }
+
+    .shift-body { min-width: 0; }
+    .shift-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .shift-name-area { display: flex; align-items: center; gap: 8px; }
-    .sitter-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #374151; flex-shrink: 0; }
-    .shift-name { font-weight: 600; font-size: 1.05rem; word-break: break-word; }
-    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.1rem; flex-shrink: 0; margin-left: 8px; }
-    .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
+    .sitter-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #374151; flex-shrink: 0; }
+    .shift-name { font-weight: 600; font-size: 1.05rem; }
+    .shift-pay { font-weight: 700; color: var(--green); font-size: 1.15rem; }
+    .shift-meta { font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2px; }
     .shift-notes { font-size: 0.85rem; color: #d1d5db; margin-top: 6px; }
 
     .pay-links { display: flex; gap: 8px; }
-    .pay-link { font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+    .pay-link { font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; display: inline-block; }
     .venmo-btn { background: #008CFF; color: white; }
     .paypal-btn { background: #003087; color: white; }
 
     /* Multi Pay Toolbar */
     .batch-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: #1a2332; border-top: 1px solid var(--accent);
-      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 7000;
+      padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 7000;
       transform: translateY(100%); transition: transform 0.2s ease;
     }
     .batch-bar.visible { transform: translateY(0); }
+    .batch-bar-top { display: flex; justify-content: space-between; align-items: center; }
+    .batch-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -185,13 +201,18 @@
     <div id="shift-list">Loading shifts...</div>
   </div>
 
-  <!-- Multi-Shift Batch Toolbar -->
+  <!-- Multi-Shift Batch Toolbar with Payment Links -->
   <div class="batch-bar" id="batch-bar">
-    <div>
-      <span id="batch-count">0</span> shifts selected
-      <strong id="batch-total" style="color:var(--green); margin-left: 8px;">$0</strong>
+    <div class="batch-bar-top">
+      <div>
+        <span id="batch-count">0</span> shifts selected
+        <strong id="batch-total" style="color:var(--green); margin-left: 8px;">$0</strong>
+      </div>
+      <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.85rem;">Mark Paid</button>
     </div>
-    <button onclick="batchMarkPaid()" style="background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:600;">Mark Paid</button>
+    <div class="batch-actions" id="batch-pay-links">
+      <!-- Dynamic Venmo/PayPal buttons rendered here -->
+    </div>
   </div>
 
   <!-- Sitters Management Modal -->
@@ -213,8 +234,10 @@
             <input type="number" id="s-rate" value="20" required>
           </div>
           <div class="form-group">
-            <label>Avatar / Photo URL</label>
-            <input type="url" id="s-avatar" placeholder="https://...">
+            <label>Photo / Avatar Image</label>
+            <label class="file-upload-btn" for="s-avatar-file" id="s-avatar-label">📷 Upload Photo</label>
+            <input type="file" id="s-avatar-file" accept="image/*" onchange="handleImageFile(this, 's-avatar-base64', 's-avatar-label')">
+            <input type="hidden" id="s-avatar-base64">
           </div>
         </div>
         <div class="form-row">
@@ -244,8 +267,10 @@
       </div>
       <form id="settings-form">
         <div class="form-group">
-          <label>Header Banner Image URL</label>
-          <input type="url" id="banner-url-input" placeholder="https://images.unsplash.com/...">
+          <label>Upload Banner Image from Photo Library / Files</label>
+          <label class="file-upload-btn" for="banner-file" id="banner-file-label">🖼️ Choose Header Image</label>
+          <input type="file" id="banner-file" accept="image/*" onchange="handleImageFile(this, 'banner-base64', 'banner-file-label')">
+          <input type="hidden" id="banner-base64">
         </div>
         <button type="submit" class="submit-btn">Save Banner</button>
       </form>
@@ -258,8 +283,8 @@
     const CORRECT_PIN = '1313';
 
     let sittersCache = [];
-    let selectedShifts = new Set();
-    let batchTotalPay = 0;
+    let shiftsCache = [];
+    let selectedShifts = new Map(); // id -> shift object
     let currentPin = '';
 
     const headers = {
@@ -268,6 +293,18 @@
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
     };
+
+    function handleImageFile(input, hiddenInputId, labelId) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById(hiddenInputId).value = e.target.result;
+          document.getElementById(labelId).textContent = "✓ Image Loaded";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
     function getStoredSitters() { return JSON.parse(localStorage.getItem('favero_sitters') || '[]'); }
     function saveStoredSitters(arr) {
@@ -315,15 +352,16 @@
       const savedBanner = localStorage.getItem('favero_banner');
       if (savedBanner) {
         document.getElementById('app-banner').style.backgroundImage = `url('${savedBanner}')`;
-        document.getElementById('banner-url-input').value = savedBanner;
       }
     }
 
     document.getElementById('settings-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const banner_url = document.getElementById('banner-url-input').value;
-      localStorage.setItem('favero_banner', banner_url);
-      loadBanner();
+      const banner_data = document.getElementById('banner-base64').value;
+      if (banner_data) {
+        localStorage.setItem('favero_banner', banner_data);
+        loadBanner();
+      }
       closeModal('settings-modal');
     });
 
@@ -339,9 +377,12 @@
       
       container.innerHTML = sittersCache.map((s, idx) => `
         <div style="background:#2a2a2a; padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <strong>${s.name}</strong> <span style="color:var(--green)">$${s.rate}/hr</span>
-            <div style="font-size:0.8rem; color:var(--muted);">Venmo: ${s.venmo || 'N/A'} | PayPal: ${s.paypal || 'N/A'}</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            ${s.avatar ? `<img src="${s.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : ''}
+            <div>
+              <strong>${s.name}</strong> <span style="color:var(--green)">$${s.rate}/hr</span>
+              <div style="font-size:0.8rem; color:var(--muted);">Venmo: ${s.venmo || 'N/A'} | PayPal: ${s.paypal || 'N/A'}</div>
+            </div>
           </div>
           <button onclick="deleteSitter(${idx})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem;">Delete</button>
         </div>
@@ -353,7 +394,7 @@
       const newSitter = {
         name: document.getElementById('s-name').value,
         rate: parseFloat(document.getElementById('s-rate').value),
-        avatar: document.getElementById('s-avatar').value,
+        avatar: document.getElementById('s-avatar-base64').value,
         venmo: document.getElementById('s-venmo').value,
         paypal: document.getElementById('s-paypal').value
       };
@@ -361,6 +402,7 @@
       list.push(newSitter);
       saveStoredSitters(list);
       document.getElementById('sitter-form').reset();
+      document.getElementById('s-avatar-label').textContent = "📷 Upload Photo";
       renderSittersList();
     });
 
@@ -399,20 +441,30 @@
       try {
         const res = await fetch(`${API_URL}?select=*&order=created_at.desc`, { headers });
         const data = await res.json();
+        shiftsCache = data || [];
 
-        if (!data || data.length === 0) {
+        if (!shiftsCache || shiftsCache.length === 0) {
           container.innerHTML = '<p style="color:var(--muted)">No shifts logged yet.</p>';
           return;
         }
 
-        container.innerHTML = data.map(shift => {
+        container.innerHTML = shiftsCache.map(shift => {
           const name = shift.sitterName || shift.sittername || 'Sitter';
           const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase()) || {};
           const isChecked = selectedShifts.has(shift.id);
 
           return `
             <div class="shift-card">
-              <input type="checkbox" class="shift-select" ${isChecked ? 'checked' : ''} onchange="toggleSelect('${shift.id}', ${shift.pay}, this.checked)">
+              <div class="shift-top-row">
+                <label class="select-label">
+                  <input type="checkbox" class="shift-select" ${isChecked ? 'checked' : ''} onchange="toggleSelect('${shift.id}', this.checked)">
+                  <span>Select</span>
+                </label>
+                <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
+                  ${shift.paid ? '✓ Paid' : 'Unpaid'}
+                </span>
+              </div>
+
               <div class="shift-body">
                 <div class="shift-header">
                   <div class="shift-name-area">
@@ -427,18 +479,12 @@
                 </div>
                 ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
                 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                  <span onclick="togglePaid('${shift.id}', ${shift.paid})" style="cursor:pointer; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; ${shift.paid ? 'background:rgba(16,185,129,0.2); color:#34d399;' : 'background:rgba(239,68,68,0.2); color:#f87171;'}">
-                    ${shift.paid ? '✓ Paid' : 'Unpaid'}
-                  </span>
-
-                  ${!shift.paid && (profile.venmo || profile.paypal) ? `
-                    <div class="pay-links">
-                      ${profile.venmo ? `<a href="https://venmo.com/${profile.venmo.replace('@','')}" target="_blank" class="pay-link venmo-btn">Venmo</a>` : ''}
-                      ${profile.paypal ? `<a href="https://${profile.paypal.replace('https://','')}" target="_blank" class="pay-link paypal-btn">PayPal</a>` : ''}
-                    </div>
-                  ` : ''}
-                </div>
+                ${!shift.paid && (profile.venmo || profile.paypal) ? `
+                  <div class="pay-links" style="margin-top:10px;">
+                    ${profile.venmo ? `<a href="https://venmo.com/${profile.venmo.replace('@','')}?txn=pay&amount=${shift.pay}&note=Babysitting" target="_blank" class="pay-link venmo-btn">Pay $${shift.pay} via Venmo</a>` : ''}
+                    ${profile.paypal ? `<a href="https://${profile.paypal.replace('https://','')}/${shift.pay}" target="_blank" class="pay-link paypal-btn">Pay $${shift.pay} via PayPal</a>` : ''}
+                  </div>
+                ` : ''}
               </div>
             </div>
           `;
@@ -471,30 +517,67 @@
       loadShifts();
     }
 
-    function toggleSelect(id, pay, isChecked) {
-      if (isChecked) {
-        selectedShifts.add(id);
-        batchTotalPay += pay;
+    // Consolidated Batch Pay Logic
+    function toggleSelect(id, isChecked) {
+      const shift = shiftsCache.find(s => s.id === id);
+      if (isChecked && shift) {
+        selectedShifts.set(id, shift);
       } else {
         selectedShifts.delete(id);
-        batchTotalPay -= pay;
       }
+      updateBatchToolbar();
+    }
+
+    function updateBatchToolbar() {
       const bar = document.getElementById('batch-bar');
+      const payLinksContainer = document.getElementById('batch-pay-links');
+      
+      if (selectedShifts.size === 0) {
+        bar.classList.remove('visible');
+        return;
+      }
+
+      let totalPay = 0;
+      let selectedProfiles = new Set();
+
+      selectedShifts.forEach(shift => {
+        totalPay += (shift.pay || 0);
+        const name = shift.sitterName || shift.sittername || '';
+        const profile = sittersCache.find(s => s.name.toLowerCase() === name.toLowerCase());
+        if (profile) selectedProfiles.add(profile);
+      });
+
       document.getElementById('batch-count').textContent = selectedShifts.size;
-      document.getElementById('batch-total').textContent = `$${batchTotalPay}`;
-      if (selectedShifts.size > 0) bar.classList.add('visible');
-      else bar.classList.remove('visible');
+      document.getElementById('batch-total').textContent = `$${totalPay}`;
+
+      // Build consolidated payment links
+      let linksHtml = '';
+      if (selectedProfiles.size === 1) {
+        const sitter = Array.from(selectedProfiles)[0];
+        if (sitter.venmo) {
+          const venmoUrl = `https://venmo.com/${sitter.venmo.replace('@','')}?txn=pay&amount=${totalPay}&note=Babysitting%20(${selectedShifts.size}%20shifts)`;
+          linksHtml += `<a href="${venmoUrl}" target="_blank" class="pay-link venmo-btn" style="flex:1;">Pay $${totalPay} via Venmo</a>`;
+        }
+        if (sitter.paypal) {
+          const paypalUrl = `https://${sitter.paypal.replace('https://','')}/${totalPay}`;
+          linksHtml += `<a href="${paypalUrl}" target="_blank" class="pay-link paypal-btn" style="flex:1;">Pay $${totalPay} via PayPal</a>`;
+        }
+      } else if (selectedProfiles.size > 1) {
+        linksHtml = `<span style="font-size:0.75rem; color:var(--muted)">Select shifts for a single sitter to use consolidated Venmo/PayPal</span>`;
+      }
+
+      payLinksContainer.innerHTML = linksHtml;
+      bar.classList.add('visible');
     }
 
     async function batchMarkPaid() {
-      for (let id of selectedShifts) {
+      for (let id of selectedShifts.keys()) {
         await fetch(`${API_URL}?id=eq.${id}`, {
           method: 'PATCH', headers, body: JSON.stringify({ paid: true })
         });
       }
       selectedShifts.clear();
-      batchTotalPay = 0;
-      document.getElementById('batch-bar').classList.remove('visible');
+      updateBatchToolbar();
       loadShifts();
     }
   </script>
