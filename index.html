@@ -191,6 +191,10 @@
             <input type="number" step="0.1" id="hours" placeholder="4.5" required readonly>
           </div>
           <div class="form-group">
+            <label>Extra Expenses ($)</label>
+            <input type="number" step="0.5" id="expenses" placeholder="Gas, food, tip..." value="0" oninput="autoCalcPay()">
+          </div>
+          <div class="form-group">
             <label>Total Pay ($)</label>
             <input type="number" step="1" id="pay" placeholder="90" required>
           </div>
@@ -198,7 +202,7 @@
 
         <div class="form-group">
           <label>Notes (optional)</label>
-          <textarea id="notes" rows="2" placeholder="Date night, tip included, etc."></textarea>
+          <textarea id="notes" rows="2" placeholder="Date night, $10 gas money, etc."></textarea>
         </div>
         <button type="submit" id="submit-shift-btn" class="submit-btn">Log Shift</button>
       </form>
@@ -426,6 +430,7 @@
       const sitterSel = document.getElementById('sitter-select');
       const selectedOpt = sitterSel.options[sitterSel.selectedIndex];
       const rate = selectedOpt ? parseFloat(selectedOpt.getAttribute('data-rate') || 20) : 20;
+      const extra = parseFloat(document.getElementById('expenses').value || 0);
 
       if (start && end) {
         let [sH, sM] = start.split(':').map(Number);
@@ -437,7 +442,8 @@
         
         const diffHours = Math.max(0, (endMins - startMins) / 60);
         document.getElementById('hours').value = diffHours.toFixed(1);
-        document.getElementById('pay').value = Math.round(diffHours * rate);
+        const basePay = diffHours * rate;
+        document.getElementById('pay').value = Math.round(basePay + extra);
       }
     }
 
@@ -481,6 +487,7 @@
                 <div class="shift-meta">
                   <span>📅 ${shift.date}</span>
                   <span>⏱ ${shift.hours} hrs</span>
+                  ${shift.expenses ? `<span style="color:#60a5fa;">+$${shift.expenses} extra</span>` : ''}
                 </div>
                 ${shift.notes ? `<div class="shift-notes">${shift.notes}</div>` : ''}
                 
@@ -507,15 +514,16 @@
 
       const sitterVal = document.getElementById('sitter-select').value;
       const hoursVal = parseFloat(document.getElementById('hours').value);
+      const expensesVal = parseFloat(document.getElementById('expenses').value || 0);
       const payVal = parseFloat(document.getElementById('pay').value);
       const dateVal = document.getElementById('date').value;
       const notesVal = document.getElementById('notes').value;
 
-      // Clean payload strictly matching Supabase table columns
       const payload = {
         date: dateVal,
         sitterName: sitterVal,
         hours: hoursVal,
+        expenses: expensesVal,
         pay: payVal,
         notes: notesVal,
         paid: false
@@ -529,6 +537,7 @@
         } else {
           document.getElementById('shift-form').reset();
           document.getElementById('date').valueAsDate = new Date();
+          document.getElementById('expenses').value = 0;
           await loadShifts();
         }
       } catch (err) {
