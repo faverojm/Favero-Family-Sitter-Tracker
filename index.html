@@ -1,14 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0f14"><title>Family Sitter Tracker</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0f14"><title>Family Sitter Tracker</title>
 <style>
-:root{--bg:#0b0f14;--card:#131a22;--card2:#18212b;--text:#f4f7fa;--muted:#9aa8b5;--line:#263341;--accent:#6ee7b7;--danger:#fb7185;--warn:#fbbf24;--shadow:0 12px 30px #0008}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#062218;font-weight:750;cursor:pointer}button.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}button.danger{background:var(--danger);color:#300811}button.small{padding:7px 10px;font-size:13px}.wrap{max-width:900px;margin:auto;padding:14px 14px 90px}.hidden{display:none!important}.muted{color:var(--muted)}.money{font-variant-numeric:tabular-nums}.top{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);margin-bottom:12px}.banner{height:155px;background:#111923 center/cover no-repeat}.banner.noimg{height:90px}.brand{display:flex;gap:12px;align-items:center;padding:14px}.logo{width:58px;height:58px;border-radius:16px;object-fit:cover;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted)}nav{display:flex;gap:7px;overflow:auto;padding:0 2px 12px;position:sticky;top:0;z-index:5;background:var(--bg)}nav button{white-space:nowrap;background:var(--card);color:var(--muted);border:1px solid var(--line)}nav button.active{background:var(--accent);color:#062218;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}.stat{font-size:25px;font-weight:800}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.actions{display:flex;gap:7px;flex-wrap:wrap}.list{display:grid;gap:8px}.item{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:11px}.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#263341;display:grid;place-items:center;font-weight:800;flex:none}.person{display:flex;gap:10px;align-items:center;min-width:0}.person>div:last-child{min-width:0}.person strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.pill.good{color:var(--accent);border-color:#2c6955}.pill.warn{color:var(--warn)}.pill.bad{color:var(--danger)}.section-title{font-size:18px;margin:18px 0 9px}.empty{text-align:center;padding:25px;color:var(--muted)}.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.filters select,.filters input{width:auto}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:13px;color:var(--muted)}input,select,textarea{width:100%;background:#0e141b;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}textarea{min-height:80px;resize:vertical}.modalbg{position:fixed;inset:0;background:#000b;z-index:20;display:grid;place-items:end center;padding:10px}.modal{width:min(700px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.modal h2{margin:0 0 12px}.close{background:transparent;color:var(--muted);font-size:22px;padding:3px}.check{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.check input{width:auto;margin-top:3px}.paytotal{font-size:24px;font-weight:800;margin:10px 0}.pin{min-height:100vh;display:grid;place-items:center;padding:20px}.pinbox{width:min(390px,100%);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}.pinlogo{width:90px;height:90px;border-radius:22px;object-fit:cover;background:var(--card2);margin:0 auto 14px;display:grid;place-items:center;font-size:28px;font-weight:800}.dots{font-size:28px;letter-spacing:8px;height:40px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.keypad button{background:var(--card2);color:var(--text);border:1px solid var(--line);font-size:19px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#f4f7fa;color:#0b0f14;padding:11px 15px;border-radius:999px;z-index:50;box-shadow:var(--shadow);font-weight:700}.file{padding:8px}.notice{padding:10px;border-radius:10px;background:#10231d;border:1px solid #245943;color:#b9f7dc;font-size:13px}.dangerbox{padding:10px;border-radius:10px;background:#2b1117;border:1px solid #6a2735;color:#fecdd3;font-size:13px}@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.banner{height:220px}.modalbg{place-items:center}}
+:root{--bg:#0b0f14;--card:#131a22;--card2:#18212b;--text:#f4f7fa;--muted:#9aa8b5;--line:#263341;--accent:#6ee7b7;--danger:#fb7185;--warn:#fbbf24;--shadow:0 12px 30px #0008}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#062218;font-weight:750;cursor:pointer}button.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}button.danger{background:var(--danger);color:#300811}button.small{padding:7px 10px;font-size:13px}.wrap{max-width:900px;margin:auto;padding:14px 14px 90px}.top{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);margin-bottom:12px}.banner{height:155px;background:#111923 center/cover no-repeat}.banner.noimg{height:90px}.brand{display:flex;gap:12px;align-items:center;padding:14px}.logo{width:58px;height:58px;border-radius:16px;object-fit:cover;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted)}nav{display:flex;gap:7px;overflow:auto;padding:0 2px 12px;position:sticky;top:0;z-index:5;background:var(--bg)}nav button{white-space:nowrap;background:var(--card);color:var(--muted);border:1px solid var(--line)}nav button.active{background:var(--accent);color:#062218;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}.stat{font-size:25px;font-weight:800}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.actions{display:flex;gap:7px;flex-wrap:wrap}.list{display:grid;gap:8px}.item{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:11px}.person{display:flex;gap:10px;align-items:center;min-width:0}.person>div:last-child{min-width:0}.person strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#263341;display:grid;place-items:center;font-weight:800;flex:none}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.pill.good{color:var(--accent);border-color:#2c6955}.pill.warn{color:var(--warn)}.section-title{font-size:18px;margin:18px 0 9px}.empty{text-align:center;padding:25px;color:var(--muted)}.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.filters select,.filters input{width:auto}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:13px;color:var(--muted)}input,select,textarea{width:100%;background:#0e141b;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}textarea{min-height:80px;resize:vertical}.modalbg{position:fixed;inset:0;background:#000b;z-index:20;display:grid;place-items:end center;padding:10px}.modal{width:min(700px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.modal h2{margin:0 0 12px}.close{background:transparent;color:var(--muted);font-size:22px;padding:3px}.check{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.check input{width:auto;margin-top:3px}.paytotal{font-size:24px;font-weight:800;margin:10px 0}.pin{min-height:100vh;display:grid;place-items:center;padding:20px}.pinbox{width:min(390px,100%);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}.pinlogo{width:90px;height:90px;border-radius:22px;object-fit:cover;background:var(--card2);margin:0 auto 14px;display:grid;place-items:center;font-size:28px;font-weight:800}.dots{font-size:28px;letter-spacing:8px;height:40px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.keypad button{background:var(--card2);color:var(--text);border:1px solid var(--line);font-size:19px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#f4f7fa;color:#0b0f14;padding:11px 15px;border-radius:999px;z-index:50;box-shadow:var(--shadow);font-weight:700}.file{padding:8px}.notice{padding:10px;border-radius:10px;background:#10231d;border:1px solid #245943;color:#b9f7dc;font-size:13px}.dangerbox{padding:10px;border-radius:10px;background:#2b1117;border:1px solid #6a2735;color:#fecdd3;font-size:13px}.adjust{display:flex;gap:7px;align-items:center;margin:7px 0}.adjust>*{flex:1}.adjust button{flex:0 0 auto}.breakdown{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.line{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.line.total{font-weight:800;padding-top:7px;margin-top:4px;border-top:1px solid var(--line)}.method{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:11px;margin:7px 0}.method small{color:var(--muted)}.muted{color:var(--muted)}.hidden{display:none!important}@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.banner{height:220px}.modalbg{place-items:center}}
 </style>
 </head>
-<body>
-<div id="app"></div><div id="toast"></div>
+<body><div id="app"></div><div id="toast"></div>
 <script>
 'use strict';
 
@@ -51,23 +49,23 @@ const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({
   '"':'&quot;'
 }[c]));
 
-const initials=s=>String(s||'?').trim()
+const initials=s=>String(s||'?')
+  .trim()
   .split(/\s+/)
   .slice(0,2)
   .map(x=>x[0])
   .join('')
   .toUpperCase()||'?';
 
-const today=()=>{
-  let d=new Date();
-  return d.toISOString().slice(0,10);
-};
+const today=()=>new Date().toISOString().slice(0,10);
 
-const fmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString(undefined,{
-  month:'short',
-  day:'numeric',
-  year:'numeric'
-}):'';
+const fmt=d=>d
+  ?new Date(d+'T12:00:00').toLocaleDateString(undefined,{
+    month:'short',
+    day:'numeric',
+    year:'numeric'
+  })
+  :'';
 
 const sitter=id=>state.sitters.find(s=>s.id===id);
 
@@ -77,6 +75,49 @@ function notify(msg){
   t.className='toast';
   clearTimeout(notify.t);
   notify.t=setTimeout(()=>t.className='',2600);
+}
+
+function normalize(){
+  state.sitters=Array.isArray(state.sitters)?state.sitters:[];
+  state.shifts=Array.isArray(state.shifts)?state.shifts:[];
+  state.payments=Array.isArray(state.payments)?state.payments:[];
+
+  state.sitters=state.sitters.map(s=>({
+    ...s,
+    id:s.id||uid(),
+    paymentMethods:Array.isArray(s.paymentMethods)?s.paymentMethods:[],
+    avatar:s.avatar||'',
+    archived:!!s.archived
+  }));
+
+  state.shifts=state.shifts.map(s=>{
+    let adjustments=Array.isArray(s.adjustments)?s.adjustments:[];
+
+    if(!adjustments.length&&(Number(s.adjustment)||0)!==0){
+      adjustments=[{
+        id:uid(),
+        type:s.adjustmentType||'other',
+        amount:Number(s.adjustment)||0,
+        note:s.adjustmentNote||''
+      }];
+    }
+
+    let base=round(
+      Number(s.basePay)||
+      round((Number(s.hours)||0)*(Number(s.hourlyRate)||0))
+    );
+
+    return {
+      ...s,
+      id:s.id||uid(),
+      adjustments,
+      totalPay:round(
+        base+
+        adjustments.reduce((a,x)=>a+Number(x.amount||0),0)
+      ),
+      basePay:base
+    };
+  });
 }
 
 function save(){
@@ -102,36 +143,41 @@ function load(){
       ...JSON.parse(localStorage.getItem(K.settings)||'{}')
     };
   }catch(e){
-    state={
-      ...state,
-      sitters:[],
-      shifts:[],
-      payments:[],
-      settings:{...DEF}
-    };
+    state.sitters=[];
+    state.shifts=[];
+    state.payments=[];
+    state.settings={...DEF};
   }
+
+  normalize();
+  save();
 }
 
-function hours(start,end){
-  if(!start||!end)return 0;
+function hours(a,b){
+  if(!a||!b)return 0;
 
-  let [h,m]=start.split(':').map(Number);
-  let [eh,em]=end.split(':').map(Number);
+  let [h,m]=a.split(':').map(Number);
+  let [eh,em]=b.split(':').map(Number);
 
-  let a=h*60+m;
-  let b=eh*60+em;
+  let x=h*60+m;
+  let y=eh*60+em;
 
-  if(b<=a)b+=1440;
+  if(y<=x)y+=1440;
 
-  return round((b-a)/60);
+  return round((y-x)/60);
+}
+
+function adjustmentsTotal(s){
+  return round(
+    (s.adjustments||[])
+      .reduce((a,x)=>a+Number(x.amount||0),0)
+  );
 }
 
 function total(s){
   return round(
-    Number(
-      s.totalPay ??
-      (s.basePay||0)+(s.adjustment||0)
-    )
+    Number(s.basePay||0)+
+    adjustmentsTotal(s)
   );
 }
 
@@ -196,8 +242,8 @@ function image(file,max=1000,quality=.78){
 
 function imgOrInitial(src,name,cls='avatar'){
   return src
-    ? `<img class="${cls}" src="${esc(src)}" alt="">`
-    : `<div class="${cls}">${esc(initials(name))}</div>`;
+    ?`<img class="${cls}" src="${esc(src)}" alt="">`
+    :`<div class="${cls}">${esc(initials(name))}</div>`;
 }
 
 function shell(){
@@ -205,17 +251,14 @@ function shell(){
 
   return `
   <div class="wrap">
-
     <header class="top">
-
       ${
         s.banner
-        ? `<div class="banner" style="background-image:url('${esc(s.banner)}')"></div>`
-        : '<div class="banner noimg"></div>'
+        ?`<div class="banner" style="background-image:url('${esc(s.banner)}')"></div>`
+        :'<div class="banner noimg"></div>'
       }
 
       <div class="brand">
-
         ${imgOrInitial(s.logo,s.familyName,'logo')}
 
         <div>
@@ -230,9 +273,7 @@ function shell(){
         >
           Lock
         </button>
-
       </div>
-
     </header>
 
     <nav>
@@ -251,12 +292,12 @@ function shell(){
           >
             ${x[1]}
           </button>
-        `).join('')
+        `)
+        .join('')
       }
     </nav>
 
     <main id="main"></main>
-
   </div>`;
 }
 
@@ -266,8 +307,7 @@ function tab(t){
 }
 
 function render(){
-  document.body.innerHTML=
-    `<div id="app"></div><div id="toast"></div>`;
+  document.body.innerHTML='<div id="app"></div><div id="toast"></div>';
 
   if(!sessionStorage.getItem('fst_unlocked')){
     return pin();
@@ -282,68 +322,61 @@ function render(){
   if(state.tab==='settings')settingsPage();
 }
 
-function pin(){
-  let logo=state.settings.logo;
-
-  document.getElementById('app').innerHTML=`
-  <div class="pin">
-    <div class="pinbox">
-
-      ${imgOrInitial(logo,state.settings.familyName,'pinlogo')}
-
-      <h1>${esc(state.settings.familyName)}</h1>
-
-      <p class="muted">Enter your PIN</p>
-
-      <div id="dots" class="dots">
-        ○ ○ ○ ○
-      </div>
-
-      <div class="keypad">
-
-        ${
-          [1,2,3,4,5,6,7,8,9,'⌫',0,'✓']
-          .map(k=>`
-            <button onclick="pinKey('${k}')">
-              ${k}
-            </button>
-          `).join('')
-        }
-
-      </div>
-
-    </div>
-  </div>`;
-}
-
 let pinbuf='';
 
+function pin(){
+  document.getElementById('app').innerHTML=`
+    <div class="pin">
+      <div class="pinbox">
+        ${imgOrInitial(state.settings.logo,state.settings.familyName,'pinlogo')}
+
+        <h1>${esc(state.settings.familyName)}</h1>
+
+        <p class="muted">Enter your PIN</p>
+
+        <div id="dots" class="dots">
+          ○ ○ ○ ○
+        </div>
+
+        <div class="keypad">
+          ${
+            [1,2,3,4,5,6,7,8,9,'C',0,'⌫']
+            .map(k=>`
+              <button onclick="pinKey('${k}')">
+                ${k}
+              </button>
+            `)
+            .join('')
+          }
+        </div>
+      </div>
+    </div>`;
+}
+
 function pinKey(k){
-
-  if(k==='⌫'){
+  if(k==='C'){
+    pinbuf='';
+  }else if(k==='⌫'){
     pinbuf=pinbuf.slice(0,-1);
+  }else if(pinbuf.length<4){
+    pinbuf+=k;
+  }
 
-  }else if(k==='✓'){
-
+  if(pinbuf.length===4){
     if(pinbuf===state.settings.pin){
       sessionStorage.setItem('fst_unlocked','1');
       pinbuf='';
       render();
       return;
     }else{
-      pinbuf='';
       notify('Incorrect PIN');
+      pinbuf='';
     }
-
-  }else if(pinbuf.length<4){
-    pinbuf+=k;
   }
 
   if($('dots')){
     $('dots').textContent=
-      pinbuf.padEnd(4,'○')
-        .split('')
-        .join(' ');
+      pinbuf.padEnd(4,'○').split('').join(' ');
   }
 }
 
@@ -354,7 +387,6 @@ function lock(){
 }
 
 function dashboard(){
-
   let owed=round(
     state.shifts
       .filter(s=>!paid(s))
@@ -377,163 +409,157 @@ function dashboard(){
     .slice(0,6);
 
   $('main').innerHTML=`
+    <div class="grid">
 
-  <div class="grid">
+      <div class="card">
+        <div class="label">Currently owed</div>
+        <div class="stat money">${money(owed)}</div>
+      </div>
 
-    <div class="card">
-      <div class="label">Currently owed</div>
-      <div class="stat money">${money(owed)}</div>
+      <div class="card">
+        <div class="label">Paid on recorded shifts</div>
+        <div class="stat money">${money(paidTotal)}</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Sitting shifts</div>
+        <div class="stat">${state.shifts.length}</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Sitters</div>
+        <div class="stat">${state.sitters.length}</div>
+      </div>
+
     </div>
 
-    <div class="card">
-      <div class="label">Paid on recorded shifts</div>
-      <div class="stat money">${money(paidTotal)}</div>
+    <div class="row section-title">
+      <span>Currently Owed</span>
+      <button class="small" onclick="openPay()">Pay Sitter</button>
     </div>
 
-    <div class="card">
-      <div class="label">Sitting shifts</div>
-      <div class="stat">${state.shifts.length}</div>
-    </div>
+    <div class="list">
+      ${
+        people.length
+        ?people.map(s=>`
+          <div class="item">
+            <div class="row">
 
-    <div class="card">
-      <div class="label">Sitters</div>
-      <div class="stat">${state.sitters.length}</div>
-    </div>
+              <div class="person">
+                ${imgOrInitial(s.avatar,s.name)}
 
-  </div>
+                <div>
+                  <strong>
+                    ${esc(s.name)}
+                    ${s.archived?'<span class="pill">Archived</span>':''}
+                  </strong>
 
-  <div class="row section-title">
-    <span>Currently Owed</span>
-    <button class="small" onclick="openPay()">Pay Sitter</button>
-  </div>
-
-  <div class="list">
-
-    ${
-      people.length
-      ? people.map(s=>`
-
-        <div class="item">
-
-          <div class="row">
-
-            <div class="person">
-
-              ${imgOrInitial(s.avatar,s.name)}
+                  <span class="muted">
+                    ${unpaid(s.id).length}
+                    unpaid shift${unpaid(s.id).length===1?'':'s'}
+                  </span>
+                </div>
+              </div>
 
               <div>
-                <strong>
-                  ${esc(s.name)}
-                  ${
-                    s.archived
-                    ? '<span class="pill">Archived</span>'
-                    : ''
-                  }
-                </strong>
-
-                <span class="muted">
-                  ${unpaid(s.id).length}
-                  unpaid shift${unpaid(s.id).length===1?'':'s'}
-                </span>
-
+                <strong class="money">${money(s.owed)}</strong>
+                <br>
+                <button
+                  class="small"
+                  onclick="openPay('${s.id}')"
+                >
+                  Pay
+                </button>
               </div>
 
             </div>
-
-            <div>
-              <strong class="money">
-                ${money(s.owed)}
-              </strong>
-
-              <br>
-
-              <button
-                class="small"
-                onclick="openPay('${s.id}')"
-              >
-                Pay
-              </button>
-            </div>
-
           </div>
+        `).join('')
+        :'<div class="card empty">Nothing is currently owed.</div>'
+      }
+    </div>
 
-        </div>
+    <h2 class="section-title">Recent Shifts</h2>
 
-      `).join('')
+    <div class="list">
+      ${
+        recent.length
+        ?recent.map(shiftItem).join('')
+        :'<div class="card empty">No shifts yet.</div>'
+      }
+    </div>`;
+}
 
-      : '<div class="card empty">Nothing is currently owed.</div>'
-    }
+function breakdownHTML(s){
+  let rows=[
+    `<div class="line">
+      <span>
+        Hours (${s.hours}h × ${money(s.hourlyRate)})
+      </span>
+      <span>${money(s.basePay)}</span>
+    </div>`
+  ];
 
-  </div>
+  (s.adjustments||[]).forEach(a=>{
+    rows.push(`
+      <div class="line">
+        <span>
+          ${esc(a.typeLabel||a.type||'Adjustment')}
+          ${a.note?' — '+esc(a.note):''}
+        </span>
+        <span>${money(a.amount)}</span>
+      </div>
+    `);
+  });
 
-  <h2 class="section-title">Recent Shifts</h2>
+  rows.push(`
+    <div class="line total">
+      <span>Total</span>
+      <span>${money(total(s))}</span>
+    </div>
+  `);
 
-  <div class="list">
-
-    ${
-      recent.length
-      ? recent.map(shiftItem).join('')
-      : '<div class="card empty">No shifts yet.</div>'
-    }
-
-  </div>`;
+  return `<div class="breakdown">${rows.join('')}</div>`;
 }
 
 function shiftItem(s){
-
   let p=sitter(s.sitterId);
   let pay=state.payments.find(x=>x.id===s.paymentId);
 
   return `
-  <div class="item">
+    <div class="item">
+      <div class="row">
 
-    <div class="row">
+        <div>
+          <strong>
+            ${esc(s.sitterName||p?.name||'Unknown')}
+          </strong>
 
-      <div>
+          <div class="muted">
+            ${fmt(s.date)} · ${esc(s.start)}–${esc(s.end)}
+          </div>
+        </div>
 
-        <strong>
-          ${esc(s.sitterName||p?.name||'Unknown')}
-        </strong>
+        <div style="text-align:right">
+          <strong class="money">${money(total(s))}</strong>
+          <br>
 
-        <div class="muted">
-          ${fmt(s.date)} ·
-          ${esc(s.start)}–${esc(s.end)} ·
-          ${s.hours}h
+          <span class="pill ${paid(s)?'good':'warn'}">
+            ${paid(s)?`Paid ${fmt(pay?.date)}`:'Unpaid'}
+          </span>
         </div>
 
       </div>
 
-      <div style="text-align:right">
-
-        <strong class="money">
-          ${money(total(s))}
-        </strong>
-
-        <br>
-
-        <span class="pill ${paid(s)?'good':'warn'}">
-          ${
-            paid(s)
-            ? `Paid ${fmt(pay?.date)}`
-            : 'Unpaid'
-          }
-        </span>
-
-      </div>
-
-    </div>
-
-  </div>`;
+      ${breakdownHTML(s)}
+    </div>`;
 }
 
 function shiftsPage(){
-
   let list=[...state.shifts];
 
   if(state.sitterFilter!=='all'){
-    list=list.filter(
-      s=>s.sitterId===state.sitterFilter
-    );
+    list=list.filter(s=>s.sitterId===state.sitterFilter);
   }
 
   if(state.filter==='outstanding'){
@@ -545,29 +571,23 @@ function shiftsPage(){
   }
 
   if(state.filter==='week'){
-
     let d=new Date();
     let day=(d.getDay()+6)%7;
     let from=new Date(d);
 
     from.setDate(d.getDate()-day);
 
-    let iso=from.toISOString().slice(0,10);
-
-    list=list.filter(s=>s.date>=iso);
-  }
-
-  if(state.filter==='month'){
-
-    let m=today().slice(0,7);
-
     list=list.filter(
-      s=>s.date.startsWith(m)
+      s=>s.date>=from.toISOString().slice(0,10)
     );
   }
 
-  if(state.filter==='custom'){
+  if(state.filter==='month'){
+    let m=today().slice(0,7);
+    list=list.filter(s=>s.date.startsWith(m));
+  }
 
+  if(state.filter==='custom'){
     if(state.from){
       list=list.filter(s=>s.date>=state.from);
     }
@@ -580,494 +600,447 @@ function shiftsPage(){
   list.sort((a,b)=>b.date.localeCompare(a.date));
 
   $('main').innerHTML=`
+    <div class="row">
+      <h2>Shifts</h2>
+      <button onclick="openShift()">+ Shift</button>
+    </div>
 
-  <div class="row">
-    <h2>Shifts</h2>
-    <button onclick="openShift()">+ Shift</button>
-  </div>
+    <div class="filters">
 
-  <div class="filters">
+      <select onchange="state.filter=this.value;render()">
+        ${
+          [
+            ['outstanding','Outstanding'],
+            ['all','All'],
+            ['paid','Paid'],
+            ['week','This Week'],
+            ['month','This Month'],
+            ['custom','Custom Dates']
+          ]
+          .map(x=>`
+            <option
+              value="${x[0]}"
+              ${state.filter===x[0]?'selected':''}
+            >
+              ${x[1]}
+            </option>
+          `)
+          .join('')
+        }
+      </select>
 
-    <select onchange="state.filter=this.value;render()">
+      <select onchange="state.sitterFilter=this.value;render()">
+        <option value="all">All Sitters</option>
 
-      ${
-        [
-          ['outstanding','Outstanding'],
-          ['all','All'],
-          ['paid','Paid'],
-          ['week','This Week'],
-          ['month','This Month'],
-          ['custom','Custom Dates']
-        ]
-        .map(x=>`
-          <option
-            value="${x[0]}"
-            ${state.filter===x[0]?'selected':''}
-          >
-            ${x[1]}
-          </option>
-        `).join('')
-      }
+        ${
+          state.sitters.map(s=>`
+            <option
+              value="${s.id}"
+              ${state.sitterFilter===s.id?'selected':''}
+            >
+              ${esc(s.name)}
+            </option>
+          `).join('')
+        }
+      </select>
 
-    </select>
-
-    <select
-      onchange="state.sitterFilter=this.value;render()"
-    >
-
-      <option value="all">All Sitters</option>
-
-      ${
-        state.sitters.map(s=>`
-          <option
-            value="${s.id}"
-            ${state.sitterFilter===s.id?'selected':''}
-          >
-            ${esc(s.name)}
-          </option>
-        `).join('')
-      }
-
-    </select>
-
-  </div>
-
-  ${
-    state.filter==='custom'
-    ? `
-      <div class="grid">
-
-        <input
-          type="date"
-          value="${state.from}"
-          onchange="state.from=this.value;render()"
-        >
-
-        <input
-          type="date"
-          value="${state.to}"
-          onchange="state.to=this.value;render()"
-        >
-
-      </div>
-    `
-    : ''
-  }
-
-  <div class="list" style="margin-top:10px">
+    </div>
 
     ${
-      list.length
-      ? list.map(s=>`
+      state.filter==='custom'
+      ?`
+        <div class="grid">
+          <input
+            type="date"
+            value="${state.from}"
+            onchange="state.from=this.value;render()"
+          >
 
-        <div class="item">
-
-          ${shiftItem(s)}
-
-          ${
-            !paid(s)
-            ? `
-              <div class="actions" style="margin-top:8px">
-
-                <button
-                  class="secondary small"
-                  onclick="openShift('${s.id}')"
-                >
-                  Edit
-                </button>
-
-                <button
-                  class="danger small"
-                  onclick="deleteShift('${s.id}')"
-                >
-                  Delete
-                </button>
-
-              </div>
-            `
-            : ''
-          }
-
+          <input
+            type="date"
+            value="${state.to}"
+            onchange="state.to=this.value;render()"
+          >
         </div>
-
-      `).join('')
-
-      : '<div class="card empty">No shifts match this filter.</div>'
+      `
+      :''
     }
 
-  </div>`;
+    <div class="list" style="margin-top:10px">
+      ${
+        list.length
+        ?list.map(s=>`
+          <div class="item">
+            ${shiftItem(s)}
+
+            ${
+              !paid(s)
+              ?`
+                <div class="actions" style="margin-top:8px">
+                  <button
+                    class="secondary small"
+                    onclick="openShift('${s.id}')"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    class="danger small"
+                    onclick="deleteShift('${s.id}')"
+                  >
+                    Delete
+                  </button>
+                </div>
+              `
+              :''
+            }
+          </div>
+        `).join('')
+        :'<div class="card empty">No shifts match this filter.</div>'
+      }
+    </div>`;
 }
 
 function sittersPage(){
-
   let active=state.sitters.filter(s=>!s.archived);
   let arch=state.sitters.filter(s=>s.archived);
 
   $('main').innerHTML=`
+    <div class="row">
+      <h2>Sitters</h2>
+      <button onclick="openSitter()">+ Sitter</button>
+    </div>
 
-  <div class="row">
-    <h2>Sitters</h2>
-    <button onclick="openSitter()">+ Sitter</button>
-  </div>
-
-  <div class="list">
+    <div class="list">
+      ${
+        active.map(sitterCard).join('')||
+        '<div class="card empty">No active sitters.</div>'
+      }
+    </div>
 
     ${
-      active.map(sitterCard).join('')
-      || '<div class="card empty">No active sitters.</div>'
-    }
-
-  </div>
-
-  ${
-    arch.length
-    ? `
-      <h2 class="section-title">Archived</h2>
-
-      <div class="list">
-        ${arch.map(sitterCard).join('')}
-      </div>
-    `
-    : ''
-  }`;
+      arch.length
+      ?`
+        <h2 class="section-title">Archived</h2>
+        <div class="list">
+          ${arch.map(sitterCard).join('')}
+        </div>
+      `
+      :''
+    }`;
 }
 
 function sitterCard(s){
-
   return `
-  <div class="card">
+    <div class="card">
+      <div class="row">
 
-    <div class="row">
+        <div class="person">
+          ${imgOrInitial(s.avatar,s.name)}
 
-      <div class="person">
+          <div>
+            <strong>${esc(s.name)}</strong>
 
-        ${imgOrInitial(s.avatar,s.name)}
+            <div class="muted">
+              ${money(s.rate)}/hr
+            </div>
 
-        <div>
+            ${
+              s.paymentMethods?.length
+              ?`
+                <div class="muted">
+                  ${s.paymentMethods.map(m=>esc(m.label)).join(' · ')}
+                </div>
+              `
+              :s.paymentInfo
+              ?`
+                <div class="muted">
+                  ${esc(s.paymentInfo)}
+                </div>
+              `
+              :''
+            }
 
-          <strong>${esc(s.name)}</strong>
-
-          <div class="muted">
-            ${money(s.rate)}/hr ·
-            ${esc(s.paymentInfo||'No payment info')}
+            ${
+              outstandingFor(s.id)
+              ?`
+                <span class="pill warn">
+                  Owed ${money(outstandingFor(s.id))}
+                </span>
+              `
+              :''
+            }
           </div>
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="secondary small"
+            onclick="openSitter('${s.id}')"
+          >
+            Edit
+          </button>
 
           ${
             outstandingFor(s.id)
-            ? `
-              <span class="pill warn">
-                Owed ${money(outstandingFor(s.id))}
-              </span>
+            ?`
+              <button
+                class="small"
+                onclick="openPay('${s.id}')"
+              >
+                Pay
+              </button>
             `
-            : ''
+            :''
           }
+
+          <button
+            class="secondary small"
+            onclick="archiveSitter('${s.id}')"
+          >
+            ${s.archived?'Restore':'Archive'}
+          </button>
 
         </div>
 
       </div>
-
-      <div class="actions">
-
-        <button
-          class="secondary small"
-          onclick="openSitter('${s.id}')"
-        >
-          Edit
-        </button>
-
-        ${
-          outstandingFor(s.id)
-          ? `
-            <button
-              class="small"
-              onclick="openPay('${s.id}')"
-            >
-              Pay
-            </button>
-          `
-          : ''
-        }
-
-        <button
-          class="secondary small"
-          onclick="archiveSitter('${s.id}')"
-        >
-          ${s.archived?'Restore':'Archive'}
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>`;
+    </div>`;
 }
 
 function paymentsPage(){
-
   let list=[...state.payments]
     .sort((a,b)=>b.date.localeCompare(a.date));
 
   $('main').innerHTML=`
+    <div class="row">
+      <h2>Payments</h2>
+      <button onclick="openPay()">+ Payment</button>
+    </div>
 
-  <div class="row">
-    <h2>Payments</h2>
-    <button onclick="openPay()">+ Payment</button>
-  </div>
+    <div class="list">
+      ${
+        list.length
+        ?list.map(p=>{
+          let s=sitter(p.sitterId);
 
-  <div class="list">
+          return `
+            <div class="card">
+              <div class="row">
 
-    ${
-      list.length
-      ? list.map(p=>{
+                <div>
+                  <strong>
+                    ${esc(s?.name||p.sitterName||'Unknown')}
+                  </strong>
 
-        let s=sitter(p.sitterId);
+                  <div class="muted">
+                    ${fmt(p.date)} ·
+                    ${esc(p.method||'Other')} ·
+                    ${p.shiftIds?.length||0}
+                    shift${p.shiftIds?.length===1?'':'s'}
+                  </div>
 
-        return `
-        <div class="card">
+                  ${
+                    p.note
+                    ?`
+                      <div class="muted">
+                        ${esc(p.note)}
+                      </div>
+                    `
+                    :''
+                  }
+                </div>
 
-          <div class="row">
+                <strong class="money">
+                  ${money(p.amount)}
+                </strong>
 
-            <div>
-
-              <strong>
-                ${esc(s?.name||p.sitterName||'Unknown')}
-              </strong>
-
-              <div class="muted">
-                ${fmt(p.date)} ·
-                ${esc(p.method||'Other')} ·
-                ${p.shiftIds?.length||0}
-                shift${p.shiftIds?.length===1?'':'s'}
               </div>
-
-              ${
-                p.note
-                ? `<div class="muted">${esc(p.note)}</div>`
-                : ''
-              }
-
-            </div>
-
-            <strong class="money">
-              ${money(p.amount)}
-            </strong>
-
-          </div>
-
-        </div>`;
-      }).join('')
-
-      : '<div class="card empty">No payments recorded.</div>'
-    }
-
-  </div>`;
+            </div>`;
+        }).join('')
+        :'<div class="card empty">No payments recorded.</div>'
+      }
+    </div>`;
 }
 
 function settingsPage(){
-
   let s=state.settings;
 
   $('main').innerHTML=`
+    <h2>Settings</h2>
 
-  <h2>Settings</h2>
+    <div class="card">
 
-  <div class="card">
-
-    <div class="field">
-      <label>Family name</label>
-      <input
-        id="familyName"
-        value="${esc(s.familyName)}"
-      >
-    </div>
-
-    <div class="field">
-      <label>PIN</label>
-      <input
-        id="pinSet"
-        inputmode="numeric"
-        maxlength="4"
-        value="${esc(s.pin)}"
-      >
-    </div>
-
-    <button onclick="saveSettings()">
-      Save Settings
-    </button>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Landing-page logo</h3>
-
-    ${
-      s.logo
-      ? `
-        <img
-          src="${esc(s.logo)}"
-          style="width:110px;height:110px;border-radius:20px;object-fit:cover"
+      <div class="field">
+        <label>Family name</label>
+        <input
+          id="familyName"
+          value="${esc(s.familyName)}"
         >
-        <br>
-      `
-      : ''
-    }
+      </div>
 
-    <input
-      class="file"
-      type="file"
-      accept="image/*"
-      id="logoFile"
-    >
-
-    <div class="actions">
-
-      <button
-        class="secondary"
-        onclick="clearLogo()"
-      >
-        Clear Logo
-      </button>
-
-    </div>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Dashboard banner</h3>
-
-    ${
-      s.banner
-      ? `
-        <img
-          src="${esc(s.banner)}"
-          style="width:100%;max-height:180px;object-fit:cover;border-radius:12px"
+      <div class="field">
+        <label>PIN</label>
+        <input
+          id="pinSet"
+          inputmode="numeric"
+          maxlength="4"
+          value="${esc(s.pin)}"
         >
-        <br>
-      `
-      : ''
-    }
+      </div>
 
-    <input
-      class="file"
-      type="file"
-      accept="image/*"
-      id="bannerFile"
-    >
-
-    <div class="actions">
-
-      <button
-        class="secondary"
-        onclick="clearBanner()"
-      >
-        Clear Banner
+      <button onclick="saveSettings()">
+        Save Settings
       </button>
 
     </div>
 
-  </div>
+    <div class="card">
+      <h3>Landing-page logo</h3>
 
-  <div class="card">
-
-    <h3>Backup</h3>
-
-    <div class="notice">
-      Photos and tracker data are stored in this browser.
-      Keep photos reasonably sized and make backups before changing devices.
-    </div>
-
-    <div class="actions" style="margin-top:10px">
-
-      <button onclick="exportData()">
-        Export Backup
-      </button>
-
-      <button
-        class="secondary"
-        onclick="$('importFile').click()"
-      >
-        Import Backup
-      </button>
+      ${
+        s.logo
+        ?`
+          <img
+            src="${esc(s.logo)}"
+            style="width:110px;height:110px;border-radius:20px;object-fit:cover"
+          >
+          <br>
+        `
+        :''
+      }
 
       <input
-        id="importFile"
+        class="file"
         type="file"
-        accept="application/json"
-        class="hidden"
+        accept="image/*"
+        id="logoFile"
       >
 
+      <div class="actions">
+        <button
+          class="secondary"
+          onclick="clearLogo()"
+        >
+          Clear Logo
+        </button>
+      </div>
     </div>
 
-  </div>
+    <div class="card">
+      <h3>Dashboard banner</h3>
 
-  <div class="card">
+      ${
+        s.banner
+        ?`
+          <img
+            src="${esc(s.banner)}"
+            style="width:100%;max-height:180px;object-fit:cover;border-radius:12px"
+          >
+          <br>
+        `
+        :''
+      }
 
-    <h3>Reset</h3>
+      <input
+        class="file"
+        type="file"
+        accept="image/*"
+        id="bannerFile"
+      >
 
-    <div class="dangerbox">
-      This removes all sitters, shifts, payments, and settings from this browser.
+      <div class="actions">
+        <button
+          class="secondary"
+          onclick="clearBanner()"
+        >
+          Clear Banner
+        </button>
+      </div>
     </div>
 
-    <button
-      class="danger"
-      style="margin-top:10px"
-      onclick="resetAll()"
-    >
-      Clear All Data
-    </button>
+    <div class="card">
+      <h3>Backup</h3>
 
-  </div>`;
+      <div class="notice">
+        Photos and tracker data are stored in this browser.
+        Keep photos reasonably sized and make backups before changing devices.
+      </div>
+
+      <div class="actions" style="margin-top:10px">
+
+        <button onclick="exportData()">
+          Export Backup
+        </button>
+
+        <button
+          class="secondary"
+          onclick="$('importFile').click()"
+        >
+          Import Backup
+        </button>
+
+        <input
+          id="importFile"
+          type="file"
+          accept="application/json"
+          class="hidden"
+        >
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Reset</h3>
+
+      <div class="dangerbox">
+        This removes all sitters, shifts, payments, and settings from this browser.
+      </div>
+
+      <button
+        class="danger"
+        style="margin-top:10px"
+        onclick="resetAll()"
+      >
+        Clear All Data
+      </button>
+    </div>`;
 
   $('logoFile').onchange=async e=>{
-
     if(!e.target.files[0])return;
 
     try{
-
       let old=s.logo;
-      let s2=await image(
+
+      s.logo=await image(
         e.target.files[0],
         700,
         .78
       );
 
-      s.logo=s2;
-
-      if(!save()){
-        s.logo=old;
-      }
+      if(!save())s.logo=old;
 
       render();
-
     }catch{
       notify('Could not read that image.');
     }
   };
 
   $('bannerFile').onchange=async e=>{
-
     if(!e.target.files[0])return;
 
     try{
-
       let old=s.banner;
 
-      let s2=await image(
+      s.banner=await image(
         e.target.files[0],
         1400,
         .78
       );
 
-      s.banner=s2;
-
-      if(!save()){
-        s.banner=old;
-      }
+      if(!save())s.banner=old;
 
       render();
-
     }catch{
       notify('Could not read that image.');
     }
@@ -1077,7 +1050,6 @@ function settingsPage(){
 }
 
 function saveSettings(){
-
   let p=$('pinSet').value.trim();
 
   if(!/^\d{4}$/.test(p)){
@@ -1091,7 +1063,6 @@ function saveSettings(){
 
   save();
   render();
-
   notify('Settings saved');
 }
 
@@ -1107,130 +1078,172 @@ function clearBanner(){
   render();
 }
 
-function openSitter(id){
+function paymentMethodsHTML(methods){
+  return (methods||[])
+    .map((m,i)=>`
+      <div class="method">
 
+        <div>
+          <strong>${esc(m.label)}</strong>
+
+          <small>
+            ${m.handle?`<br>${esc(m.handle)}`:''}
+          </small>
+        </div>
+
+        <button
+          class="danger small"
+          onclick="removePaymentMethod(${i})"
+        >
+          Remove
+        </button>
+
+      </div>
+    `)
+    .join('');
+}
+
+function openSitter(id){
   let s=sitter(id);
   let avatar=s?.avatar||'';
 
+  window.editMethods=
+    JSON.parse(JSON.stringify(s?.paymentMethods||[]));
+
   showModal(`
+    <div class="row">
+      <h2>${s?'Edit':'Add'} Sitter</h2>
 
-  <div class="row">
+      <button
+        class="close secondary"
+        onclick="closeModal()"
+      >
+        ×
+      </button>
+    </div>
 
-    <h2>${s?'Edit':'Add'} Sitter</h2>
+    <div class="field">
+      <label>Name</label>
+      <input
+        id="sn"
+        value="${esc(s?.name||'')}"
+      >
+    </div>
 
-    <button
-      class="close secondary"
-      onclick="closeModal()"
-    >
-      ×
-    </button>
+    <div class="field">
+      <label>Hourly rate</label>
+      <input
+        id="sr"
+        type="number"
+        min="0"
+        step="0.01"
+        value="${esc(s?.rate??'20')}"
+      >
+    </div>
 
-  </div>
+    <div class="field">
+      <label>Payment methods, in priority order</label>
 
-  <div class="field">
+      <div class="muted">
+        Put the preferred method first.
+        Venmo can be launched directly from the payment screen
+        when a Venmo handle is saved.
+      </div>
 
-    <label>Name</label>
+      <div id="methods">
+        ${paymentMethodsHTML(window.editMethods)}
+      </div>
 
-    <input
-      id="sn"
-      value="${esc(s?.name||'')}"
-    >
+      <div class="grid">
 
-  </div>
+        <select id="newMethod">
+          <option>Venmo</option>
+          <option>PayPal</option>
+          <option>Cash App</option>
+          <option>Zelle</option>
+          <option>Other</option>
+        </select>
 
-  <div class="field">
-
-    <label>Hourly rate</label>
-
-    <input
-      id="sr"
-      type="number"
-      min="0"
-      step="0.01"
-      value="${esc(s?.rate??'20')}"
-    >
-
-  </div>
-
-  <div class="field">
-
-    <label>Payment info</label>
-
-    <input
-      id="sp"
-      placeholder="Venmo, Zelle, etc."
-      value="${esc(s?.paymentInfo||'')}"
-    >
-
-  </div>
-
-  <div class="field">
-
-    <label>Photo</label>
-
-    ${
-      avatar
-      ? `
-        <img
-          id="spreview"
-          src="${esc(avatar)}"
-          style="width:90px;height:90px;border-radius:50%;object-fit:cover"
+        <input
+          id="newHandle"
+          placeholder="Handle, username, email, or other info"
         >
-      `
-      : `
-        <div
-          id="spreview"
-          class="avatar"
-          style="width:90px;height:90px"
-        >
-          ${esc(initials(s?.name||'Sitter'))}
-        </div>
-      `
-    }
 
-    <input
-      id="sphoto"
-      type="file"
-      accept="image/*"
-    >
+      </div>
 
-    <button
-      class="secondary small"
-      onclick="window.removeAvatar=true;window.newAvatar=''"
-    >
-      Remove Photo
-    </button>
+      <button
+        class="secondary small"
+        onclick="addPaymentMethod()"
+      >
+        + Add Payment Method
+      </button>
+    </div>
 
-  </div>
+    <div class="field">
+      <label>Photo</label>
 
-  <div class="actions">
+      ${
+        avatar
+        ?`
+          <img
+            id="spreview"
+            src="${esc(avatar)}"
+            style="width:90px;height:90px;border-radius:50%;object-fit:cover"
+          >
+        `
+        :`
+          <div
+            id="spreview"
+            class="avatar"
+            style="width:90px;height:90px"
+          >
+            ${esc(initials(s?.name||'Sitter'))}
+          </div>
+        `
+      }
 
-    <button onclick="saveSitter('${id||''}')">
-      Save
-    </button>
+      <input
+        id="sphoto"
+        type="file"
+        accept="image/*"
+      >
 
-    <button
-      class="secondary"
-      onclick="closeModal()"
-    >
-      Cancel
-    </button>
+      <button
+        class="secondary small"
+        onclick="
+          window.removeAvatar=true;
+          window.newAvatar='';
+          $('spreview').outerHTML='<div id=\"spreview\" class=\"avatar\" style=\"width:90px;height:90px\">'+esc(initials($('sn').value||'Sitter'))+'</div>'
+        "
+      >
+        Remove Photo
+      </button>
+    </div>
 
-  </div>`);
+    <div class="actions">
+
+      <button onclick="saveSitter('${id||''}')">
+        Save
+      </button>
+
+      <button
+        class="secondary"
+        onclick="closeModal()"
+      >
+        Cancel
+      </button>
+
+    </div>
+  `);
 
   window.newAvatar=avatar;
   window.removeAvatar=false;
 
   $('sphoto').onchange=async e=>{
-
     if(!e.target.files[0])return;
 
     window.newAvatar=
-      await image(
-        e.target.files[0],
-        500,
-        .8
-      );
+      await image(e.target.files[0],500,.8);
 
     window.removeAvatar=false;
 
@@ -1239,12 +1252,38 @@ function openSitter(id){
         id="spreview"
         src="${esc(window.newAvatar)}"
         style="width:90px;height:90px;border-radius:50%;object-fit:cover"
-      >`;
+      >
+    `;
   };
 }
 
-function saveSitter(id){
+function addPaymentMethod(){
+  let label=$('newMethod').value;
+  let handle=$('newHandle').value.trim();
 
+  if(!handle){
+    return notify('Enter the payment handle or account');
+  }
+
+  window.editMethods.push({
+    id:uid(),
+    label,
+    handle
+  });
+
+  $('methods').innerHTML=
+    paymentMethodsHTML(window.editMethods);
+
+  $('newHandle').value='';
+}
+
+function removePaymentMethod(i){
+  window.editMethods.splice(i,1);
+  $('methods').innerHTML=
+    paymentMethodsHTML(window.editMethods);
+}
+
+function saveSitter(id){
   let name=$('sn').value.trim();
   let rate=Number($('sr').value);
 
@@ -1257,47 +1296,39 @@ function saveSitter(id){
   }
 
   if(id){
-
     let s=sitter(id);
 
     Object.assign(s,{
       name,
       rate:round(rate),
-      paymentInfo:$('sp').value.trim(),
+      paymentMethods:window.editMethods,
       avatar:window.removeAvatar?'':window.newAvatar
     });
-
   }else{
-
     state.sitters.push({
       id:uid(),
       name,
       rate:round(rate),
-      paymentInfo:$('sp').value.trim(),
+      paymentMethods:window.editMethods,
       avatar:window.removeAvatar?'':window.newAvatar,
       archived:false
     });
-
   }
 
   save();
   closeModal();
   render();
-
   notify('Sitter saved');
 }
 
 function archiveSitter(id){
-
   let s=sitter(id);
 
   if(!s)return;
 
   if(
     !s.archived&&
-    !confirm(
-      `Archive ${s.name}? Their history will remain.`
-    )
+    !confirm(`Archive ${s.name}? Their history will remain.`)
   ){
     return;
   }
@@ -1309,7 +1340,6 @@ function archiveSitter(id){
 }
 
 function openShift(id){
-
   let sh=state.shifts.find(x=>x.id===id);
 
   if(sh&&paid(sh)){
@@ -1330,26 +1360,25 @@ function openShift(id){
     sitter(selected)?.rate||
     20;
 
-  let html=`
+  showModal(`
     <div class="row">
       <h2>${sh?'Edit':'Add'} Shift</h2>
+
       <button
         class="close secondary"
         onclick="closeModal()"
-      >×</button>
+      >
+        ×
+      </button>
     </div>
-  `;
 
-  html+=`
     <div class="field">
-
       <label>Sitter</label>
 
       <select
         id="ss"
         ${sh?'disabled':''}
       >
-
         ${
           opts.map(s=>`
             <option
@@ -1361,17 +1390,12 @@ function openShift(id){
             </option>
           `).join('')
         }
-
       </select>
-
     </div>
-  `;
 
-  html+=`
     <div class="grid">
 
       <div class="field">
-
         <label>Date</label>
 
         <input
@@ -1379,11 +1403,9 @@ function openShift(id){
           type="date"
           value="${esc(sh?.date||today())}"
         >
-
       </div>
 
       <div class="field">
-
         <label>Hourly rate</label>
 
         <input
@@ -1393,17 +1415,13 @@ function openShift(id){
           step="0.01"
           value="${esc(rate)}"
         >
-
       </div>
 
     </div>
-  `;
 
-  html+=`
     <div class="grid">
 
       <div class="field">
-
         <label>Start</label>
 
         <input
@@ -1411,11 +1429,9 @@ function openShift(id){
           type="time"
           value="${esc(sh?.start||'17:00')}"
         >
-
       </div>
 
       <div class="field">
-
         <label>End</label>
 
         <input
@@ -1423,103 +1439,57 @@ function openShift(id){
           type="time"
           value="${esc(sh?.end||'21:00')}"
         >
-
       </div>
 
     </div>
-  `;
 
-  html+=`
-    <div class="grid">
-
-      <div class="field">
-
-        <label>Adjustment type</label>
-
-        <select id="at">
-
-          <option value="none">None</option>
-          <option value="bonus">Bonus</option>
-          <option value="reimbursement">Reimbursement</option>
-          <option value="deduction">Deduction</option>
-          <option value="other">Other</option>
-
-        </select>
-
-      </div>
-
-      <div class="field">
-
-        <label>Adjustment amount</label>
-
-        <input
-          id="aa"
-          type="number"
-          step="0.01"
-          value="${Math.abs(sh?.adjustment||0)}"
-        >
-
-      </div>
-
-    </div>
-  `;
-
-  html+=`
     <div class="field">
+      <label>Separate adjustments</label>
 
-      <label>Adjustment note</label>
+      <div class="muted">
+        Add each reimbursement, tip, bonus, or deduction as its own line.
+      </div>
 
-      <input
-        id="an"
-        value="${esc(sh?.adjustmentNote||'')}"
+      <div id="adjustments"></div>
+
+      <button
+        class="secondary small"
+        onclick="addAdjustmentRow()"
       >
-
+        + Add Adjustment
+      </button>
     </div>
 
     <div class="field">
-
       <label>Shift notes</label>
 
       <textarea id="snotes">${esc(sh?.notes||'')}</textarea>
-
     </div>
-  `;
 
-  html+=`
     <div class="card">
-
       <div class="label">Preview</div>
-
-      <div
-        id="preview"
-        class="stat"
-      >
-        $0.00
-      </div>
-
+      <div id="preview" class="stat">$0.00</div>
     </div>
 
     <div class="actions">
 
-      <button
-        onclick="saveShift('${id||''}')"
-      >
+      <button onclick="saveShift('${id||''}')">
         Save Shift
       </button>
-  `;
 
-  if(sh){
-    html+=`
-      <button
-        class="danger"
-        onclick="deleteShift('${id}')"
-      >
-        Delete
-      </button>
-    `;
-  }
+      ${
+        sh
+        ?`
+          <button
+            class="danger"
+            onclick="deleteShift('${id}')"
+          >
+            Delete
+          </button>
+        `
+        :''
+      }
 
-  html+=`
       <button
         class="secondary"
         onclick="closeModal()"
@@ -1528,40 +1498,119 @@ function openShift(id){
       </button>
 
     </div>
-  `;
+  `);
 
-  showModal(html);
+  window.shiftAdjustments=
+    JSON.parse(
+      JSON.stringify(sh?.adjustments||[])
+    );
 
-  if(sh){
-    $('at').value=sh.adjustmentType||'none';
+  if(!window.shiftAdjustments.length){
+    window.shiftAdjustments=[];
   }
 
-  ['sst','se','srate','aa','at'].forEach(x=>{
-    $(x).addEventListener(
-      'input',
-      updatePreview
-    );
-  });
+  renderAdjustmentRows();
+
+  ['sst','se','srate'].forEach(x=>
+    $(x).addEventListener('input',updatePreview)
+  );
 
   updatePreview();
 }
 
-function adjVal(){
+function addAdjustmentRow(
+  type='reimbursement',
+  amount='',
+  note=''
+){
+  window.shiftAdjustments.push({
+    id:uid(),
+    type,
+    amount:Number(amount)||0,
+    note
+  });
 
-  let type=$('at').value;
-  let a=Number($('aa').value)||0;
+  renderAdjustmentRows();
+}
 
-  if(type==='none')return 0;
+function renderAdjustmentRows(){
+  let box=$('adjustments');
 
-  if(type==='deduction'){
-    return -Math.abs(a);
-  }
+  if(!box)return;
 
-  return Math.abs(a);
+  box.innerHTML=
+    window.shiftAdjustments.length
+    ?window.shiftAdjustments.map((a,i)=>`
+      <div class="adjust">
+
+        <select
+          onchange="
+            window.shiftAdjustments[${i}].type=this.value;
+            updatePreview()
+          "
+        >
+          <option ${a.type==='reimbursement'?'selected':''}>
+            reimbursement
+          </option>
+
+          <option ${a.type==='bonus'?'selected':''}>
+            bonus
+          </option>
+
+          <option ${a.type==='tip'?'selected':''}>
+            tip
+          </option>
+
+          <option ${a.type==='deduction'?'selected':''}>
+            deduction
+          </option>
+
+          <option ${a.type==='other'?'selected':''}>
+            other
+          </option>
+        </select>
+
+        <input
+          type="number"
+          step="0.01"
+          placeholder="Amount"
+          value="${a.amount||''}"
+          oninput="
+            window.shiftAdjustments[${i}].amount=Number(this.value)||0;
+            updatePreview()
+          "
+        >
+
+        <input
+          placeholder="Note (food, toys, fuel...)"
+          value="${esc(a.note||'')}"
+          oninput="
+            window.shiftAdjustments[${i}].note=this.value
+          "
+        >
+
+        <button
+          class="danger small"
+          onclick="
+            window.shiftAdjustments.splice(${i},1);
+            renderAdjustmentRows();
+            updatePreview()
+          "
+        >
+          ×
+        </button>
+
+      </div>
+    `).join('')
+    :'<div class="muted">No adjustments added.</div>';
+}
+
+function adjSigned(a){
+  let n=Math.abs(Number(a.amount)||0);
+  return a.type==='deduction'?-n:n;
 }
 
 function updatePreview(){
-
   let h=hours(
     $('sst').value,
     $('se').value
@@ -1571,19 +1620,19 @@ function updatePreview(){
     h*(Number($('srate').value)||0)
   );
 
-  let a=round(adjVal());
+  let adj=round(
+    (window.shiftAdjustments||[])
+      .reduce((a,x)=>a+adjSigned(x),0)
+  );
 
   $('preview').textContent=
-    money(base+a)+` (${h}h)`;
+    money(base+adj)+` (${h}h)`;
 }
 
 function saveShift(id){
-
   let s=sitter($('ss').value);
 
-  if(!s){
-    return notify('Choose a sitter');
-  }
+  if(!s)return notify('Choose a sitter');
 
   let h=hours(
     $('sst').value,
@@ -1605,7 +1654,18 @@ function saveShift(id){
     return notify('Enter a valid rate');
   }
 
-  let a=round(adjVal());
+  let adj=(window.shiftAdjustments||[])
+    .map(a=>({
+      ...a,
+      amount:round(adjSigned(a)),
+      typeLabel:
+        a.type.charAt(0).toUpperCase()+
+        a.type.slice(1)
+    }))
+    .filter(
+      a=>a.amount!==0||a.note
+    );
+
   let base=round(h*rate);
 
   let obj={
@@ -1618,54 +1678,43 @@ function saveShift(id){
     hours:h,
     hourlyRate:round(rate),
     basePay:base,
-    adjustment:a,
-    adjustmentType:$('at').value,
-    adjustmentNote:$('an').value.trim(),
-    totalPay:round(base+a),
+    adjustments:adj,
+    totalPay:round(
+      base+
+      adj.reduce((a,x)=>a+x.amount,0)
+    ),
     notes:$('snotes').value.trim(),
-    paymentId:
-      id
-      ? state.shifts.find(x=>x.id===id)?.paymentId||null
-      : null
+    paymentId:id
+      ?(
+        state.shifts.find(x=>x.id===id)?.paymentId||
+        null
+      )
+      :null
   };
 
   if(id){
-
-    let i=state.shifts.findIndex(
-      x=>x.id===id
-    );
-
-    state.shifts[i]=obj;
-
+    state.shifts[
+      state.shifts.findIndex(x=>x.id===id)
+    ]=obj;
   }else{
-
     state.shifts.push(obj);
-
   }
 
   save();
   closeModal();
   render();
-
   notify('Shift saved');
 }
 
 function deleteShift(id){
-
-  let s=state.shifts.find(
-    x=>x.id===id
-  );
+  let s=state.shifts.find(x=>x.id===id);
 
   if(!s||paid(s))return;
 
-  if(!confirm('Delete this unpaid shift?')){
-    return;
-  }
+  if(!confirm('Delete this unpaid shift?'))return;
 
   state.shifts=
-    state.shifts.filter(
-      x=>x.id!==id
-    );
+    state.shifts.filter(x=>x.id!==id);
 
   save();
   closeModal();
@@ -1673,27 +1722,22 @@ function deleteShift(id){
 }
 
 function openPay(pre){
-
   let candidates=
     state.sitters.filter(
       s=>outstandingFor(s.id)>0
     );
 
   if(!candidates.length){
-    return notify(
-      'No unpaid shifts to pay'
-    );
+    return notify('No unpaid shifts to pay');
   }
 
   let sid=
     pre&&outstandingFor(pre)>0
-    ? pre
-    : candidates[0].id;
+    ?pre
+    :candidates[0].id;
 
   showModal(`
-
     <div class="row">
-
       <h2>Record Payment</h2>
 
       <button
@@ -1702,18 +1746,15 @@ function openPay(pre){
       >
         ×
       </button>
-
     </div>
 
     <div class="field">
-
       <label>Sitter</label>
 
       <select
         id="ps"
         onchange="payList()"
       >
-
         ${
           candidates.map(s=>`
             <option
@@ -1721,21 +1762,15 @@ function openPay(pre){
               ${s.id===sid?'selected':''}
             >
               ${esc(s.name)}
-              ${s.paymentInfo
-                ? ' — '+esc(s.paymentInfo)
-                : ''}
             </option>
           `).join('')
         }
-
       </select>
-
     </div>
 
     <div id="payList"></div>
 
     <div class="field">
-
       <label>Payment date</label>
 
       <input
@@ -1743,31 +1778,30 @@ function openPay(pre){
         type="date"
         value="${today()}"
       >
-
     </div>
 
     <div class="field">
-
       <label>Method</label>
 
       <select id="pm">
         <option>Venmo</option>
+        <option>PayPal</option>
+        <option>Cash App</option>
         <option>Zelle</option>
         <option>Cash</option>
         <option>Check</option>
         <option>Bank Transfer</option>
         <option>Other</option>
       </select>
-
     </div>
 
     <div class="field">
-
       <label>Note / reference</label>
 
       <input id="pn">
-
     </div>
+
+    <div id="payActions"></div>
 
     <button onclick="recordPayment()">
       Record Payment
@@ -1777,13 +1811,35 @@ function openPay(pre){
   payList();
 }
 
-function payList(){
+function selectedPayIds(){
+  return [
+    ...document.querySelectorAll(
+      'input[name=payshift]:checked'
+    )
+  ].map(x=>x.value);
+}
 
+function selectedPayAmount(){
+  return round(
+    selectedPayIds()
+      .reduce(
+        (a,id)=>
+          a+
+          total(
+            state.shifts.find(
+              s=>s.id===id
+            )
+          ),
+        0
+      )
+  );
+}
+
+function payList(){
   let id=$('ps').value;
   let list=unpaid(id);
 
   $('payList').innerHTML=`
-
     <div class="field">
 
       <label>
@@ -1792,7 +1848,6 @@ function payList(){
 
       ${
         list.map(s=>`
-
           <label class="check">
 
             <input
@@ -1803,40 +1858,27 @@ function payList(){
             >
 
             <span>
-
               <strong>
                 ${fmt(s.date)}
               </strong>
-
               · ${s.start}–${s.end}
-              · ${s.hours}h
 
               <br>
 
               <span class="muted">
-                ${s.notes?esc(s.notes):''}
+                ${s.hours}h · ${money(total(s))}
               </span>
 
+              ${breakdownHTML(s)}
             </span>
 
-            <strong
-              class="money"
-              style="margin-left:auto"
-            >
-              ${money(total(s))}
-            </strong>
-
           </label>
-
         `).join('')
       }
 
     </div>
 
-    <div
-      id="ptotal"
-      class="paytotal"
-    >
+    <div id="ptotal" class="paytotal">
       Selected: $0.00
     </div>
   `;
@@ -1845,46 +1887,105 @@ function payList(){
 }
 
 function payTotal(){
-
-  let ids=[
-    ...document.querySelectorAll(
-      'input[name=payshift]:checked'
-    )
-  ].map(x=>x.value);
-
-  let n=ids.reduce(
-    (a,id)=>
-      a+total(
-        state.shifts.find(
-          s=>s.id===id
-        )
-      ),
-    0
-  );
+  let amount=selectedPayAmount();
 
   if($('ptotal')){
     $('ptotal').textContent=
-      'Selected: '+money(n);
+      'Selected: '+money(amount);
   }
+
+  renderVenmoButton();
 }
 
-function recordPayment(){
+function venmoMethod(s){
+  return (s?.paymentMethods||[])
+    .find(
+      m=>String(m.label).toLowerCase()==='venmo'
+    );
+}
 
-  let ids=[
-    ...document.querySelectorAll(
-      'input[name=payshift]:checked'
-    )
-  ].map(x=>x.value);
+function venmoUrl(handle,amount,note){
+  let h=String(handle||'')
+    .trim()
+    .replace(/^@/,'');
 
-  if(!ids.length){
+  let cleanNote=
+    encodeURIComponent(
+      note||'Sitter payment'
+    );
+
+  return `https://venmo.com/u/${encodeURIComponent(h)}?txn=pay&amount=${encodeURIComponent(amount.toFixed(2))}&note=${cleanNote}`;
+}
+
+function renderVenmoButton(){
+  let box=$('payActions');
+
+  if(!box)return;
+
+  let s=sitter($('ps').value);
+  let v=venmoMethod(s);
+  let amount=selectedPayAmount();
+
+  box.innerHTML=
+    amount&&v
+    ?`
+      <div
+        class="notice"
+        style="margin:10px 0"
+      >
+        Venmo recipient:
+        <strong>
+          @${esc(String(v.handle).replace(/^@/,''))}
+        </strong>
+      </div>
+
+      <button
+        class="secondary"
+        style="width:100%;margin-bottom:10px"
+        onclick="openVenmo()"
+      >
+        Open Venmo — ${money(amount)}
+      </button>
+    `
+    :'';
+}
+
+function openVenmo(){
+  let s=sitter($('ps').value);
+  let v=venmoMethod(s);
+  let amount=selectedPayAmount();
+
+  if(!v||!amount){
     return notify(
-      'Select at least one shift'
+      'Select shifts and add a Venmo handle for this sitter'
     );
   }
 
-  let sh=state.shifts.filter(
-    s=>ids.includes(s.id)
-  );
+  let note=
+    $('pn').value.trim()||
+    'Sitter payment';
+
+  let url=
+    venmoUrl(
+      v.handle,
+      amount,
+      note
+    );
+
+  window.open(url,'_blank');
+}
+
+function recordPayment(){
+  let ids=selectedPayIds();
+
+  if(!ids.length){
+    return notify('Select at least one shift');
+  }
+
+  let sh=
+    state.shifts.filter(
+      s=>ids.includes(s.id)
+    );
 
   let amount=round(
     sh.reduce(
@@ -1898,8 +1999,7 @@ function recordPayment(){
   let p={
     id:uid(),
     sitterId:sid,
-    sitterName:
-      sitter(sid)?.name||'',
+    sitterName:sitter(sid)?.name||'',
     date:$('pd').value,
     amount,
     method:$('pm').value,
@@ -1916,12 +2016,10 @@ function recordPayment(){
   save();
   closeModal();
   render();
-
   notify('Payment recorded');
 }
 
 function showModal(html){
-
   closeModal();
 
   let d=document.createElement('div');
@@ -1937,26 +2035,21 @@ function showModal(html){
   d.addEventListener(
     'click',
     e=>{
-      if(e.target===d){
-        closeModal();
-      }
+      if(e.target===d)closeModal();
     }
   );
 }
 
 function closeModal(){
-  document.getElementById(
-    'modalRoot'
-  )?.remove();
+  document.getElementById('modalRoot')?.remove();
 }
 
 function exportData(){
-
   let blob=new Blob(
     [
       JSON.stringify(
         {
-          version:1,
+          version:2,
           sitters:state.sitters,
           shifts:state.shifts,
           payments:state.payments,
@@ -1966,14 +2059,13 @@ function exportData(){
         2
       )
     ],
-    {
-      type:'application/json'
-    }
+    {type:'application/json'}
   );
 
   let a=document.createElement('a');
 
-  a.href=URL.createObjectURL(blob);
+  a.href=
+    URL.createObjectURL(blob);
 
   a.download=
     'family-sitter-tracker-backup-'+
@@ -1989,7 +2081,6 @@ function exportData(){
 }
 
 function importData(e){
-
   let f=e.target.files[0];
 
   if(!f)return;
@@ -1997,9 +2088,7 @@ function importData(e){
   let r=new FileReader();
 
   r.onload=()=>{
-
     try{
-
       let d=JSON.parse(r.result);
 
       if(
@@ -2027,11 +2116,11 @@ function importData(e){
         ...(d.settings||{})
       };
 
+      normalize();
       save();
       render();
 
       notify('Backup imported');
-
     }catch{
       notify('Invalid backup file');
     }
@@ -2041,7 +2130,6 @@ function importData(e){
 }
 
 function resetAll(){
-
   if(
     !confirm(
       'Clear ALL tracker data from this browser?'
@@ -2050,10 +2138,9 @@ function resetAll(){
     return;
   }
 
-  localStorage.removeItem(K.sitters);
-  localStorage.removeItem(K.shifts);
-  localStorage.removeItem(K.payments);
-  localStorage.removeItem(K.settings);
+  Object.values(K).forEach(
+    k=>localStorage.removeItem(k)
+  );
 
   sessionStorage.removeItem(
     'fst_unlocked'
