@@ -1,3052 +1,2078 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Favero Family Sitter Tracker</title>
-
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14"><title>Family Sitter Tracker</title>
 <style>
-:root{
-  --bg:#0b1020;
-  --panel:#111827;
-  --panel2:#182235;
-  --panel3:#202c42;
-  --text:#f8fafc;
-  --muted:#9ca3af;
-  --line:#2b3952;
-  --accent:#60a5fa;
-  --green:#34d399;
-  --danger:#f87171;
-  --warning:#fbbf24;
-  --shadow:0 10px 30px rgba(0,0,0,.25);
-}
-
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-}
-
-body{min-height:100vh}
-
-button,input,select,textarea{font:inherit}
-
-button{
-  cursor:pointer;
-  border:0;
-  border-radius:12px;
-  padding:11px 14px;
-  background:var(--panel3);
-  color:var(--text);
-  font-weight:700;
-}
-
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-
-button.primary{
-  background:var(--accent);
-  color:#07111f;
-}
-
-button.success{
-  background:var(--green);
-  color:#062014;
-}
-
-button.danger{
-  background:#3b1e25;
-  color:#fecaca;
-}
-
-button.ghost{
-  background:transparent;
-  border:1px solid var(--line);
-}
-
-button.small{
-  padding:8px 10px;
-  font-size:13px;
-}
-
-input,select,textarea{
-  width:100%;
-  background:#0d1525;
-  border:1px solid var(--line);
-  color:var(--text);
-  border-radius:11px;
-  padding:11px 12px;
-  outline:none;
-}
-
-input:focus,select:focus,textarea:focus{
-  border-color:var(--accent);
-}
-
-textarea{
-  min-height:82px;
-  resize:vertical;
-}
-
-label{
-  display:block;
-  color:#cbd5e1;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.hidden{display:none!important}
-
-.app{
-  max-width:760px;
-  margin:0 auto;
-  min-height:100vh;
-}
-
-.screen{
-  min-height:100vh;
-  padding:16px;
-}
-
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:18px;
-  box-shadow:var(--shadow);
-}
-
-.row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.spread{
-  justify-content:space-between;
-}
-
-.wrap{
-  flex-wrap:wrap;
-}
-
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.summary-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.field{
-  margin-bottom:14px;
-}
-
-.muted{color:var(--muted)}
-
-.smalltext{
-  font-size:12px;
-}
-
-.money{
-  font-variant-numeric:tabular-nums;
-}
-
-h1{
-  font-size:25px;
-  margin:0 0 4px;
-}
-
-h2{
-  font-size:20px;
-  margin:0 0 12px;
-}
-
-h3{
-  font-size:16px;
-  margin:0 0 5px;
-}
-
-.section{
-  margin-top:16px;
-}
-
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-  gap:10px;
-}
-
-.section-title h2{
-  margin:0;
-}
-
-.list{
-  display:grid;
-  gap:10px;
-}
-
-.item{
-  padding:14px;
-}
-
-.empty{
-  padding:24px;
-  text-align:center;
-  color:var(--muted);
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  border-radius:999px;
-  padding:4px 8px;
-  font-size:11px;
-  font-weight:800;
-  background:#273449;
-  color:#cbd5e1;
-}
-
-.badge.paid{
-  background:#12392e;
-  color:#86efac;
-}
-
-.badge.unpaid{
-  background:#3a2c12;
-  color:#fde68a;
-}
-
-.badge.archived{
-  background:#332331;
-  color:#f0abfc;
-}
-
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(11,16,32,.94);
-  backdrop-filter:blur(14px);
-  padding:10px 0 12px;
-}
-
-.topbar-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
-
-.brand-avatar,
-.avatar{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#273449;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  color:#cbd5e1;
-  overflow:hidden;
-  flex:0 0 auto;
-}
-
-.brand-avatar{
-  width:40px;
-  height:40px;
-}
-
-.brand-avatar img,
-.avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.avatar.large{
-  width:70px;
-  height:70px;
-  font-size:22px;
-}
-
-.banner{
-  height:145px;
-  border-radius:18px;
-  overflow:hidden;
-  background:linear-gradient(135deg,#182235,#0f172a);
-  border:1px solid var(--line);
-  margin-bottom:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.banner img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.banner-placeholder{
-  padding:20px;
-  text-align:center;
-  color:var(--muted);
-}
-
-.summary{
-  padding:15px;
-}
-
-.summary .value{
-  font-size:25px;
-  font-weight:900;
-  margin-top:5px;
-}
-
-.sitter-card{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.sitter-main{
-  flex:1;
-  min-width:0;
-}
-
-.sitter-actions{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-
-.actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.nav{
-  position:sticky;
-  bottom:0;
-  z-index:25;
-  padding:10px 0 max(10px,env(safe-area-inset-bottom));
-  background:linear-gradient(transparent,var(--bg) 20%);
-}
-
-.nav-inner{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:5px;
-  background:#101827;
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:5px;
-}
-
-.nav button{
-  background:transparent;
-  padding:9px 4px;
-  font-size:11px;
-  color:#94a3b8;
-}
-
-.nav button.active{
-  background:var(--panel3);
-  color:var(--text);
-}
-
-.nav-icon{
-  display:block;
-  font-size:18px;
-  line-height:20px;
-  margin-bottom:2px;
-}
-
-hr{
-  border:0;
-  border-top:1px solid var(--line);
-  margin:14px 0;
-}
-
-/* Modal */
-
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  z-index:50;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:0;
-}
-
-.modal{
-  width:min(760px,100%);
-  max-height:94vh;
-  overflow:auto;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:22px 22px 0 0;
-  padding:18px;
-}
-
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.modal-head h2{
-  margin:0;
-}
-
-.close{
-  width:38px;
-  height:38px;
-  padding:0;
-  border-radius:50%;
-}
-
-.check-item{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  padding:12px;
-  background:#0d1525;
-  border:1px solid var(--line);
-  border-radius:12px;
-  margin-bottom:8px;
-}
-
-.check-item input{
-  width:20px;
-  height:20px;
-  margin-top:2px;
-}
-
-.check-main{
-  flex:1;
-}
-
-.total-box{
-  padding:14px;
-  border-radius:14px;
-  background:#0d1525;
-  border:1px solid var(--line);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.detail-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  font-size:13px;
-}
-
-.detail-grid div{
-  background:#0d1525;
-  border-radius:10px;
-  padding:10px;
-}
-
-.settings-logo{
-  width:90px;
-  height:90px;
-  border-radius:18px;
-  object-fit:cover;
-  background:#273449;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  font-size:32px;
-  font-weight:900;
-}
-
-.settings-logo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.file-input{
-  padding:9px;
-}
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:85px;
-  transform:translateX(-50%);
-  z-index:100;
-  background:#f8fafc;
-  color:#0b1020;
-  padding:11px 15px;
-  border-radius:12px;
-  font-weight:800;
-  box-shadow:var(--shadow);
-  max-width:90%;
-  text-align:center;
-}
-
-/* PIN */
-
-.pin-screen{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100vh;
-  padding:20px;
-}
-
-.pin-card{
-  width:min(390px,100%);
-  padding:24px;
-  text-align:center;
-}
-
-.pin-logo{
-  width:105px;
-  height:105px;
-  margin:0 auto 16px;
-  border-radius:24px;
-  background:#182235;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  border:1px solid var(--line);
-  font-size:38px;
-  font-weight:900;
-}
-
-.pin-logo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.pin-dots{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:18px 0;
-}
-
-.pin-dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#334155;
-}
-
-.pin-dot.filled{
-  background:var(--accent);
-}
-
-.keypad{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:15px;
-}
-
-.keypad button{
-  height:58px;
-  font-size:20px;
-  background:#182235;
-}
-
-.keypad .zero{
-  grid-column:2;
-}
-
-.pin-error{
-  height:20px;
-  color:#fca5a5;
-  font-size:13px;
-}
-
-.footer-note{
-  text-align:center;
-  color:#64748b;
-  font-size:11px;
-  margin:16px 0 6px;
-}
-
-@media(min-width:650px){
-  .modal-backdrop{
-    align-items:center;
-    padding:20px;
-  }
-
-  .modal{
-    border-radius:22px;
-    max-height:90vh;
-  }
-}
-
-@media(max-width:430px){
-  .grid2{
-    grid-template-columns:1fr;
-  }
-
-  .sitter-actions{
-    justify-content:flex-start;
-  }
-}
+:root{--bg:#0b0f14;--card:#131a22;--card2:#18212b;--text:#f4f7fa;--muted:#9aa8b5;--line:#263341;--accent:#6ee7b7;--danger:#fb7185;--warn:#fbbf24;--shadow:0 12px 30px #0008}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#062218;font-weight:750;cursor:pointer}button.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}button.danger{background:var(--danger);color:#300811}button.small{padding:7px 10px;font-size:13px}.wrap{max-width:900px;margin:auto;padding:14px 14px 90px}.hidden{display:none!important}.muted{color:var(--muted)}.money{font-variant-numeric:tabular-nums}.top{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);margin-bottom:12px}.banner{height:155px;background:#111923 center/cover no-repeat}.banner.noimg{height:90px}.brand{display:flex;gap:12px;align-items:center;padding:14px}.logo{width:58px;height:58px;border-radius:16px;object-fit:cover;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted)}nav{display:flex;gap:7px;overflow:auto;padding:0 2px 12px;position:sticky;top:0;z-index:5;background:var(--bg)}nav button{white-space:nowrap;background:var(--card);color:var(--muted);border:1px solid var(--line)}nav button.active{background:var(--accent);color:#062218;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}.stat{font-size:25px;font-weight:800}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.actions{display:flex;gap:7px;flex-wrap:wrap}.list{display:grid;gap:8px}.item{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:11px}.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#263341;display:grid;place-items:center;font-weight:800;flex:none}.person{display:flex;gap:10px;align-items:center;min-width:0}.person>div:last-child{min-width:0}.person strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.pill.good{color:var(--accent);border-color:#2c6955}.pill.warn{color:var(--warn)}.pill.bad{color:var(--danger)}.section-title{font-size:18px;margin:18px 0 9px}.empty{text-align:center;padding:25px;color:var(--muted)}.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.filters select,.filters input{width:auto}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:13px;color:var(--muted)}input,select,textarea{width:100%;background:#0e141b;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}textarea{min-height:80px;resize:vertical}.modalbg{position:fixed;inset:0;background:#000b;z-index:20;display:grid;place-items:end center;padding:10px}.modal{width:min(700px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.modal h2{margin:0 0 12px}.close{background:transparent;color:var(--muted);font-size:22px;padding:3px}.check{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.check input{width:auto;margin-top:3px}.paytotal{font-size:24px;font-weight:800;margin:10px 0}.pin{min-height:100vh;display:grid;place-items:center;padding:20px}.pinbox{width:min(390px,100%);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}.pinlogo{width:90px;height:90px;border-radius:22px;object-fit:cover;background:var(--card2);margin:0 auto 14px;display:grid;place-items:center;font-size:28px;font-weight:800}.dots{font-size:28px;letter-spacing:8px;height:40px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.keypad button{background:var(--card2);color:var(--text);border:1px solid var(--line);font-size:19px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#f4f7fa;color:#0b0f14;padding:11px 15px;border-radius:999px;z-index:50;box-shadow:var(--shadow);font-weight:700}.file{padding:8px}.notice{padding:10px;border-radius:10px;background:#10231d;border:1px solid #245943;color:#b9f7dc;font-size:13px}.dangerbox{padding:10px;border-radius:10px;background:#2b1117;border:1px solid #6a2735;color:#fecdd3;font-size:13px}@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.banner{height:220px}.modalbg{place-items:center}}
 </style>
 </head>
-
 <body>
-
-<div id="app" class="app"></div>
-<div id="toast" class="toast hidden"></div>
-
+<div id="app"></div><div id="toast"></div>
 <script>
-"use strict";
+'use strict';
 
-/* =========================================================
-   FAVERO FAMILY SITTER TRACKER
-   Phase 1 - Local Device Version
-
-   Features:
-   - PIN landing page
-   - Family logo/photo
-   - Dashboard banner
-   - Sitter profiles + avatars
-   - Sitter archive/restore
-   - Shift logging
-   - Historical hourly rates
-   - Adjustments/bonuses/reimbursements/deductions
-   - Flexible payments
-   - Pay multiple shifts in one transaction
-   - Payment history
-   - Backup / restore
-   - Mobile-first design
-   ========================================================= */
-
-const KEYS = {
-  sitters: "favero_sitters_v2",
-  shifts: "favero_shifts_v2",
-  payments: "favero_payments_v2",
-  settings: "favero_settings_v2",
-  unlocked: "favero_unlocked_v2"
+const K={
+  sitters:'fst_sitters',
+  shifts:'fst_shifts',
+  payments:'fst_payments',
+  settings:'fst_settings'
 };
 
-const DEFAULT_SETTINGS = {
-  pin: "1313",
-  familyName: "Favero Family",
-  banner: "",
-  logo: ""
+const DEF={
+  pin:'1313',
+  familyName:'Favero Family',
+  logo:'',
+  banner:''
 };
 
-let state = {
-  sitters: [],
-  shifts: [],
-  payments: [],
-  settings: {...DEFAULT_SETTINGS},
-  tab: "dashboard",
-  filter: "outstanding",
-  sitterFilter: "all",
-  dateFrom: "",
-  dateTo: ""
+let state={
+  sitters:[],
+  shifts:[],
+  payments:[],
+  settings:{...DEF},
+  tab:'dashboard',
+  filter:'outstanding',
+  sitterFilter:'all',
+  from:'',
+  to:''
 };
 
+const $=id=>document.getElementById(id);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const money=n=>'$'+Number(n||0).toFixed(2);
+const round=n=>Math.round((Number(n)||0)*100)/100;
 
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  "'":'&#39;',
+  '"':'&quot;'
+}[c]));
 
-function uid(prefix="id"){
-  return prefix + "_" +
-    Date.now().toString(36) + "_" +
-    Math.random().toString(36).slice(2,8);
-}
+const initials=s=>String(s||'?').trim()
+  .split(/\s+/)
+  .slice(0,2)
+  .map(x=>x[0])
+  .join('')
+  .toUpperCase()||'?';
 
-function round2(n){
-  return Math.round((Number(n)||0)*100)/100;
-}
+const today=()=>{
+  let d=new Date();
+  return d.toISOString().slice(0,10);
+};
 
-function money(n){
-  return new Intl.NumberFormat("en-US",{
-    style:"currency",
-    currency:"USD"
-  }).format(Number(n)||0);
-}
+const fmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString(undefined,{
+  month:'short',
+  day:'numeric',
+  year:'numeric'
+}):'';
 
-function esc(value){
-  return String(value ?? "").replace(/[&<>"']/g, m => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  }[m]));
-}
+const sitter=id=>state.sitters.find(s=>s.id===id);
 
-function initials(name){
-  const parts = String(name||"")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  return parts
-    .slice(0,2)
-    .map(x => x[0].toUpperCase())
-    .join("") || "?";
-}
-
-function todayISO(){
-  const d = new Date();
-  const offset = d.getTimezoneOffset();
-  return new Date(d.getTime()-offset*60000)
-    .toISOString()
-    .slice(0,10);
-}
-
-function fmtDate(value){
-  if(!value) return "";
-
-  const d = new Date(value+"T12:00:00");
-
-  if(isNaN(d)) return value;
-
-  return d.toLocaleDateString(undefined,{
-    month:"short",
-    day:"numeric",
-    year:"numeric"
-  });
-}
-
-function load(key,fallback){
-  try{
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  }catch{
-    return fallback;
-  }
+function notify(msg){
+  let t=$('toast');
+  t.textContent=msg;
+  t.className='toast';
+  clearTimeout(notify.t);
+  notify.t=setTimeout(()=>t.className='',2600);
 }
 
 function save(){
-  localStorage.setItem(KEYS.sitters,JSON.stringify(state.sitters));
-  localStorage.setItem(KEYS.shifts,JSON.stringify(state.shifts));
-  localStorage.setItem(KEYS.payments,JSON.stringify(state.payments));
-  localStorage.setItem(KEYS.settings,JSON.stringify(state.settings));
-}
-
-function getSitter(id){
-  return state.sitters.find(s => s.id === id);
-}
-
-function calcHours(start,end){
-  if(!start || !end) return 0;
-
-  const [sh,sm] = start.split(":").map(Number);
-  const [eh,em] = end.split(":").map(Number);
-
-  let startMinutes = sh*60+sm;
-  let endMinutes = eh*60+em;
-
-  if(endMinutes <= startMinutes){
-    endMinutes += 1440;
+  try{
+    localStorage.setItem(K.sitters,JSON.stringify(state.sitters));
+    localStorage.setItem(K.shifts,JSON.stringify(state.shifts));
+    localStorage.setItem(K.payments,JSON.stringify(state.payments));
+    localStorage.setItem(K.settings,JSON.stringify(state.settings));
+    return true;
+  }catch(e){
+    notify('Browser storage is full. Try smaller photos.');
+    return false;
   }
-
-  return round2((endMinutes-startMinutes)/60);
 }
 
-function shiftPaid(shift){
-  return !!shift.paymentId;
+function load(){
+  try{
+    state.sitters=JSON.parse(localStorage.getItem(K.sitters)||'[]');
+    state.shifts=JSON.parse(localStorage.getItem(K.shifts)||'[]');
+    state.payments=JSON.parse(localStorage.getItem(K.payments)||'[]');
+    state.settings={
+      ...DEF,
+      ...JSON.parse(localStorage.getItem(K.settings)||'{}')
+    };
+  }catch(e){
+    state={
+      ...state,
+      sitters:[],
+      shifts:[],
+      payments:[],
+      settings:{...DEF}
+    };
+  }
 }
 
-function shiftTotal(shift){
-  return Number(
-    shift.totalPay ??
-    (
-      (Number(shift.hours)||0) *
-      (Number(shift.hourlyRate)||0) +
-      (Number(shift.adjustment)||0)
+function hours(start,end){
+  if(!start||!end)return 0;
+
+  let [h,m]=start.split(':').map(Number);
+  let [eh,em]=end.split(':').map(Number);
+
+  let a=h*60+m;
+  let b=eh*60+em;
+
+  if(b<=a)b+=1440;
+
+  return round((b-a)/60);
+}
+
+function total(s){
+  return round(
+    Number(
+      s.totalPay ??
+      (s.basePay||0)+(s.adjustment||0)
     )
   );
 }
 
-function sitterShifts(id){
-  return state.shifts.filter(s => s.sitterId === id);
+function paid(s){
+  return !!s.paymentId;
 }
 
-function sitterOutstanding(id){
-  return sitterShifts(id).filter(s => !shiftPaid(s));
-}
-
-function sitterOwed(id){
-  return round2(
-    sitterOutstanding(id)
-      .reduce((total,s) => total + shiftTotal(s),0)
-  );
-}
-
-function totalOutstanding(){
-  return round2(
+function outstandingFor(id){
+  return round(
     state.shifts
-      .filter(s => !shiftPaid(s))
-      .reduce((total,s) => total + shiftTotal(s),0)
+      .filter(s=>s.sitterId===id&&!paid(s))
+      .reduce((a,s)=>a+total(s),0)
   );
 }
 
-function totalPaid(){
-  return round2(
-    state.payments
-      .reduce((total,p) => total + Number(p.amount||0),0)
-  );
+function unpaid(id){
+  return state.shifts
+    .filter(s=>s.sitterId===id&&!paid(s))
+    .sort((a,b)=>b.date.localeCompare(a.date));
 }
 
-function activeSitters(){
-  return state.sitters.filter(s => !s.archived);
-}
+function image(file,max=1000,quality=.78){
+  return new Promise((res,rej)=>{
+    if(!file)return res('');
 
-function recent(items){
-  return [...items].sort((a,b) =>
-    String(b.date).localeCompare(String(a.date))
-  );
-}
+    let r=new FileReader();
 
+    r.onerror=rej;
 
-/* =========================================================
-   MIGRATION FROM ORIGINAL VERSION
-   ========================================================= */
+    r.onload=()=>{
+      let im=new Image();
 
-function migrateOldData(){
+      im.onload=()=>{
+        let scale=Math.min(
+          1,
+          max/Math.max(im.width,im.height)
+        );
 
-  const oldSitters = load("favero_sitters",null);
-  const oldShifts = load("favero_shifts",null);
+        let c=document.createElement('canvas');
 
-  if(
-    state.sitters.length ||
-    state.shifts.length ||
-    !oldSitters
-  ){
-    return;
-  }
+        c.width=Math.max(1,Math.round(im.width*scale));
+        c.height=Math.max(1,Math.round(im.height*scale));
 
-  const sitterMap = {};
+        c.getContext('2d').drawImage(
+          im,
+          0,
+          0,
+          c.width,
+          c.height
+        );
 
-  state.sitters = (
-    Array.isArray(oldSitters)
-      ? oldSitters
-      : []
-  ).map(old => {
+        res(c.toDataURL('image/jpeg',quality));
+      };
 
-    const id = uid("sit");
-
-    sitterMap[old.id ?? old.name] = id;
-
-    return {
-      id,
-      name: old.name || "Unnamed Sitter",
-      rate: Number(old.rate)||0,
-      paymentInfo: old.paymentInfo || "",
-      archived: false,
-      avatar: ""
+      im.onerror=rej;
+      im.src=r.result;
     };
+
+    r.readAsDataURL(file);
   });
-
-  state.shifts = (
-    Array.isArray(oldShifts)
-      ? oldShifts
-      : []
-  ).map(old => {
-
-    const sitter = state.sitters.find(
-      s =>
-        s.name === old.sitter ||
-        s.id === old.sitterId
-    );
-
-    const start = old.start || "";
-    const end = old.end || "";
-
-    const hours = calcHours(start,end);
-
-    const hourlyRate =
-      Number(old.hourlyRate ??
-      sitter?.rate ??
-      0);
-
-    const basePay =
-      round2(hours * hourlyRate);
-
-    const adjustment =
-      Number(old.adjustment)||0;
-
-    return {
-      id: uid("sh"),
-      sitterId: sitter?.id || "",
-      sitterName: sitter?.name || old.sitter || "",
-      date: old.date || todayISO(),
-      start,
-      end,
-      hours,
-      hourlyRate,
-      basePay,
-      adjustment,
-      adjustmentType: old.adjustmentType || "none",
-      adjustmentNote: old.adjustmentNote || "",
-      totalPay: round2(basePay + adjustment),
-      notes: old.notes || "",
-      paymentId: null
-    };
-  });
-
-  save();
 }
 
+function imgOrInitial(src,name,cls='avatar'){
+  return src
+    ? `<img class="${cls}" src="${esc(src)}" alt="">`
+    : `<div class="${cls}">${esc(initials(name))}</div>`;
+}
 
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
+function shell(){
+  let s=state.settings;
 
-function init(){
+  return `
+  <div class="wrap">
 
-  state.sitters =
-    load(KEYS.sitters,[]);
+    <header class="top">
 
-  state.shifts =
-    load(KEYS.shifts,[]);
+      ${
+        s.banner
+        ? `<div class="banner" style="background-image:url('${esc(s.banner)}')"></div>`
+        : '<div class="banner noimg"></div>'
+      }
 
-  state.payments =
-    load(KEYS.payments,[]);
+      <div class="brand">
 
-  state.settings = {
-    ...DEFAULT_SETTINGS,
-    ...load(KEYS.settings,{})
-  };
+        ${imgOrInitial(s.logo,s.familyName,'logo')}
 
-  migrateOldData();
+        <div>
+          <h1>${esc(s.familyName)}</h1>
+          <p>Family sitter tracker</p>
+        </div>
 
-  state.sitters = state.sitters.map(s => ({
-    ...s,
-    avatar: s.avatar || "",
-    archived: !!s.archived
-  }));
+        <button
+          class="secondary small"
+          style="margin-left:auto"
+          onclick="lock()"
+        >
+          Lock
+        </button>
 
-  state.shifts = state.shifts.map(s => ({
-    ...s,
-    adjustment: Number(s.adjustment)||0,
-    totalPay: Number(
-      s.totalPay ??
-      (
-        (Number(s.hours)||0) *
-        (Number(s.hourlyRate)||0) +
-        (Number(s.adjustment)||0)
-      )
-    ),
-    paymentId: s.paymentId || null
-  }));
+      </div>
 
-  state.payments = state.payments.map(p => ({
-    ...p,
-    shiftIds: Array.isArray(p.shiftIds)
-      ? p.shiftIds
-      : [],
-    amount: Number(p.amount)||0
-  }));
+    </header>
 
-  save();
+    <nav>
+      ${
+        [
+          ['dashboard','Dashboard'],
+          ['shifts','Shifts'],
+          ['sitters','Sitters'],
+          ['payments','Payments'],
+          ['settings','Settings']
+        ]
+        .map(x=>`
+          <button
+            class="${state.tab===x[0]?'active':''}"
+            onclick="tab('${x[0]}')"
+          >
+            ${x[1]}
+          </button>
+        `).join('')
+      }
+    </nav>
 
+    <main id="main"></main>
+
+  </div>`;
+}
+
+function tab(t){
+  state.tab=t;
   render();
 }
 
-
-/* =========================================================
-   AVATARS / BRANDING
-   ========================================================= */
-
-function avatarHTML(s,size=""){
-
-  const cls = "avatar " + size;
-
-  if(s?.avatar){
-
-    return `
-      <div class="${cls}">
-        <img
-          src="${esc(s.avatar)}"
-          alt=""
-        >
-      </div>
-    `;
-  }
-
-  return `
-    <div class="${cls}">
-      ${esc(initials(s?.name))}
-    </div>
-  `;
-}
-
-function logoHTML(){
-
-  if(state.settings.logo){
-
-    return `
-      <div class="brand-avatar">
-        <img
-          src="${esc(state.settings.logo)}"
-          alt=""
-        >
-      </div>
-    `;
-  }
-
-  return `
-    <div class="brand-avatar">F</div>
-  `;
-}
-
-async function imageToDataUrl(
-  file,
-  maxDimension=1000,
-  quality=.8
-){
-
-  return new Promise((resolve,reject)=>{
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-
-      const img = new Image();
-
-      img.onload = () => {
-
-        let width = img.naturalWidth;
-        let height = img.naturalHeight;
-
-        const scale =
-          Math.min(
-            1,
-            maxDimension /
-            Math.max(width,height)
-          );
-
-        width = Math.round(width * scale);
-        height = Math.round(height * scale);
-
-        const canvas =
-          document.createElement("canvas");
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx =
-          canvas.getContext("2d");
-
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          width,
-          height
-        );
-
-        resolve(
-          canvas.toDataURL(
-            "image/jpeg",
-            quality
-          )
-        );
-      };
-
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-  });
-}
-
-
-/* =========================================================
-   MAIN RENDER
-   ========================================================= */
-
 function render(){
+  document.body.innerHTML=
+    `<div id="app"></div><div id="toast"></div>`;
 
-  const root =
-    document.getElementById("app");
-
-  if(
-    sessionStorage.getItem(KEYS.unlocked)
-    !== "yes"
-  ){
-
-    root.innerHTML = renderPin();
-
-    bindPin();
-
-    return;
+  if(!sessionStorage.getItem('fst_unlocked')){
+    return pin();
   }
 
-  root.innerHTML = renderMain();
+  $('app').innerHTML=shell();
 
-  bindMain();
+  if(state.tab==='dashboard')dashboard();
+  if(state.tab==='shifts')shiftsPage();
+  if(state.tab==='sitters')sittersPage();
+  if(state.tab==='payments')paymentsPage();
+  if(state.tab==='settings')settingsPage();
 }
 
-function renderPin(){
+function pin(){
+  let logo=state.settings.logo;
 
-  return `
-    <div class="pin-screen">
+  document.getElementById('app').innerHTML=`
+  <div class="pin">
+    <div class="pinbox">
 
-      <div class="pin-card card">
+      ${imgOrInitial(logo,state.settings.familyName,'pinlogo')}
 
-        <div class="pin-logo">
+      <h1>${esc(state.settings.familyName)}</h1>
 
-          ${
-            state.settings.logo
+      <p class="muted">Enter your PIN</p>
 
-              ? `
-                <img
-                  src="${esc(state.settings.logo)}"
-                  alt=""
-                >
-              `
-
-              : `<span>F</span>`
-          }
-
-        </div>
-
-        <h1>
-          ${esc(state.settings.familyName)}
-        </h1>
-
-        <p class="muted">
-          Sitter Tracker
-        </p>
-
-        <div
-          class="pin-dots"
-          id="pinDots"
-        >
-          ${[0,1,2,3].map(i => `
-            <span
-              class="pin-dot"
-              data-dot="${i}"
-            ></span>
-          `).join("")}
-        </div>
-
-        <div
-          id="pinError"
-          class="pin-error"
-        ></div>
-
-        <div class="keypad">
-
-          ${[1,2,3,4,5,6,7,8,9]
-            .map(n => `
-              <button
-                data-key="${n}"
-              >
-                ${n}
-              </button>
-            `).join("")}
-
-          <button data-key="back">
-            ⌫
-          </button>
-
-          <button
-            class="zero"
-            data-key="0"
-          >
-            0
-          </button>
-
-          <button data-key="enter">
-            ✓
-          </button>
-
-        </div>
-
-        <div class="footer-note">
-          PIN is a convenience lock, not encryption.
-        </div>
-
+      <div id="dots" class="dots">
+        ○ ○ ○ ○
       </div>
 
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   PIN
-   ========================================================= */
-
-function bindPin(){
-
-  let entered = "";
-
-  function update(){
-
-    document
-      .querySelectorAll("[data-dot]")
-      .forEach((dot,index)=>{
-        dot.classList.toggle(
-          "filled",
-          index < entered.length
-        );
-      });
-  }
-
-  function submit(){
-
-    if(
-      entered ===
-      String(state.settings.pin || "1313")
-    ){
-
-      sessionStorage.setItem(
-        KEYS.unlocked,
-        "yes"
-      );
-
-      render();
-
-    }else{
-
-      document
-        .getElementById("pinError")
-        .textContent =
-        "Incorrect PIN";
-
-      entered = "";
-
-      update();
-    }
-  }
-
-  document
-    .querySelectorAll("[data-key]")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const key =
-            button.dataset.key;
-
-          if(key === "back"){
-
-            entered =
-              entered.slice(0,-1);
-
-          }else if(key === "enter"){
-
-            if(entered.length === 4){
-              submit();
-            }
-
-            return;
-
-          }else if(entered.length < 4){
-
-            entered += key;
-          }
-
-          update();
-
-          if(entered.length === 4){
-
-            setTimeout(
-              submit,
-              120
-            );
-          }
-        }
-      );
-    });
-}
-
-
-/* =========================================================
-   MAIN APP
-   ========================================================= */
-
-function renderMain(){
-
-  const tabs = [
-    ["dashboard","🏠","Dashboard"],
-    ["shifts","🕒","Shifts"],
-    ["sitters","👥","Sitters"],
-    ["payments","💵","Payments"],
-    ["settings","⚙️","Settings"]
-  ];
-
-  return `
-    <div class="screen">
-
-      <div class="topbar">
-
-        <div class="topbar-inner">
-
-          <div class="brand">
-
-            ${logoHTML()}
-
-            <div>
-
-              <div style="font-weight:900">
-                ${esc(state.settings.familyName)}
-              </div>
-
-              <div class="smalltext muted">
-                Sitter Tracker
-              </div>
-
-            </div>
-
-          </div>
-
-          <button
-            class="small ghost"
-            id="lockBtn"
-          >
-            Lock
-          </button>
-
-        </div>
-
-      </div>
-
-      <main id="content">
-        ${renderTab()}
-      </main>
-
-      <div class="nav">
-
-        <div class="nav-inner">
-
-          ${tabs.map(t => `
-            <button
-              class="${state.tab===t[0] ? "active" : ""}"
-              data-tab="${t[0]}"
-            >
-              <span class="nav-icon">
-                ${t[1]}
-              </span>
-              ${t[2]}
-            </button>
-          `).join("")}
-
-        </div>
-
-      </div>
-
-    </div>
-  `;
-}
-
-function renderTab(){
-
-  if(state.tab === "dashboard")
-    return renderDashboard();
-
-  if(state.tab === "shifts")
-    return renderShifts();
-
-  if(state.tab === "sitters")
-    return renderSitters();
-
-  if(state.tab === "payments")
-    return renderPayments();
-
-  return renderSettings();
-}
-
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-function renderDashboard(){
-
-  const banner =
-    state.settings.banner
-
-      ? `
-        <div class="banner">
-          <img
-            src="${esc(state.settings.banner)}"
-            alt=""
-          >
-        </div>
-      `
-
-      : `
-        <div class="banner">
-          <div class="banner-placeholder">
-            <strong>
-              ${esc(state.settings.familyName)}
-            </strong>
-            <br>
-            <span class="smalltext">
-              Add a banner in Settings
-            </span>
-          </div>
-        </div>
-      `;
-
-  const sitterSummary =
-    activeSitters()
-      .map(s => ({
-        sitter:s,
-        owed:sitterOwed(s.id),
-        count:sitterOutstanding(s.id).length,
-        hours:sitterOutstanding(s.id)
-          .reduce(
-            (total,shift) =>
-              total + Number(shift.hours||0),
-            0
-          )
-      }))
-      .filter(x => x.owed > 0)
-      .sort((a,b)=>b.owed-a.owed);
-
-  const recentShifts =
-    recent(state.shifts).slice(0,5);
-
-  const recentPayments =
-    recent(state.payments).slice(0,4);
-
-  return `
-
-    ${banner}
-
-    <div class="section">
-
-      <div class="section-title">
-
-        <h2>
-          Currently Owed
-        </h2>
-
-        <button
-          class="primary small"
-          id="quickPay"
-        >
-          Pay Sitter
-        </button>
-
-      </div>
-
-      <div class="summary-grid">
-
-        <div class="summary card">
-
-          <div class="muted smalltext">
-            Outstanding
-          </div>
-
-          <div class="value money">
-            ${money(totalOutstanding())}
-          </div>
-
-        </div>
-
-        <div class="summary card">
-
-          <div class="muted smalltext">
-            Paid to Date
-          </div>
-
-          <div class="value money">
-            ${money(totalPaid())}
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-title">
-
-        <h2>
-          By Sitter
-        </h2>
-
-        <button
-          class="small ghost"
-          id="addSitterBtn"
-        >
-          + Sitter
-        </button>
-
-      </div>
-
-      <div class="list">
+      <div class="keypad">
 
         ${
-          sitterSummary.length
-
-            ? sitterSummary.map(x => `
-
-              <div class="item card sitter-card">
-
-                ${avatarHTML(x.sitter)}
-
-                <div class="sitter-main">
-
-                  <h3>
-                    ${esc(x.sitter.name)}
-                  </h3>
-
-                  <div class="muted smalltext">
-                    ${x.count}
-                    unpaid shift${x.count===1?"":"s"}
-                    ·
-                    ${x.hours.toFixed(2)}
-                    hrs
-                  </div>
-
-                </div>
-
-                <div style="text-align:right">
-
-                  <div
-                    class="money"
-                    style="font-size:18px;font-weight:900"
-                  >
-                    ${money(x.owed)}
-                  </div>
-
-                  <button
-                    class="small primary paySitterBtn"
-                    data-id="${esc(x.sitter.id)}"
-                  >
-                    Pay
-                  </button>
-
-                </div>
-
-              </div>
-
-            `).join("")
-
-            : `
-              <div class="empty card">
-                Nobody is currently owed money.
-              </div>
-            `
+          [1,2,3,4,5,6,7,8,9,'⌫',0,'✓']
+          .map(k=>`
+            <button onclick="pinKey('${k}')">
+              ${k}
+            </button>
+          `).join('')
         }
 
       </div>
 
     </div>
-
-
-    <div class="section">
-
-      <div class="section-title">
-
-        <h2>
-          Recent Shifts
-        </h2>
-
-        <button
-          class="small ghost"
-          id="addShiftBtn"
-        >
-          + Shift
-        </button>
-
-      </div>
-
-      ${renderShiftList(recentShifts)}
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="section-title">
-
-        <h2>
-          Recent Payments
-        </h2>
-
-      </div>
-
-      ${renderPaymentList(recentPayments)}
-
-    </div>
-  `;
+  </div>`;
 }
 
-
-/* =========================================================
-   SHIFT LIST
-   ========================================================= */
-
-function renderShiftList(items){
-
-  if(!items.length){
-
-    return `
-      <div class="empty card">
-        No shifts logged yet.
-      </div>
-    `;
-  }
-
-  return `
-    <div class="list">
-
-      ${items.map(shift => {
-
-        const sitter =
-          getSitter(shift.sitterId) ||
-          {
-            name:shift.sitterName || "Unknown",
-            avatar:""
-          };
-
-        return `
-
-          <div class="item card">
-
-            <div class="row spread">
-
-              <div class="row">
-
-                ${avatarHTML(sitter)}
-
-                <div>
-
-                  <strong>
-                    ${esc(sitter.name)}
-                  </strong>
-
-                  <div class="muted smalltext">
-                    ${fmtDate(shift.date)}
-                    ·
-                    ${esc(shift.start)}
-                    –
-                    ${esc(shift.end)}
-                  </div>
-
-                </div>
-
-              </div>
-
-              <span
-                class="badge ${
-                  shiftPaid(shift)
-                    ? "paid"
-                    : "unpaid"
-                }"
-              >
-                ${
-                  shiftPaid(shift)
-                    ? "Paid"
-                    : "Unpaid"
-                }
-              </span>
-
-            </div>
-
-            <div
-              class="row spread"
-              style="margin-top:10px"
-            >
-
-              <span class="muted smalltext">
-
-                ${Number(shift.hours).toFixed(2)}
-                hrs @
-                ${money(shift.hourlyRate)}/hr
-
-              </span>
-
-              <strong class="money">
-                ${money(shiftTotal(shift))}
-              </strong>
-
-            </div>
-
-            ${
-              shift.notes
-
-                ? `
-                  <div
-                    class="muted smalltext"
-                    style="margin-top:6px"
-                  >
-                    ${esc(shift.notes)}
-                  </div>
-                `
-
-                : ""
-            }
-
-            ${
-              !shiftPaid(shift)
-
-                ? `
-                  <div style="margin-top:10px">
-                    <button
-                      class="small ghost editShiftBtn"
-                      data-id="${esc(shift.id)}"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                `
-
-                : ""
-            }
-
-          </div>
-
-        `;
-      }).join("")}
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   SHIFTS TAB
-   ========================================================= */
-
-function renderShifts(){
-
-  let items = recent(state.shifts);
-
-  const filter = state.filter;
-
-  const now = new Date();
-
-  const startWeek =
-    new Date(now);
-
-  startWeek.setHours(0,0,0,0);
-
-  const day =
-    startWeek.getDay();
-
-  startWeek.setDate(
-    startWeek.getDate() -
-    (day === 0 ? 6 : day-1)
-  );
-
-  const weekISO =
-    new Date(
-      startWeek.getTime() -
-      startWeek.getTimezoneOffset()*60000
-    )
-    .toISOString()
-    .slice(0,10);
-
-  const monthISO =
-    todayISO().slice(0,7);
-
-  if(state.sitterFilter !== "all"){
-
-    items =
-      items.filter(
-        s =>
-          s.sitterId ===
-          state.sitterFilter
-      );
-  }
-
-  if(filter === "outstanding")
-    items = items.filter(
-      s => !shiftPaid(s)
-    );
-
-  if(filter === "paid")
-    items = items.filter(
-      s => shiftPaid(s)
-    );
-
-  if(filter === "week")
-    items = items.filter(
-      s => s.date >= weekISO
-    );
-
-  if(filter === "month")
-    items = items.filter(
-      s => s.date.startsWith(monthISO)
-    );
-
-  if(filter === "custom"){
-
-    if(state.dateFrom)
-      items =
-        items.filter(
-          s => s.date >= state.dateFrom
-        );
-
-    if(state.dateTo)
-      items =
-        items.filter(
-          s => s.date <= state.dateTo
-        );
-  }
-
-  return `
-
-    <div class="section-title">
-
-      <h1>
-        Shifts
-      </h1>
-
-      <button
-        class="primary small"
-        id="addShiftBtn"
-      >
-        + Add Shift
-      </button>
-
-    </div>
-
-
-    <div class="card item">
-
-      <div class="grid2">
-
-        <div class="field">
-
-          <label>
-            View
-          </label>
-
-          <select id="shiftFilter">
-
-            <option
-              value="outstanding"
-              ${filter==="outstanding"?"selected":""}
-            >
-              Outstanding
-            </option>
-
-            <option
-              value="all"
-              ${filter==="all"?"selected":""}
-            >
-              All Shifts
-            </option>
-
-            <option
-              value="paid"
-              ${filter==="paid"?"selected":""}
-            >
-              Paid
-            </option>
-
-            <option
-              value="week"
-              ${filter==="week"?"selected":""}
-            >
-              This Week
-            </option>
-
-            <option
-              value="month"
-              ${filter==="month"?"selected":""}
-            >
-              This Month
-            </option>
-
-            <option
-              value="custom"
-              ${filter==="custom"?"selected":""}
-            >
-              Custom Dates
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            Sitter
-          </label>
-
-          <select id="sitterFilter">
-
-            <option value="all">
-              All Sitters
-            </option>
-
-            ${
-              state.sitters.map(s => `
-
-                <option
-                  value="${esc(s.id)}"
-                  ${
-                    state.sitterFilter===s.id
-                      ? "selected"
-                      : ""
-                  }
-                >
-                  ${esc(s.name)}
-                  ${s.archived?" (Archived)":""}
-                </option>
-
-              `).join("")
-            }
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      ${
-        filter === "custom"
-
-          ? `
-
-            <div class="grid2">
-
-              <div class="field">
-
-                <label>
-                  From
-                </label>
-
-                <input
-                  id="dateFrom"
-                  type="date"
-                  value="${esc(state.dateFrom)}"
-                >
-
-              </div>
-
-              <div class="field">
-
-                <label>
-                  To
-                </label>
-
-                <input
-                  id="dateTo"
-                  type="date"
-                  value="${esc(state.dateTo)}"
-                >
-
-              </div>
-
-            </div>
-
-          `
-
-          : ""
-      }
-
-    </div>
-
-
-    <div class="section">
-
-      ${renderShiftList(items)}
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   SITTERS
-   ========================================================= */
-
-function renderSitters(){
-
-  const active =
-    state.sitters.filter(
-      s => !s.archived
-    );
-
-  const archived =
-    state.sitters.filter(
-      s => s.archived
-    );
-
-  return `
-
-    <div class="section-title">
-
-      <h1>
-        Sitters
-      </h1>
-
-      <button
-        class="primary small"
-        id="addSitterBtn"
-      >
-        + Add Sitter
-      </button>
-
-    </div>
-
-
-    <div class="list">
-
-      ${
-        active.length
-
-          ? active.map(
-              renderSitterCard
-            ).join("")
-
-          : `
-            <div class="empty card">
-              No active sitters yet.
-            </div>
-          `
-      }
-
-    </div>
-
-
-    ${
-      archived.length
-
-        ? `
-
-          <div class="section">
-
-            <div class="section-title">
-
-              <h2>
-                Archived
-              </h2>
-
-            </div>
-
-            <div class="list">
-
-              ${
-                archived
-                  .map(renderSitterCard)
-                  .join("")
-              }
-
-            </div>
-
-          </div>
-
-        `
-
-        : ""
+let pinbuf='';
+
+function pinKey(k){
+
+  if(k==='⌫'){
+    pinbuf=pinbuf.slice(0,-1);
+
+  }else if(k==='✓'){
+
+    if(pinbuf===state.settings.pin){
+      sessionStorage.setItem('fst_unlocked','1');
+      pinbuf='';
+      render();
+      return;
+    }else{
+      pinbuf='';
+      notify('Incorrect PIN');
     }
 
-  `;
+  }else if(pinbuf.length<4){
+    pinbuf+=k;
+  }
+
+  if($('dots')){
+    $('dots').textContent=
+      pinbuf.padEnd(4,'○')
+        .split('')
+        .join(' ');
+  }
 }
 
-function renderSitterCard(s){
+function lock(){
+  sessionStorage.removeItem('fst_unlocked');
+  pinbuf='';
+  render();
+}
 
-  const owed =
-    sitterOwed(s.id);
+function dashboard(){
 
-  const shifts =
-    sitterShifts(s.id);
+  let owed=round(
+    state.shifts
+      .filter(s=>!paid(s))
+      .reduce((a,s)=>a+total(s),0)
+  );
 
-  return `
+  let paidTotal=round(
+    state.shifts
+      .filter(paid)
+      .reduce((a,s)=>a+total(s),0)
+  );
 
-    <div class="item card sitter-card">
+  let people=state.sitters
+    .map(s=>({...s,owed:outstandingFor(s.id)}))
+    .filter(s=>s.owed>0)
+    .sort((a,b)=>b.owed-a.owed);
 
-      ${avatarHTML(s,"large")}
+  let recent=[...state.shifts]
+    .sort((a,b)=>b.date.localeCompare(a.date))
+    .slice(0,6);
 
-      <div class="sitter-main">
+  $('main').innerHTML=`
 
-        <h3>
+  <div class="grid">
 
-          ${esc(s.name)}
+    <div class="card">
+      <div class="label">Currently owed</div>
+      <div class="stat money">${money(owed)}</div>
+    </div>
 
-          ${
-            s.archived
-              ? `
-                <span class="badge archived">
-                  Archived
+    <div class="card">
+      <div class="label">Paid on recorded shifts</div>
+      <div class="stat money">${money(paidTotal)}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Sitting shifts</div>
+      <div class="stat">${state.shifts.length}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Sitters</div>
+      <div class="stat">${state.sitters.length}</div>
+    </div>
+
+  </div>
+
+  <div class="row section-title">
+    <span>Currently Owed</span>
+    <button class="small" onclick="openPay()">Pay Sitter</button>
+  </div>
+
+  <div class="list">
+
+    ${
+      people.length
+      ? people.map(s=>`
+
+        <div class="item">
+
+          <div class="row">
+
+            <div class="person">
+
+              ${imgOrInitial(s.avatar,s.name)}
+
+              <div>
+                <strong>
+                  ${esc(s.name)}
+                  ${
+                    s.archived
+                    ? '<span class="pill">Archived</span>'
+                    : ''
+                  }
+                </strong>
+
+                <span class="muted">
+                  ${unpaid(s.id).length}
+                  unpaid shift${unpaid(s.id).length===1?'':'s'}
                 </span>
-              `
-              : ""
-          }
 
-        </h3>
+              </div>
 
-        <div class="muted smalltext">
+            </div>
 
-          ${money(s.rate)}/hr
+            <div>
+              <strong class="money">
+                ${money(s.owed)}
+              </strong>
 
-          ·
+              <br>
 
-          ${shifts.length}
-          total shift${shifts.length===1?"":"s"}
+              <button
+                class="small"
+                onclick="openPay('${s.id}')"
+              >
+                Pay
+              </button>
+            </div>
+
+          </div>
 
         </div>
 
-        <div
-          class="smalltext"
-          style="margin-top:5px"
+      `).join('')
+
+      : '<div class="card empty">Nothing is currently owed.</div>'
+    }
+
+  </div>
+
+  <h2 class="section-title">Recent Shifts</h2>
+
+  <div class="list">
+
+    ${
+      recent.length
+      ? recent.map(shiftItem).join('')
+      : '<div class="card empty">No shifts yet.</div>'
+    }
+
+  </div>`;
+}
+
+function shiftItem(s){
+
+  let p=sitter(s.sitterId);
+  let pay=state.payments.find(x=>x.id===s.paymentId);
+
+  return `
+  <div class="item">
+
+    <div class="row">
+
+      <div>
+
+        <strong>
+          ${esc(s.sitterName||p?.name||'Unknown')}
+        </strong>
+
+        <div class="muted">
+          ${fmt(s.date)} ·
+          ${esc(s.start)}–${esc(s.end)} ·
+          ${s.hours}h
+        </div>
+
+      </div>
+
+      <div style="text-align:right">
+
+        <strong class="money">
+          ${money(total(s))}
+        </strong>
+
+        <br>
+
+        <span class="pill ${paid(s)?'good':'warn'}">
+          ${
+            paid(s)
+            ? `Paid ${fmt(pay?.date)}`
+            : 'Unpaid'
+          }
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>`;
+}
+
+function shiftsPage(){
+
+  let list=[...state.shifts];
+
+  if(state.sitterFilter!=='all'){
+    list=list.filter(
+      s=>s.sitterId===state.sitterFilter
+    );
+  }
+
+  if(state.filter==='outstanding'){
+    list=list.filter(s=>!paid(s));
+  }
+
+  if(state.filter==='paid'){
+    list=list.filter(paid);
+  }
+
+  if(state.filter==='week'){
+
+    let d=new Date();
+    let day=(d.getDay()+6)%7;
+    let from=new Date(d);
+
+    from.setDate(d.getDate()-day);
+
+    let iso=from.toISOString().slice(0,10);
+
+    list=list.filter(s=>s.date>=iso);
+  }
+
+  if(state.filter==='month'){
+
+    let m=today().slice(0,7);
+
+    list=list.filter(
+      s=>s.date.startsWith(m)
+    );
+  }
+
+  if(state.filter==='custom'){
+
+    if(state.from){
+      list=list.filter(s=>s.date>=state.from);
+    }
+
+    if(state.to){
+      list=list.filter(s=>s.date<=state.to);
+    }
+  }
+
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+
+  $('main').innerHTML=`
+
+  <div class="row">
+    <h2>Shifts</h2>
+    <button onclick="openShift()">+ Shift</button>
+  </div>
+
+  <div class="filters">
+
+    <select onchange="state.filter=this.value;render()">
+
+      ${
+        [
+          ['outstanding','Outstanding'],
+          ['all','All'],
+          ['paid','Paid'],
+          ['week','This Week'],
+          ['month','This Month'],
+          ['custom','Custom Dates']
+        ]
+        .map(x=>`
+          <option
+            value="${x[0]}"
+            ${state.filter===x[0]?'selected':''}
+          >
+            ${x[1]}
+          </option>
+        `).join('')
+      }
+
+    </select>
+
+    <select
+      onchange="state.sitterFilter=this.value;render()"
+    >
+
+      <option value="all">All Sitters</option>
+
+      ${
+        state.sitters.map(s=>`
+          <option
+            value="${s.id}"
+            ${state.sitterFilter===s.id?'selected':''}
+          >
+            ${esc(s.name)}
+          </option>
+        `).join('')
+      }
+
+    </select>
+
+  </div>
+
+  ${
+    state.filter==='custom'
+    ? `
+      <div class="grid">
+
+        <input
+          type="date"
+          value="${state.from}"
+          onchange="state.from=this.value;render()"
         >
 
-          <strong>
-            ${money(owed)}
-          </strong>
+        <input
+          type="date"
+          value="${state.to}"
+          onchange="state.to=this.value;render()"
+        >
 
-          currently owed
+      </div>
+    `
+    : ''
+  }
+
+  <div class="list" style="margin-top:10px">
+
+    ${
+      list.length
+      ? list.map(s=>`
+
+        <div class="item">
+
+          ${shiftItem(s)}
+
+          ${
+            !paid(s)
+            ? `
+              <div class="actions" style="margin-top:8px">
+
+                <button
+                  class="secondary small"
+                  onclick="openShift('${s.id}')"
+                >
+                  Edit
+                </button>
+
+                <button
+                  class="danger small"
+                  onclick="deleteShift('${s.id}')"
+                >
+                  Delete
+                </button>
+
+              </div>
+            `
+            : ''
+          }
+
+        </div>
+
+      `).join('')
+
+      : '<div class="card empty">No shifts match this filter.</div>'
+    }
+
+  </div>`;
+}
+
+function sittersPage(){
+
+  let active=state.sitters.filter(s=>!s.archived);
+  let arch=state.sitters.filter(s=>s.archived);
+
+  $('main').innerHTML=`
+
+  <div class="row">
+    <h2>Sitters</h2>
+    <button onclick="openSitter()">+ Sitter</button>
+  </div>
+
+  <div class="list">
+
+    ${
+      active.map(sitterCard).join('')
+      || '<div class="card empty">No active sitters.</div>'
+    }
+
+  </div>
+
+  ${
+    arch.length
+    ? `
+      <h2 class="section-title">Archived</h2>
+
+      <div class="list">
+        ${arch.map(sitterCard).join('')}
+      </div>
+    `
+    : ''
+  }`;
+}
+
+function sitterCard(s){
+
+  return `
+  <div class="card">
+
+    <div class="row">
+
+      <div class="person">
+
+        ${imgOrInitial(s.avatar,s.name)}
+
+        <div>
+
+          <strong>${esc(s.name)}</strong>
+
+          <div class="muted">
+            ${money(s.rate)}/hr ·
+            ${esc(s.paymentInfo||'No payment info')}
+          </div>
+
+          ${
+            outstandingFor(s.id)
+            ? `
+              <span class="pill warn">
+                Owed ${money(outstandingFor(s.id))}
+              </span>
+            `
+            : ''
+          }
 
         </div>
 
       </div>
 
-
-      <div class="sitter-actions">
+      <div class="actions">
 
         <button
-          class="small ghost editSitterBtn"
-          data-id="${esc(s.id)}"
+          class="secondary small"
+          onclick="openSitter('${s.id}')"
         >
           Edit
         </button>
 
         ${
-          owed > 0 && !s.archived
-
-            ? `
-              <button
-                class="small primary paySitterBtn"
-                data-id="${esc(s.id)}"
-              >
-                Pay
-              </button>
-            `
-
-            : ""
+          outstandingFor(s.id)
+          ? `
+            <button
+              class="small"
+              onclick="openPay('${s.id}')"
+            >
+              Pay
+            </button>
+          `
+          : ''
         }
 
         <button
-          class="small ghost toggleArchiveBtn"
-          data-id="${esc(s.id)}"
+          class="secondary small"
+          onclick="archiveSitter('${s.id}')"
         >
-          ${
-            s.archived
-              ? "Restore"
-              : "Archive"
-          }
+          ${s.archived?'Restore':'Archive'}
         </button>
 
       </div>
 
     </div>
 
-  `;
+  </div>`;
 }
 
+function paymentsPage(){
 
-/* =========================================================
-   PAYMENTS
-   ========================================================= */
+  let list=[...state.payments]
+    .sort((a,b)=>b.date.localeCompare(a.date));
 
-function renderPayments(){
+  $('main').innerHTML=`
 
-  const payments =
-    recent(state.payments);
+  <div class="row">
+    <h2>Payments</h2>
+    <button onclick="openPay()">+ Payment</button>
+  </div>
 
-  return `
+  <div class="list">
 
-    <div class="section-title">
+    ${
+      list.length
+      ? list.map(p=>{
 
-      <h1>
-        Payments
-      </h1>
+        let s=sitter(p.sitterId);
 
-      <button
-        class="primary small"
-        id="quickPay"
-      >
-        + Record Payment
-      </button>
-
-    </div>
-
-
-    <div class="summary-grid">
-
-      <div class="summary card">
-
-        <div class="muted smalltext">
-          Outstanding
-        </div>
-
-        <div class="value">
-          ${money(totalOutstanding())}
-        </div>
-
-      </div>
-
-      <div class="summary card">
-
-        <div class="muted smalltext">
-          Payments
-        </div>
-
-        <div class="value">
-          ${state.payments.length}
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <h2>
-        Payment History
-      </h2>
-
-      ${renderPaymentList(payments)}
-
-    </div>
-  `;
-}
-
-function renderPaymentList(items){
-
-  if(!items.length){
-
-    return `
-      <div class="empty card">
-        No payments recorded yet.
-      </div>
-    `;
-  }
-
-  return `
-
-    <div class="list">
-
-      ${
-        items.map(payment => {
-
-          const sitter =
-            getSitter(payment.sitterId) ||
-            {
-              name:"Unknown",
-              avatar:""
-            };
-
-          return `
-
-            <div class="item card">
-
-              <div class="row spread">
-
-                <div class="row">
-
-                  ${avatarHTML(sitter)}
-
-                  <div>
-
-                    <strong>
-                      ${esc(sitter.name)}
-                    </strong>
-
-                    <div class="muted smalltext">
-
-                      ${fmtDate(payment.date)}
-
-                      ·
-
-                      ${esc(
-                        payment.method ||
-                        "Other"
-                      )}
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <strong class="money">
-
-                  ${money(payment.amount)}
-
-                </strong>
-
-              </div>
-
-
-              <div
-                class="smalltext muted"
-                style="margin-top:8px"
-              >
-
-                ${payment.shiftIds.length}
-                shift${payment.shiftIds.length===1?"":"s"}
-                paid
-
-                ${
-                  payment.note
-                    ? ` · ${esc(payment.note)}`
-                    : ""
-                }
-
-              </div>
-
-            </div>
-
-          `;
-        }).join("")
-      }
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   SETTINGS
-   ========================================================= */
-
-function renderSettings(){
-
-  return `
-
-    <div class="section-title">
-
-      <h1>
-        Settings
-      </h1>
-
-    </div>
-
-
-    <div class="section">
-
-      <h2>
-        Family
-      </h2>
-
-      <div class="card item">
-
-        <div class="field">
-
-          <label>
-            Family Name
-          </label>
-
-          <input
-            id="familyName"
-            value="${esc(state.settings.familyName)}"
-            maxlength="60"
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            PIN
-          </label>
-
-          <input
-            id="appPin"
-            inputmode="numeric"
-            maxlength="4"
-            value="${esc(state.settings.pin)}"
-          >
-
-          <div class="smalltext muted">
-            Use 4 digits. This is a convenience lock,
-            not encryption.
-          </div>
-
-        </div>
-
-
-        <button
-          class="primary"
-          id="saveFamilySettings"
-        >
-          Save Family Settings
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div class="section">
-
-      <h2>
-        Branding
-      </h2>
-
-      <div class="card item">
-
-
-        <div class="field">
-
-          <label>
-            Landing Page Logo / Photo
-          </label>
+        return `
+        <div class="card">
 
           <div class="row">
 
-            <div class="settings-logo">
+            <div>
+
+              <strong>
+                ${esc(s?.name||p.sitterName||'Unknown')}
+              </strong>
+
+              <div class="muted">
+                ${fmt(p.date)} ·
+                ${esc(p.method||'Other')} ·
+                ${p.shiftIds?.length||0}
+                shift${p.shiftIds?.length===1?'':'s'}
+              </div>
 
               ${
-                state.settings.logo
-
-                  ? `
-                    <img
-                      src="${esc(state.settings.logo)}"
-                      alt=""
-                    >
-                  `
-
-                  : "F"
+                p.note
+                ? `<div class="muted">${esc(p.note)}</div>`
+                : ''
               }
 
             </div>
 
-
-            <div style="flex:1">
-
-              <input
-                class="file-input"
-                id="logoFile"
-                type="file"
-                accept="image/*"
-              >
-
-              <button
-                class="small ghost"
-                id="clearLogo"
-                style="margin-top:8px"
-              >
-                Clear Logo
-              </button>
-
-            </div>
+            <strong class="money">
+              ${money(p.amount)}
+            </strong>
 
           </div>
 
-        </div>
+        </div>`;
+      }).join('')
 
+      : '<div class="card empty">No payments recorded.</div>'
+    }
 
-        <hr>
+  </div>`;
+}
 
+function settingsPage(){
 
-        <div class="field">
+  let s=state.settings;
 
-          <label>
-            Main Dashboard Banner
-          </label>
+  $('main').innerHTML=`
 
-          ${
-            state.settings.banner
+  <h2>Settings</h2>
 
-              ? `
-                <div
-                  class="banner"
-                  style="height:110px"
-                >
-                  <img
-                    src="${esc(state.settings.banner)}"
-                    alt=""
-                  >
-                </div>
-              `
+  <div class="card">
 
-              : ""
-          }
-
-
-          <input
-            class="file-input"
-            id="bannerFile"
-            type="file"
-            accept="image/*"
-          >
-
-
-          <button
-            class="small ghost"
-            id="clearBanner"
-            style="margin-top:8px"
-          >
-            Clear Banner
-          </button>
-
-        </div>
-
-
-        <div class="smalltext muted">
-
-          Images are resized automatically before
-          being stored on this device.
-
-        </div>
-
-      </div>
-
+    <div class="field">
+      <label>Family name</label>
+      <input
+        id="familyName"
+        value="${esc(s.familyName)}"
+      >
     </div>
 
+    <div class="field">
+      <label>PIN</label>
+      <input
+        id="pinSet"
+        inputmode="numeric"
+        maxlength="4"
+        value="${esc(s.pin)}"
+      >
+    </div>
 
-    <div class="section">
+    <button onclick="saveSettings()">
+      Save Settings
+    </button>
 
-      <h2>
-        Backup & Restore
-      </h2>
+  </div>
 
-      <div class="card item">
+  <div class="card">
 
-        <p class="muted smalltext">
+    <h3>Landing-page logo</h3>
 
-          Export your sitters, shifts, payments,
-          settings, and photos into one JSON backup file.
-
-        </p>
-
-
-        <div class="actions">
-
-          <button
-            class="primary"
-            id="exportBtn"
-          >
-            Export Backup
-          </button>
-
-          <button
-            class="ghost"
-            id="importBtn"
-          >
-            Import Backup
-          </button>
-
-          <input
-            id="importFile"
-            type="file"
-            accept=".json,application/json"
-            class="hidden"
-          >
-
-        </div>
-
-
-        <hr>
-
-
-        <button
-          class="danger"
-          id="clearAllBtn"
+    ${
+      s.logo
+      ? `
+        <img
+          src="${esc(s.logo)}"
+          style="width:110px;height:110px;border-radius:20px;object-fit:cover"
         >
-          Clear All App Data
-        </button>
+        <br>
+      `
+      : ''
+    }
 
-      </div>
+    <input
+      class="file"
+      type="file"
+      accept="image/*"
+      id="logoFile"
+    >
+
+    <div class="actions">
+
+      <button
+        class="secondary"
+        onclick="clearLogo()"
+      >
+        Clear Logo
+      </button>
 
     </div>
 
+  </div>
 
-    <div class="footer-note">
+  <div class="card">
 
-      Favero Family Sitter Tracker
-      · Local device storage
+    <h3>Dashboard banner</h3>
+
+    ${
+      s.banner
+      ? `
+        <img
+          src="${esc(s.banner)}"
+          style="width:100%;max-height:180px;object-fit:cover;border-radius:12px"
+        >
+        <br>
+      `
+      : ''
+    }
+
+    <input
+      class="file"
+      type="file"
+      accept="image/*"
+      id="bannerFile"
+    >
+
+    <div class="actions">
+
+      <button
+        class="secondary"
+        onclick="clearBanner()"
+      >
+        Clear Banner
+      </button>
 
     </div>
 
-  `;
+  </div>
+
+  <div class="card">
+
+    <h3>Backup</h3>
+
+    <div class="notice">
+      Photos and tracker data are stored in this browser.
+      Keep photos reasonably sized and make backups before changing devices.
+    </div>
+
+    <div class="actions" style="margin-top:10px">
+
+      <button onclick="exportData()">
+        Export Backup
+      </button>
+
+      <button
+        class="secondary"
+        onclick="$('importFile').click()"
+      >
+        Import Backup
+      </button>
+
+      <input
+        id="importFile"
+        type="file"
+        accept="application/json"
+        class="hidden"
+      >
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Reset</h3>
+
+    <div class="dangerbox">
+      This removes all sitters, shifts, payments, and settings from this browser.
+    </div>
+
+    <button
+      class="danger"
+      style="margin-top:10px"
+      onclick="resetAll()"
+    >
+      Clear All Data
+    </button>
+
+  </div>`;
+
+  $('logoFile').onchange=async e=>{
+
+    if(!e.target.files[0])return;
+
+    try{
+
+      let old=s.logo;
+      let s2=await image(
+        e.target.files[0],
+        700,
+        .78
+      );
+
+      s.logo=s2;
+
+      if(!save()){
+        s.logo=old;
+      }
+
+      render();
+
+    }catch{
+      notify('Could not read that image.');
+    }
+  };
+
+  $('bannerFile').onchange=async e=>{
+
+    if(!e.target.files[0])return;
+
+    try{
+
+      let old=s.banner;
+
+      let s2=await image(
+        e.target.files[0],
+        1400,
+        .78
+      );
+
+      s.banner=s2;
+
+      if(!save()){
+        s.banner=old;
+      }
+
+      render();
+
+    }catch{
+      notify('Could not read that image.');
+    }
+  };
+
+  $('importFile').onchange=importData;
 }
 
+function saveSettings(){
 
-/* =========================================================
-   EVENT BINDING
-   ========================================================= */
+  let p=$('pinSet').value.trim();
 
-function bindMain(){
+  if(!/^\d{4}$/.test(p)){
+    return notify('PIN must be exactly 4 digits');
+  }
 
-  document
-    .querySelectorAll("[data-tab]")
-    .forEach(button => {
+  state.settings.familyName=
+    $('familyName').value.trim()||'Family';
 
-      button.addEventListener(
-        "click",
-        () => {
+  state.settings.pin=p;
 
-          state.tab =
-            button.dataset.tab;
+  save();
+  render();
 
-          render();
-        }
-      );
-    });
-
-
-  document
-    .getElementById("lockBtn")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        sessionStorage.removeItem(
-          KEYS.unlocked
-        );
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("addShiftBtn")
-    ?.addEventListener(
-      "click",
-      () => openShiftModal()
-    );
-
-
-  document
-    .getElementById("addSitterBtn")
-    ?.addEventListener(
-      "click",
-      () => openSitterModal()
-    );
-
-
-  document
-    .querySelectorAll(".editSitterBtn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () =>
-          openSitterModal(
-            button.dataset.id
-          )
-      );
-    });
-
-
-  document
-    .querySelectorAll(".editShiftBtn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () =>
-          openShiftModal(
-            button.dataset.id
-          )
-      );
-    });
-
-
-  document
-    .querySelectorAll(".toggleArchiveBtn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () =>
-          toggleArchive(
-            button.dataset.id
-          )
-      );
-    });
-
-
-  document
-    .querySelectorAll(".paySitterBtn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () =>
-          openPayModal(
-            button.dataset.id
-          )
-      );
-    });
-
-
-  document
-    .getElementById("quickPay")
-    ?.addEventListener(
-      "click",
-      () => openPayModal()
-    );
-
-
-  document
-    .getElementById("shiftFilter")
-    ?.addEventListener(
-      "change",
-      event => {
-
-        state.filter =
-          event.target.value;
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("sitterFilter")
-    ?.addEventListener(
-      "change",
-      event => {
-
-        state.sitterFilter =
-          event.target.value;
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("dateFrom")
-    ?.addEventListener(
-      "change",
-      event => {
-
-        state.dateFrom =
-          event.target.value;
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("dateTo")
-    ?.addEventListener(
-      "change",
-      event => {
-
-        state.dateTo =
-          event.target.value;
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("saveFamilySettings")
-    ?.addEventListener(
-      "click",
-      saveFamilySettings
-    );
-
-
-  document
-    .getElementById("logoFile")
-    ?.addEventListener(
-      "change",
-      async event => {
-
-        const file =
-          event.target.files[0];
-
-        if(!file) return;
-
-        try{
-
-          state.settings.logo =
-            await imageToDataUrl(
-              file,
-              500,
-              .82
-            );
-
-          save();
-
-          render();
-
-          toast("Logo updated");
-
-        }catch{
-
-          toast("Could not load image");
-        }
-      }
-    );
-
-
-  document
-    .getElementById("bannerFile")
-    ?.addEventListener(
-      "change",
-      async event => {
-
-        const file =
-          event.target.files[0];
-
-        if(!file) return;
-
-        try{
-
-          state.settings.banner =
-            await imageToDataUrl(
-              file,
-              1400,
-              .78
-            );
-
-          save();
-
-          render();
-
-          toast("Banner updated");
-
-        }catch{
-
-          toast("Could not load image");
-        }
-      }
-    );
-
-
-  document
-    .getElementById("clearLogo")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        state.settings.logo = "";
-
-        save();
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("clearBanner")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        state.settings.banner = "";
-
-        save();
-
-        render();
-      }
-    );
-
-
-  document
-    .getElementById("exportBtn")
-    ?.addEventListener(
-      "click",
-      exportBackup
-    );
-
-
-  document
-    .getElementById("importBtn")
-    ?.addEventListener(
-      "click",
-      () =>
-        document
-          .getElementById("importFile")
-          .click()
-    );
-
-
-  document
-    .getElementById("importFile")
-    ?.addEventListener(
-      "change",
-      importBackup
-    );
-
-
-  document
-    .getElementById("clearAllBtn")
-    ?.addEventListener(
-      "click",
-      clearAll
-    );
+  notify('Settings saved');
 }
 
+function clearLogo(){
+  state.settings.logo='';
+  save();
+  render();
+}
 
-/* =========================================================
-   SITTER MODAL
-   ========================================================= */
+function clearBanner(){
+  state.settings.banner='';
+  save();
+  render();
+}
 
-function openSitterModal(id=null){
+function openSitter(id){
 
-  const sitter =
-    id ? getSitter(id) : null;
+  let s=sitter(id);
+  let avatar=s?.avatar||'';
 
   showModal(`
 
-    <div class="modal-head">
+  <div class="row">
 
-      <h2>
-        ${sitter ? "Edit Sitter" : "Add Sitter"}
-      </h2>
+    <h2>${s?'Edit':'Add'} Sitter</h2>
+
+    <button
+      class="close secondary"
+      onclick="closeModal()"
+    >
+      ×
+    </button>
+
+  </div>
+
+  <div class="field">
+
+    <label>Name</label>
+
+    <input
+      id="sn"
+      value="${esc(s?.name||'')}"
+    >
+
+  </div>
+
+  <div class="field">
+
+    <label>Hourly rate</label>
+
+    <input
+      id="sr"
+      type="number"
+      min="0"
+      step="0.01"
+      value="${esc(s?.rate??'20')}"
+    >
+
+  </div>
+
+  <div class="field">
+
+    <label>Payment info</label>
+
+    <input
+      id="sp"
+      placeholder="Venmo, Zelle, etc."
+      value="${esc(s?.paymentInfo||'')}"
+    >
+
+  </div>
+
+  <div class="field">
+
+    <label>Photo</label>
+
+    ${
+      avatar
+      ? `
+        <img
+          id="spreview"
+          src="${esc(avatar)}"
+          style="width:90px;height:90px;border-radius:50%;object-fit:cover"
+        >
+      `
+      : `
+        <div
+          id="spreview"
+          class="avatar"
+          style="width:90px;height:90px"
+        >
+          ${esc(initials(s?.name||'Sitter'))}
+        </div>
+      `
+    }
+
+    <input
+      id="sphoto"
+      type="file"
+      accept="image/*"
+    >
+
+    <button
+      class="secondary small"
+      onclick="window.removeAvatar=true;window.newAvatar=''"
+    >
+      Remove Photo
+    </button>
+
+  </div>
+
+  <div class="actions">
+
+    <button onclick="saveSitter('${id||''}')">
+      Save
+    </button>
+
+    <button
+      class="secondary"
+      onclick="closeModal()"
+    >
+      Cancel
+    </button>
+
+  </div>`);
+
+  window.newAvatar=avatar;
+  window.removeAvatar=false;
+
+  $('sphoto').onchange=async e=>{
+
+    if(!e.target.files[0])return;
+
+    window.newAvatar=
+      await image(
+        e.target.files[0],
+        500,
+        .8
+      );
+
+    window.removeAvatar=false;
+
+    $('spreview').outerHTML=`
+      <img
+        id="spreview"
+        src="${esc(window.newAvatar)}"
+        style="width:90px;height:90px;border-radius:50%;object-fit:cover"
+      >`;
+  };
+}
+
+function saveSitter(id){
+
+  let name=$('sn').value.trim();
+  let rate=Number($('sr').value);
+
+  if(
+    !name||
+    !Number.isFinite(rate)||
+    rate<0
+  ){
+    return notify('Enter a valid name and rate');
+  }
+
+  if(id){
+
+    let s=sitter(id);
+
+    Object.assign(s,{
+      name,
+      rate:round(rate),
+      paymentInfo:$('sp').value.trim(),
+      avatar:window.removeAvatar?'':window.newAvatar
+    });
+
+  }else{
+
+    state.sitters.push({
+      id:uid(),
+      name,
+      rate:round(rate),
+      paymentInfo:$('sp').value.trim(),
+      avatar:window.removeAvatar?'':window.newAvatar,
+      archived:false
+    });
+
+  }
+
+  save();
+  closeModal();
+  render();
+
+  notify('Sitter saved');
+}
+
+function archiveSitter(id){
+
+  let s=sitter(id);
+
+  if(!s)return;
+
+  if(
+    !s.archived&&
+    !confirm(
+      `Archive ${s.name}? Their history will remain.`
+    )
+  ){
+    return;
+  }
+
+  s.archived=!s.archived;
+
+  save();
+  render();
+}
+
+function openShift(id){
+
+  let sh=state.shifts.find(x=>x.id===id);
+
+  if(sh&&paid(sh)){
+    return notify('Paid shifts cannot be edited.');
+  }
+
+  let opts=state.sitters.filter(
+    s=>!s.archived||s.id===sh?.sitterId
+  );
+
+  let selected=
+    sh?.sitterId||
+    opts[0]?.id||
+    '';
+
+  let rate=
+    sh?.hourlyRate||
+    sitter(selected)?.rate||
+    20;
+
+  let html=`
+    <div class="row">
+      <h2>${sh?'Edit':'Add'} Shift</h2>
+      <button
+        class="close secondary"
+        onclick="closeModal()"
+      >×</button>
+    </div>
+  `;
+
+  html+=`
+    <div class="field">
+
+      <label>Sitter</label>
+
+      <select
+        id="ss"
+        ${sh?'disabled':''}
+      >
+
+        ${
+          opts.map(s=>`
+            <option
+              value="${esc(s.id)}"
+              ${s.id===selected?'selected':''}
+            >
+              ${esc(s.name)}
+              ${s.archived?' (archived)':''}
+            </option>
+          `).join('')
+        }
+
+      </select>
+
+    </div>
+  `;
+
+  html+=`
+    <div class="grid">
+
+      <div class="field">
+
+        <label>Date</label>
+
+        <input
+          id="sd"
+          type="date"
+          value="${esc(sh?.date||today())}"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>Hourly rate</label>
+
+        <input
+          id="srate"
+          type="number"
+          min="0"
+          step="0.01"
+          value="${esc(rate)}"
+        >
+
+      </div>
+
+    </div>
+  `;
+
+  html+=`
+    <div class="grid">
+
+      <div class="field">
+
+        <label>Start</label>
+
+        <input
+          id="sst"
+          type="time"
+          value="${esc(sh?.start||'17:00')}"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>End</label>
+
+        <input
+          id="se"
+          type="time"
+          value="${esc(sh?.end||'21:00')}"
+        >
+
+      </div>
+
+    </div>
+  `;
+
+  html+=`
+    <div class="grid">
+
+      <div class="field">
+
+        <label>Adjustment type</label>
+
+        <select id="at">
+
+          <option value="none">None</option>
+          <option value="bonus">Bonus</option>
+          <option value="reimbursement">Reimbursement</option>
+          <option value="deduction">Deduction</option>
+          <option value="other">Other</option>
+
+        </select>
+
+      </div>
+
+      <div class="field">
+
+        <label>Adjustment amount</label>
+
+        <input
+          id="aa"
+          type="number"
+          step="0.01"
+          value="${Math.abs(sh?.adjustment||0)}"
+        >
+
+      </div>
+
+    </div>
+  `;
+
+  html+=`
+    <div class="field">
+
+      <label>Adjustment note</label>
+
+      <input
+        id="an"
+        value="${esc(sh?.adjustmentNote||'')}"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label>Shift notes</label>
+
+      <textarea id="snotes">${esc(sh?.notes||'')}</textarea>
+
+    </div>
+  `;
+
+  html+=`
+    <div class="card">
+
+      <div class="label">Preview</div>
+
+      <div
+        id="preview"
+        class="stat"
+      >
+        $0.00
+      </div>
+
+    </div>
+
+    <div class="actions">
 
       <button
-        class="close ghost"
-        id="closeModal"
+        onclick="saveShift('${id||''}')"
+      >
+        Save Shift
+      </button>
+  `;
+
+  if(sh){
+    html+=`
+      <button
+        class="danger"
+        onclick="deleteShift('${id}')"
+      >
+        Delete
+      </button>
+    `;
+  }
+
+  html+=`
+      <button
+        class="secondary"
+        onclick="closeModal()"
+      >
+        Cancel
+      </button>
+
+    </div>
+  `;
+
+  showModal(html);
+
+  if(sh){
+    $('at').value=sh.adjustmentType||'none';
+  }
+
+  ['sst','se','srate','aa','at'].forEach(x=>{
+    $(x).addEventListener(
+      'input',
+      updatePreview
+    );
+  });
+
+  updatePreview();
+}
+
+function adjVal(){
+
+  let type=$('at').value;
+  let a=Number($('aa').value)||0;
+
+  if(type==='none')return 0;
+
+  if(type==='deduction'){
+    return -Math.abs(a);
+  }
+
+  return Math.abs(a);
+}
+
+function updatePreview(){
+
+  let h=hours(
+    $('sst').value,
+    $('se').value
+  );
+
+  let base=round(
+    h*(Number($('srate').value)||0)
+  );
+
+  let a=round(adjVal());
+
+  $('preview').textContent=
+    money(base+a)+` (${h}h)`;
+}
+
+function saveShift(id){
+
+  let s=sitter($('ss').value);
+
+  if(!s){
+    return notify('Choose a sitter');
+  }
+
+  let h=hours(
+    $('sst').value,
+    $('se').value
+  );
+
+  if(!h){
+    return notify(
+      'Enter valid start and end times'
+    );
+  }
+
+  let rate=Number($('srate').value);
+
+  if(
+    !Number.isFinite(rate)||
+    rate<0
+  ){
+    return notify('Enter a valid rate');
+  }
+
+  let a=round(adjVal());
+  let base=round(h*rate);
+
+  let obj={
+    id:id||uid(),
+    sitterId:s.id,
+    sitterName:s.name,
+    date:$('sd').value,
+    start:$('sst').value,
+    end:$('se').value,
+    hours:h,
+    hourlyRate:round(rate),
+    basePay:base,
+    adjustment:a,
+    adjustmentType:$('at').value,
+    adjustmentNote:$('an').value.trim(),
+    totalPay:round(base+a),
+    notes:$('snotes').value.trim(),
+    paymentId:
+      id
+      ? state.shifts.find(x=>x.id===id)?.paymentId||null
+      : null
+  };
+
+  if(id){
+
+    let i=state.shifts.findIndex(
+      x=>x.id===id
+    );
+
+    state.shifts[i]=obj;
+
+  }else{
+
+    state.shifts.push(obj);
+
+  }
+
+  save();
+  closeModal();
+  render();
+
+  notify('Shift saved');
+}
+
+function deleteShift(id){
+
+  let s=state.shifts.find(
+    x=>x.id===id
+  );
+
+  if(!s||paid(s))return;
+
+  if(!confirm('Delete this unpaid shift?')){
+    return;
+  }
+
+  state.shifts=
+    state.shifts.filter(
+      x=>x.id!==id
+    );
+
+  save();
+  closeModal();
+  render();
+}
+
+function openPay(pre){
+
+  let candidates=
+    state.sitters.filter(
+      s=>outstandingFor(s.id)>0
+    );
+
+  if(!candidates.length){
+    return notify(
+      'No unpaid shifts to pay'
+    );
+  }
+
+  let sid=
+    pre&&outstandingFor(pre)>0
+    ? pre
+    : candidates[0].id;
+
+  showModal(`
+
+    <div class="row">
+
+      <h2>Record Payment</h2>
+
+      <button
+        class="close secondary"
+        onclick="closeModal()"
       >
         ×
       </button>
 
     </div>
 
+    <div class="field">
+
+      <label>Sitter</label>
+
+      <select
+        id="ps"
+        onchange="payList()"
+      >
+
+        ${
+          candidates.map(s=>`
+            <option
+              value="${s.id}"
+              ${s.id===sid?'selected':''}
+            >
+              ${esc(s.name)}
+              ${s.paymentInfo
+                ? ' — '+esc(s.paymentInfo)
+                : ''}
+            </option>
+          `).join('')
+        }
+
+      </select>
+
+    </div>
+
+    <div id="payList"></div>
+
+    <div class="field">
+
+      <label>Payment date</label>
+
+      <input
+        id="pd"
+        type="date"
+        value="${today()}"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label>Method</label>
+
+      <select id="pm">
+        <option>Venmo</option>
+        <option>Zelle</option>
+        <option>Cash</option>
+        <option>Check</option>
+        <option>Bank Transfer</option>
+        <option>Other</option>
+      </select>
+
+    </div>
+
+    <div class="field">
+
+      <label>Note / reference</label>
+
+      <input id="pn">
+
+    </div>
+
+    <button onclick="recordPayment()">
+      Record Payment
+    </button>
+  `);
+
+  payList();
+}
+
+function payList(){
+
+  let id=$('ps').value;
+  let list=unpaid(id);
+
+  $('payList').innerHTML=`
+
+    <div class="field">
+
+      <label>
+        Unpaid shifts — select the shifts included in this payment
+      </label>
+
+      ${
+        list.map(s=>`
+
+          <label class="check">
+
+            <input
+              type="checkbox"
+              name="payshift"
+              value="${s.id}"
+              onchange="payTotal()"
+            >
+
+            <span>
+
+              <strong>
+                ${fmt(s.date)}
+              </strong>
+
+              · ${s.start}–${s.end}
+              · ${s.hours}h
+
+              <br>
+
+              <span class="muted">
+                ${s.notes?esc(s.notes):''}
+              </span>
+
+            </span>
+
+            <strong
+              class="money"
+              style="margin-left:auto"
+            >
+              ${money(total(s))}
+            </strong>
+
+          </label>
+
+        `).join('')
+      }
+
+    </div>
 
     <div
-      class="field"
-      style="text-align:center"
+      id="ptotal"
+      class="paytotal"
     >
+      Selected: $0.00
+    </div>
+  `;
 
-      ${
-        sitter
-          ? avatarHTML(sitter,"large")
-          : `
-            <div
-              class="avatar large"
-              style="margin:auto"
-            >
-              ?
-            </div>
-          `
+  payTotal();
+}
+
+function payTotal(){
+
+  let ids=[
+    ...document.querySelectorAll(
+      'input[name=payshift]:checked'
+    )
+  ].map(x=>x.value);
+
+  let n=ids.reduce(
+    (a,id)=>
+      a+total(
+        state.shifts.find(
+          s=>s.id===id
+        )
+      ),
+    0
+  );
+
+  if($('ptotal')){
+    $('ptotal').textContent=
+      'Selected: '+money(n);
+  }
+}
+
+function recordPayment(){
+
+  let ids=[
+    ...document.querySelectorAll(
+      'input[name=payshift]:checked'
+    )
+  ].map(x=>x.value);
+
+  if(!ids.length){
+    return notify(
+      'Select at least one shift'
+    );
+  }
+
+  let sh=state.shifts.filter(
+    s=>ids.includes(s.id)
+  );
+
+  let amount=round(
+    sh.reduce(
+      (a,s)=>a+total(s),
+      0
+    )
+  );
+
+  let sid=$('ps').value;
+
+  let p={
+    id:uid(),
+    sitterId:sid,
+    sitterName:
+      sitter(sid)?.name||'',
+    date:$('pd').value,
+    amount,
+    method:$('pm').value,
+    note:$('pn').value.trim(),
+    shiftIds:ids
+  };
+
+  state.payments.push(p);
+
+  sh.forEach(
+    s=>s.paymentId=p.id
+  );
+
+  save();
+  closeModal();
+  render();
+
+  notify('Payment recorded');
+}
+
+function showModal(html){
+
+  closeModal();
+
+  let d=document.createElement('div');
+
+  d.id='modalRoot';
+  d.className='modalbg';
+
+  d.innerHTML=
+    `<div class="modal">${html}</div>`;
+
+  document.body.appendChild(d);
+
+  d.addEventListener(
+    'click',
+    e=>{
+      if(e.target===d){
+        closeModal();
+      }
+    }
+  );
+}
+
+function closeModal(){
+  document.getElementById(
+    'modalRoot'
+  )?.remove();
+}
+
+function exportData(){
+
+  let blob=new Blob(
+    [
+      JSON.stringify(
+        {
+          version:1,
+          sitters:state.sitters,
+          shifts:state.shifts,
+          payments:state.payments,
+          settings:state.settings
+        },
+        null,
+        2
+      )
+    ],
+    {
+      type:'application/json'
+    }
+  );
+
+  let a=document.createElement('a');
+
+  a.href=URL.createObjectURL(blob);
+
+  a.download=
+    'family-sitter-tracker-backup-'+
+    today()+
+    '.json';
+
+  a.click();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(a.href),
+    1000
+  );
+}
+
+function importData(e){
+
+  let f=e.target.files[0];
+
+  if(!f)return;
+
+  let r=new FileReader();
+
+  r.onload=()=>{
+
+    try{
+
+      let d=JSON.parse(r.result);
+
+      if(
+        !Array.isArray(d.sitters)||
+        !Array.isArray(d.shifts)||
+        !Array.isArray(d.payments)
+      ){
+        throw 0;
       }
 
-
-      <div style="margin-top:10px">
-
-        <input
-          id="sitterAvatar"
-          class="file-input"
-          type="file"
-          accept="image/*"
-        >
-
-      </div>
-
-
-      ${
-        sitter?.avatar
-
-          ? `
-            <button
-              class="small ghost"
-              id="removeSitterAvatar"
-              style="margin-top:7px"
-            >
-              Remove Photo
-            </button>
-          `
-
-          : ""
+      if(
+        !confirm(
+          'Replace all current tracker data with this backup?'
+        )
+      ){
+        return;
       }
 
-    </div>
+      state.sitters=d.sitters;
+      state.shifts=d.shifts;
+      state.payments=d.payments;
 
+      state.settings={
+        ...DEF,
+        ...(d.settings||{})
+      };
 
-    <div class="field">
+      save();
+      render();
 
-      <label>
-        Name
-      </label>
+      notify('Backup imported');
 
-      <input
-        id="sitterName"
-        value="${esc(sitter?.name||"")}"
-        maxlength="80"
-        placeholder="Sitter name"
-      >
+    }catch{
+      notify('Invalid backup file');
+    }
+  };
 
-    </div>
+  r.readAsText(f);
+}
 
+function resetAll(){
 
-    <div class="field">
+  if(
+    !confirm(
+      'Clear ALL tracker data from this browser?'
+    )
+  ){
+    return;
+  }
 
-      <label>
-        Hourly Rate
-      </label>
+  localStorage.removeItem(K.sitters);
+  localStorage.removeItem(K.shifts);
+  localStorage.removeItem(K.payments);
+  localStorage.removeItem(K.settings);
 
-      <input
-        id="sitterRate"
-        type="number"
-        min="0"
-        step="0.01"
-        inputmode="decimal"
-        value="${sitter?.rate ?? ""}"
-        placeholder="18.00"
-      >
+  sessionStorage.removeItem(
+    'fst_unlocked'
+  );
 
-    </div>
+  location.reload();
+}
 
+load();
 
-    <div class="field">
-
-      <label>
-       
+if(
+  !sessionStorage.getItem(
+    'fst_unlocked'
+  )
+){
+  pin();
+}else{
+  render();
+}
+</script>
+</body>
+</html>
