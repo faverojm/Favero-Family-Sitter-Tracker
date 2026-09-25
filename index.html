@@ -1,12 +1,708 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0f14"><title>Family Sitter Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>Family Sitter Tracker</title>
+
 <style>
-:root{--bg:#0b0f14;--card:#131a22;--card2:#18212b;--text:#f4f7fa;--muted:#9aa8b5;--line:#263341;--accent:#6ee7b7;--danger:#fb7185;--warn:#fbbf24;--shadow:0 12px 30px #0008}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#062218;font-weight:750;cursor:pointer}button.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}button.danger{background:var(--danger);color:#300811}button.small{padding:7px 10px;font-size:13px}.wrap{max-width:900px;margin:auto;padding:14px 14px 90px}.top{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);margin-bottom:12px}.banner{height:155px;background:#111923 center/cover no-repeat}.banner.noimg{height:90px}.brand{display:flex;gap:12px;align-items:center;padding:14px}.logo{width:58px;height:58px;border-radius:16px;object-fit:cover;background:var(--card2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:var(--muted)}nav{display:flex;gap:7px;overflow:auto;padding:0 2px 12px;position:sticky;top:0;z-index:5;background:var(--bg)}nav button{white-space:nowrap;background:var(--card);color:var(--muted);border:1px solid var(--line)}nav button.active{background:var(--accent);color:#062218;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}.stat{font-size:25px;font-weight:800}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.actions{display:flex;gap:7px;flex-wrap:wrap}.list{display:grid;gap:8px}.item{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:11px}.person{display:flex;gap:10px;align-items:center;min-width:0}.person>div:last-child{min-width:0}.person strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#263341;display:grid;place-items:center;font-weight:800;flex:none}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.pill.good{color:var(--accent);border-color:#2c6955}.pill.warn{color:var(--warn)}.section-title{font-size:18px;margin:18px 0 9px}.empty{text-align:center;padding:25px;color:var(--muted)}.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.filters select,.filters input{width:auto}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:13px;color:var(--muted)}input,select,textarea{width:100%;background:#0e141b;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;outline:none}textarea{min-height:80px;resize:vertical}.modalbg{position:fixed;inset:0;background:#000b;z-index:20;display:grid;place-items:end center;padding:10px}.modal{width:min(700px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.modal h2{margin:0 0 12px}.close{background:transparent;color:var(--muted);font-size:22px;padding:3px}.check{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}.check input{width:auto;margin-top:3px}.paytotal{font-size:24px;font-weight:800;margin:10px 0}.pin{min-height:100vh;display:grid;place-items:center;padding:20px}.pinbox{width:min(390px,100%);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}.pinlogo{width:90px;height:90px;border-radius:22px;object-fit:cover;background:var(--card2);margin:0 auto 14px;display:grid;place-items:center;font-size:28px;font-weight:800}.dots{font-size:28px;letter-spacing:8px;height:40px}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.keypad button{background:var(--card2);color:var(--text);border:1px solid var(--line);font-size:19px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#f4f7fa;color:#0b0f14;padding:11px 15px;border-radius:999px;z-index:50;box-shadow:var(--shadow);font-weight:700}.file{padding:8px}.notice{padding:10px;border-radius:10px;background:#10231d;border:1px solid #245943;color:#b9f7dc;font-size:13px}.dangerbox{padding:10px;border-radius:10px;background:#2b1117;border:1px solid #6a2735;color:#fecdd3;font-size:13px}.adjust{display:flex;gap:7px;align-items:center;margin:7px 0}.adjust>*{flex:1}.adjust button{flex:0 0 auto}.breakdown{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.line{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.line.total{font-weight:800;padding-top:7px;margin-top:4px;border-top:1px solid var(--line)}.method{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:11px;margin:7px 0}.method small{color:var(--muted)}.muted{color:var(--muted)}.hidden{display:none!important}@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.banner{height:220px}.modalbg{place-items:center}}
+:root{
+  --bg:#0b0f14;
+  --card:#131a22;
+  --card2:#18212b;
+  --text:#f4f7fa;
+  --muted:#9aa8b5;
+  --line:#263341;
+  --accent:#6ee7b7;
+  --danger:#fb7185;
+  --warn:#fbbf24;
+  --shadow:0 12px 30px #0008;
+}
+
+*{box-sizing:border-box}
+
+html{
+  min-height:100%;
+  background:var(--bg);
+}
+
+body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+
+button,input,select,textarea{
+  font:inherit;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:11px 14px;
+  background:var(--accent);
+  color:#062218;
+  font-weight:750;
+  cursor:pointer;
+  min-height:42px;
+}
+
+button.secondary{
+  background:var(--card2);
+  color:var(--text);
+  border:1px solid var(--line);
+}
+
+button.danger{
+  background:var(--danger);
+  color:#300811;
+}
+
+button.small{
+  padding:7px 10px;
+  min-height:36px;
+  font-size:13px;
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.wrap{
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  padding:14px 14px calc(90px + env(safe-area-inset-bottom));
+}
+
+.top{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--card);
+  box-shadow:var(--shadow);
+  margin-bottom:12px;
+}
+
+.banner{
+  height:155px;
+  background:#111923 center/cover no-repeat;
+}
+
+.banner.noimg{
+  height:90px;
+}
+
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:14px;
+}
+
+.logo{
+  width:58px;
+  height:58px;
+  border-radius:16px;
+  object-fit:cover;
+  background:var(--card2);
+  border:1px solid var(--line);
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  flex:none;
+}
+
+.brand h1{
+  font-size:20px;
+  margin:0;
+}
+
+.brand p{
+  margin:3px 0 0;
+  color:var(--muted);
+}
+
+nav{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:0 2px 12px;
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--bg);
+  scrollbar-width:none;
+}
+
+nav::-webkit-scrollbar{
+  display:none;
+}
+
+nav button{
+  white-space:nowrap;
+  flex:0 0 auto;
+  background:var(--card);
+  color:var(--muted);
+  border:1px solid var(--line);
+}
+
+nav button.active{
+  background:var(--accent);
+  color:#062218;
+  border-color:var(--accent);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+  min-width:0;
+}
+
+.stat{
+  font-size:25px;
+  font-weight:800;
+}
+
+.label{
+  font-size:12px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-width:0;
+  flex-wrap:wrap;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.list{
+  display:grid;
+  gap:8px;
+}
+
+.item{
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px;
+  min-width:0;
+}
+
+.person{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  min-width:0;
+  flex:1 1 220px;
+}
+
+.person>div:last-child{
+  min-width:0;
+}
+
+.person strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.avatar{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#263341;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  flex:none;
+}
+
+.pill{
+  display:inline-block;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:3px 8px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.pill.good{
+  color:var(--accent);
+  border-color:#2c6955;
+}
+
+.pill.warn{
+  color:var(--warn);
+}
+
+.section-title{
+  font-size:18px;
+  margin:18px 0 9px;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:var(--muted);
+}
+
+.filters{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.filters select,
+.filters input{
+  width:auto;
+  max-width:100%;
+}
+
+.field{
+  display:grid;
+  gap:6px;
+  margin:10px 0;
+}
+
+.field label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  max-width:100%;
+  background:#0e141b;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:11px;
+  outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#4a7b69;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+.modalbg{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  height:100dvh;
+  background:#000b;
+  z-index:20;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:
+    8px
+    8px
+    max(8px,env(safe-area-inset-bottom));
+  overflow:hidden;
+}
+
+.modal{
+  width:min(700px,100%);
+  max-height:calc(100dvh - 16px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:16px;
+  box-shadow:var(--shadow);
+}
+
+.modal h2{
+  margin:0 0 12px;
+}
+
+.modal-head{
+  position:sticky;
+  top:-16px;
+  z-index:3;
+  background:var(--card);
+  padding-top:2px;
+  padding-bottom:8px;
+}
+
+.modal-actions{
+  position:sticky;
+  bottom:-16px;
+  z-index:3;
+  background:linear-gradient(
+    to bottom,
+    transparent,
+    var(--card) 18%
+  );
+  padding-top:18px;
+  padding-bottom:2px;
+}
+
+.close{
+  background:transparent;
+  color:var(--muted);
+  font-size:22px;
+  padding:3px 8px;
+  min-height:36px;
+}
+
+.check{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin:6px 0;
+  min-width:0;
+}
+
+.check input{
+  width:auto;
+  margin-top:3px;
+  flex:none;
+}
+
+.check>span{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.paytotal{
+  font-size:24px;
+  font-weight:800;
+  margin:10px 0;
+}
+
+.pin{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:
+    20px
+    20px
+    calc(20px + env(safe-area-inset-bottom));
+}
+
+.pinbox{
+  width:min(390px,100%);
+  text-align:center;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+
+.pinlogo{
+  width:90px;
+  height:90px;
+  border-radius:22px;
+  object-fit:cover;
+  background:var(--card2);
+  margin:0 auto 14px;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  font-weight:800;
+}
+
+.dots{
+  font-size:28px;
+  letter-spacing:8px;
+  height:40px;
+}
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.keypad button{
+  background:var(--card2);
+  color:var(--text);
+  border:1px solid var(--line);
+  font-size:19px;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:
+    calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  background:#f4f7fa;
+  color:#0b0f14;
+  padding:11px 15px;
+  border-radius:999px;
+  z-index:50;
+  box-shadow:var(--shadow);
+  font-weight:700;
+  max-width:calc(100vw - 30px);
+  text-align:center;
+}
+
+.file{
+  padding:8px;
+}
+
+.notice{
+  padding:10px;
+  border-radius:10px;
+  background:#10231d;
+  border:1px solid #245943;
+  color:#b9f7dc;
+  font-size:13px;
+}
+
+.dangerbox{
+  padding:10px;
+  border-radius:10px;
+  background:#2b1117;
+  border:1px solid #6a2735;
+  color:#fecdd3;
+  font-size:13px;
+}
+
+.adjust{
+  display:grid;
+  grid-template-columns:minmax(110px,.8fr) minmax(90px,.7fr) minmax(130px,1.3fr) auto;
+  gap:7px;
+  align-items:center;
+  margin:7px 0;
+}
+
+.breakdown{
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid var(--line);
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:3px 0;
+  overflow-wrap:anywhere;
+}
+
+.line.total{
+  font-weight:800;
+  padding-top:7px;
+  margin-top:4px;
+  border-top:1px solid var(--line);
+}
+
+.method{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  align-items:center;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  margin:7px 0;
+  min-width:0;
+}
+
+.method small{
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+
+.payment-summary{
+  padding:12px;
+  border:1px solid var(--line);
+  background:var(--card2);
+  border-radius:13px;
+  margin:10px 0;
+}
+
+.payment-summary .big{
+  font-size:25px;
+  font-weight:800;
+}
+
+.copy-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:8px;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+.money{
+  white-space:nowrap;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.mobile-stack{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.sitter-card{
+  min-width:0;
+}
+
+.sitter-actions{
+  flex:0 0 auto;
+}
+
+@media(max-width:649px){
+
+  .wrap{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .brand{
+    align-items:flex-start;
+  }
+
+  .brand>button{
+    margin-left:auto!important;
+  }
+
+  .brand h1{
+    font-size:18px;
+  }
+
+  .card{
+    padding:12px;
+  }
+
+  .sitter-card>.row{
+    align-items:flex-start;
+  }
+
+  .sitter-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .sitter-actions button{
+    width:100%;
+  }
+
+  .adjust{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .adjust input:last-of-type{
+    grid-column:1 / -1;
+  }
+
+  .adjust button{
+    width:100%;
+  }
+
+  .copy-grid{
+    grid-template-columns:1fr;
+  }
+
+  .modalbg{
+    padding-left:0;
+    padding-right:0;
+    padding-top:0;
+  }
+
+  .modal{
+    width:100%;
+    max-height:calc(100dvh - 4px);
+    border-radius:20px 20px 0 0;
+    padding:
+      14px
+      14px
+      calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .modal-head{
+    top:-14px;
+  }
+
+  .modal-actions{
+    bottom:-14px;
+  }
+}
+
+@media(min-width:650px){
+
+  .grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .banner{
+    height:220px;
+  }
+
+  .modalbg{
+    align-items:center;
+    padding:20px;
+  }
+
+  .modal{
+    max-height:92dvh;
+  }
+}
 </style>
 </head>
-<body><div id="app"></div><div id="toast"></div>
+
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
 <script>
 'use strict';
 
@@ -37,8 +733,11 @@ let state={
 };
 
 const $=id=>document.getElementById(id);
+
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
 const money=n=>'$'+Number(n||0).toFixed(2);
+
 const round=n=>Math.round((Number(n)||0)*100)/100;
 
 const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({
@@ -67,33 +766,71 @@ const fmt=d=>d
   })
   :'';
 
+const shortFmt=d=>d
+  ?new Date(d+'T12:00:00').toLocaleDateString(undefined,{
+    month:'short',
+    day:'numeric'
+  })
+  :'';
+
+const dayName=d=>d
+  ?new Date(d+'T12:00:00').toLocaleDateString(undefined,{
+    weekday:'short'
+  })
+  :'';
+
 const sitter=id=>state.sitters.find(s=>s.id===id);
 
 function notify(msg){
   let t=$('toast');
+
+  if(!t)return;
+
   t.textContent=msg;
   t.className='toast';
+
   clearTimeout(notify.t);
-  notify.t=setTimeout(()=>t.className='',2600);
+
+  notify.t=setTimeout(()=>{
+    if(t)t.className='';
+  },2600);
 }
 
 function normalize(){
-  state.sitters=Array.isArray(state.sitters)?state.sitters:[];
-  state.shifts=Array.isArray(state.shifts)?state.shifts:[];
-  state.payments=Array.isArray(state.payments)?state.payments:[];
+
+  state.sitters=Array.isArray(state.sitters)
+    ?state.sitters
+    :[];
+
+  state.shifts=Array.isArray(state.shifts)
+    ?state.shifts
+    :[];
+
+  state.payments=Array.isArray(state.payments)
+    ?state.payments
+    :[];
 
   state.sitters=state.sitters.map(s=>({
     ...s,
     id:s.id||uid(),
-    paymentMethods:Array.isArray(s.paymentMethods)?s.paymentMethods:[],
+    paymentMethods:Array.isArray(s.paymentMethods)
+      ?s.paymentMethods
+      :[],
     avatar:s.avatar||'',
     archived:!!s.archived
   }));
 
   state.shifts=state.shifts.map(s=>{
-    let adjustments=Array.isArray(s.adjustments)?s.adjustments:[];
 
-    if(!adjustments.length&&(Number(s.adjustment)||0)!==0){
+    let adjustments=
+      Array.isArray(s.adjustments)
+      ?s.adjustments
+      :[];
+
+    if(
+      !adjustments.length &&
+      (Number(s.adjustment)||0)!==0
+    ){
       adjustments=[{
         id:uid(),
         type:s.adjustmentType||'other',
@@ -104,7 +841,10 @@ function normalize(){
 
     let base=round(
       Number(s.basePay)||
-      round((Number(s.hours)||0)*(Number(s.hourlyRate)||0))
+      round(
+        (Number(s.hours)||0)*
+        (Number(s.hourlyRate)||0)
+      )
     );
 
     return {
@@ -113,7 +853,10 @@ function normalize(){
       adjustments,
       totalPay:round(
         base+
-        adjustments.reduce((a,x)=>a+Number(x.amount||0),0)
+        adjustments.reduce(
+          (a,x)=>a+Number(x.amount||0),
+          0
+        )
       ),
       basePay:base
     };
@@ -121,28 +864,69 @@ function normalize(){
 }
 
 function save(){
+
   try{
-    localStorage.setItem(K.sitters,JSON.stringify(state.sitters));
-    localStorage.setItem(K.shifts,JSON.stringify(state.shifts));
-    localStorage.setItem(K.payments,JSON.stringify(state.payments));
-    localStorage.setItem(K.settings,JSON.stringify(state.settings));
+
+    localStorage.setItem(
+      K.sitters,
+      JSON.stringify(state.sitters)
+    );
+
+    localStorage.setItem(
+      K.shifts,
+      JSON.stringify(state.shifts)
+    );
+
+    localStorage.setItem(
+      K.payments,
+      JSON.stringify(state.payments)
+    );
+
+    localStorage.setItem(
+      K.settings,
+      JSON.stringify(state.settings)
+    );
+
     return true;
+
   }catch(e){
-    notify('Browser storage is full. Try smaller photos.');
+
+    notify(
+      'Browser storage is full. Try smaller photos.'
+    );
+
     return false;
   }
 }
 
 function load(){
+
   try{
-    state.sitters=JSON.parse(localStorage.getItem(K.sitters)||'[]');
-    state.shifts=JSON.parse(localStorage.getItem(K.shifts)||'[]');
-    state.payments=JSON.parse(localStorage.getItem(K.payments)||'[]');
+
+    state.sitters=
+      JSON.parse(
+        localStorage.getItem(K.sitters)||'[]'
+      );
+
+    state.shifts=
+      JSON.parse(
+        localStorage.getItem(K.shifts)||'[]'
+      );
+
+    state.payments=
+      JSON.parse(
+        localStorage.getItem(K.payments)||'[]'
+      );
+
     state.settings={
       ...DEF,
-      ...JSON.parse(localStorage.getItem(K.settings)||'{}')
+      ...JSON.parse(
+        localStorage.getItem(K.settings)||'{}'
+      )
     };
+
   }catch(e){
+
     state.sitters=[];
     state.shifts=[];
     state.payments=[];
@@ -154,6 +938,7 @@ function load(){
 }
 
 function hours(a,b){
+
   if(!a||!b)return 0;
 
   let [h,m]=a.split(':').map(Number);
@@ -170,14 +955,17 @@ function hours(a,b){
 function adjustmentsTotal(s){
   return round(
     (s.adjustments||[])
-      .reduce((a,x)=>a+Number(x.amount||0),0)
+      .reduce(
+        (a,x)=>a+Number(x.amount||0),
+        0
+      )
   );
 }
 
 function total(s){
   return round(
-    Number(s.basePay||0)+
-    adjustmentsTotal(s)
+    Number(s?.basePay||0)+
+    adjustmentsTotal(s||{})
   );
 }
 
@@ -188,19 +976,30 @@ function paid(s){
 function outstandingFor(id){
   return round(
     state.shifts
-      .filter(s=>s.sitterId===id&&!paid(s))
-      .reduce((a,s)=>a+total(s),0)
+      .filter(
+        s=>s.sitterId===id&&!paid(s)
+      )
+      .reduce(
+        (a,s)=>a+total(s),
+        0
+      )
   );
 }
 
 function unpaid(id){
   return state.shifts
-    .filter(s=>s.sitterId===id&&!paid(s))
-    .sort((a,b)=>b.date.localeCompare(a.date));
+    .filter(
+      s=>s.sitterId===id&&!paid(s)
+    )
+    .sort(
+      (a,b)=>b.date.localeCompare(a.date)
+    );
 }
 
 function image(file,max=1000,quality=.78){
+
   return new Promise((res,rej)=>{
+
     if(!file)return res('');
 
     let r=new FileReader();
@@ -208,9 +1007,11 @@ function image(file,max=1000,quality=.78){
     r.onerror=rej;
 
     r.onload=()=>{
+
       let im=new Image();
 
       im.onload=()=>{
+
         let scale=Math.min(
           1,
           max/Math.max(im.width,im.height)
@@ -218,8 +1019,15 @@ function image(file,max=1000,quality=.78){
 
         let c=document.createElement('canvas');
 
-        c.width=Math.max(1,Math.round(im.width*scale));
-        c.height=Math.max(1,Math.round(im.height*scale));
+        c.width=Math.max(
+          1,
+          Math.round(im.width*scale)
+        );
+
+        c.height=Math.max(
+          1,
+          Math.round(im.height*scale)
+        );
 
         c.getContext('2d').drawImage(
           im,
@@ -229,7 +1037,12 @@ function image(file,max=1000,quality=.78){
           c.height
         );
 
-        res(c.toDataURL('image/jpeg',quality));
+        res(
+          c.toDataURL(
+            'image/jpeg',
+            quality
+          )
+        );
       };
 
       im.onerror=rej;
@@ -241,25 +1054,37 @@ function image(file,max=1000,quality=.78){
 }
 
 function imgOrInitial(src,name,cls='avatar'){
+
   return src
     ?`<img class="${cls}" src="${esc(src)}" alt="">`
     :`<div class="${cls}">${esc(initials(name))}</div>`;
 }
 
 function shell(){
+
   let s=state.settings;
 
   return `
   <div class="wrap">
+
     <header class="top">
+
       ${
         s.banner
-        ?`<div class="banner" style="background-image:url('${esc(s.banner)}')"></div>`
+        ?`<div
+            class="banner"
+            style="background-image:url('${esc(s.banner)}')"
+          ></div>`
         :'<div class="banner noimg"></div>'
       }
 
       <div class="brand">
-        ${imgOrInitial(s.logo,s.familyName,'logo')}
+
+        ${imgOrInitial(
+          s.logo,
+          s.familyName,
+          'logo'
+        )}
 
         <div>
           <h1>${esc(s.familyName)}</h1>
@@ -273,10 +1098,13 @@ function shell(){
         >
           Lock
         </button>
+
       </div>
+
     </header>
 
     <nav>
+
       ${
         [
           ['dashboard','Dashboard'],
@@ -295,9 +1123,11 @@ function shell(){
         `)
         .join('')
       }
+
     </nav>
 
     <main id="main"></main>
+
   </div>`;
 }
 
@@ -307,9 +1137,15 @@ function tab(t){
 }
 
 function render(){
-  document.body.innerHTML='<div id="app"></div><div id="toast"></div>';
 
-  if(!sessionStorage.getItem('fst_unlocked')){
+  document.body.innerHTML=
+    '<div id="app"></div><div id="toast"></div>';
+
+  if(
+    !sessionStorage.getItem(
+      'fst_unlocked'
+    )
+  ){
     return pin();
   }
 
@@ -325,10 +1161,18 @@ function render(){
 let pinbuf='';
 
 function pin(){
+
   document.getElementById('app').innerHTML=`
+
     <div class="pin">
+
       <div class="pinbox">
-        ${imgOrInitial(state.settings.logo,state.settings.familyName,'pinlogo')}
+
+        ${imgOrInitial(
+          state.settings.logo,
+          state.settings.familyName,
+          'pinlogo'
+        )}
 
         <h1>${esc(state.settings.familyName)}</h1>
 
@@ -339,8 +1183,14 @@ function pin(){
         </div>
 
         <div class="keypad">
+
           ${
-            [1,2,3,4,5,6,7,8,9,'C',0,'⌫']
+            [
+              1,2,3,
+              4,5,6,
+              7,8,9,
+              'C',0,'⌫'
+            ]
             .map(k=>`
               <button onclick="pinKey('${k}')">
                 ${k}
@@ -348,12 +1198,16 @@ function pin(){
             `)
             .join('')
           }
+
         </div>
+
       </div>
+
     </div>`;
 }
 
 function pinKey(k){
+
   if(k==='C'){
     pinbuf='';
   }else if(k==='⌫'){
@@ -363,219 +1217,373 @@ function pinKey(k){
   }
 
   if(pinbuf.length===4){
+
     if(pinbuf===state.settings.pin){
-      sessionStorage.setItem('fst_unlocked','1');
+
+      sessionStorage.setItem(
+        'fst_unlocked',
+        '1'
+      );
+
       pinbuf='';
       render();
       return;
+
     }else{
+
       notify('Incorrect PIN');
       pinbuf='';
     }
   }
 
   if($('dots')){
+
     $('dots').textContent=
-      pinbuf.padEnd(4,'○').split('').join(' ');
+      pinbuf
+        .padEnd(4,'○')
+        .split('')
+        .join(' ');
   }
 }
 
 function lock(){
-  sessionStorage.removeItem('fst_unlocked');
+
+  sessionStorage.removeItem(
+    'fst_unlocked'
+  );
+
   pinbuf='';
   render();
 }
 
 function dashboard(){
+
   let owed=round(
     state.shifts
       .filter(s=>!paid(s))
-      .reduce((a,s)=>a+total(s),0)
+      .reduce(
+        (a,s)=>a+total(s),
+        0
+      )
   );
 
   let paidTotal=round(
     state.shifts
       .filter(paid)
-      .reduce((a,s)=>a+total(s),0)
+      .reduce(
+        (a,s)=>a+total(s),
+        0
+      )
   );
 
   let people=state.sitters
-    .map(s=>({...s,owed:outstandingFor(s.id)}))
+    .map(s=>({
+      ...s,
+      owed:outstandingFor(s.id)
+    }))
     .filter(s=>s.owed>0)
-    .sort((a,b)=>b.owed-a.owed);
+    .sort(
+      (a,b)=>b.owed-a.owed
+    );
 
   let recent=[...state.shifts]
-    .sort((a,b)=>b.date.localeCompare(a.date))
+    .sort(
+      (a,b)=>b.date.localeCompare(a.date)
+    )
     .slice(0,6);
 
   $('main').innerHTML=`
+
     <div class="grid">
 
       <div class="card">
         <div class="label">Currently owed</div>
-        <div class="stat money">${money(owed)}</div>
+        <div class="stat money">
+          ${money(owed)}
+        </div>
       </div>
 
       <div class="card">
         <div class="label">Paid on recorded shifts</div>
-        <div class="stat money">${money(paidTotal)}</div>
+        <div class="stat money">
+          ${money(paidTotal)}
+        </div>
       </div>
 
       <div class="card">
         <div class="label">Sitting shifts</div>
-        <div class="stat">${state.shifts.length}</div>
+        <div class="stat">
+          ${state.shifts.length}
+        </div>
       </div>
 
       <div class="card">
         <div class="label">Sitters</div>
-        <div class="stat">${state.sitters.length}</div>
+        <div class="stat">
+          ${state.sitters.length}
+        </div>
       </div>
 
     </div>
 
     <div class="row section-title">
+
       <span>Currently Owed</span>
-      <button class="small" onclick="openPay()">Pay Sitter</button>
+
+      <button
+        class="small"
+        onclick="openPay()"
+      >
+        Pay Sitter
+      </button>
+
     </div>
 
     <div class="list">
+
       ${
         people.length
+
         ?people.map(s=>`
+
           <div class="item">
+
             <div class="row">
 
               <div class="person">
-                ${imgOrInitial(s.avatar,s.name)}
+
+                ${imgOrInitial(
+                  s.avatar,
+                  s.name
+                )}
 
                 <div>
+
                   <strong>
                     ${esc(s.name)}
-                    ${s.archived?'<span class="pill">Archived</span>':''}
+                    ${
+                      s.archived
+                      ?'<span class="pill">Archived</span>'
+                      :''
+                    }
                   </strong>
 
                   <span class="muted">
                     ${unpaid(s.id).length}
-                    unpaid shift${unpaid(s.id).length===1?'':'s'}
+                    unpaid shift
+                    ${unpaid(s.id).length===1?'':'s'}
                   </span>
+
                 </div>
+
               </div>
 
               <div>
-                <strong class="money">${money(s.owed)}</strong>
+
+                <strong class="money">
+                  ${money(s.owed)}
+                </strong>
+
                 <br>
+
                 <button
                   class="small"
                   onclick="openPay('${s.id}')"
                 >
                   Pay
                 </button>
+
               </div>
 
             </div>
+
           </div>
+
         `).join('')
+
         :'<div class="card empty">Nothing is currently owed.</div>'
       }
+
     </div>
 
-    <h2 class="section-title">Recent Shifts</h2>
+    <h2 class="section-title">
+      Recent Shifts
+    </h2>
 
     <div class="list">
+
       ${
         recent.length
+
         ?recent.map(shiftItem).join('')
+
         :'<div class="card empty">No shifts yet.</div>'
       }
+
     </div>`;
 }
 
 function breakdownHTML(s){
+
   let rows=[
+
     `<div class="line">
+
       <span>
         Hours (${s.hours}h × ${money(s.hourlyRate)})
       </span>
-      <span>${money(s.basePay)}</span>
+
+      <span>
+        ${money(s.basePay)}
+      </span>
+
     </div>`
   ];
 
   (s.adjustments||[]).forEach(a=>{
+
     rows.push(`
+
       <div class="line">
+
         <span>
-          ${esc(a.typeLabel||a.type||'Adjustment')}
-          ${a.note?' — '+esc(a.note):''}
+
+          ${esc(
+            a.typeLabel||
+            a.type||
+            'Adjustment'
+          )}
+
+          ${
+            a.note
+            ?' — '+esc(a.note)
+            :''
+          }
+
         </span>
-        <span>${money(a.amount)}</span>
+
+        <span>
+          ${money(a.amount)}
+        </span>
+
       </div>
     `);
   });
 
   rows.push(`
+
     <div class="line total">
+
       <span>Total</span>
-      <span>${money(total(s))}</span>
+
+      <span>
+        ${money(total(s))}
+      </span>
+
     </div>
   `);
 
-  return `<div class="breakdown">${rows.join('')}</div>`;
+  return `
+    <div class="breakdown">
+      ${rows.join('')}
+    </div>`;
 }
 
 function shiftItem(s){
+
   let p=sitter(s.sitterId);
-  let pay=state.payments.find(x=>x.id===s.paymentId);
+
+  let pay=state.payments.find(
+    x=>x.id===s.paymentId
+  );
 
   return `
+
     <div class="item">
+
       <div class="row">
 
         <div>
+
           <strong>
-            ${esc(s.sitterName||p?.name||'Unknown')}
+            ${esc(
+              s.sitterName||
+              p?.name||
+              'Unknown'
+            )}
           </strong>
 
           <div class="muted">
-            ${fmt(s.date)} · ${esc(s.start)}–${esc(s.end)}
+            ${fmt(s.date)}
+            ·
+            ${esc(s.start)}
+            –
+            ${esc(s.end)}
           </div>
+
         </div>
 
         <div style="text-align:right">
-          <strong class="money">${money(total(s))}</strong>
+
+          <strong class="money">
+            ${money(total(s))}
+          </strong>
+
           <br>
 
           <span class="pill ${paid(s)?'good':'warn'}">
-            ${paid(s)?`Paid ${fmt(pay?.date)}`:'Unpaid'}
+
+            ${
+              paid(s)
+              ?`Paid ${fmt(pay?.date)}`
+              :'Unpaid'
+            }
+
           </span>
+
         </div>
 
       </div>
 
       ${breakdownHTML(s)}
+
     </div>`;
 }
 
 function shiftsPage(){
+
   let list=[...state.shifts];
 
   if(state.sitterFilter!=='all'){
-    list=list.filter(s=>s.sitterId===state.sitterFilter);
+
+    list=list.filter(
+      s=>s.sitterId===state.sitterFilter
+    );
   }
 
   if(state.filter==='outstanding'){
-    list=list.filter(s=>!paid(s));
+
+    list=list.filter(
+      s=>!paid(s)
+    );
   }
 
   if(state.filter==='paid'){
+
     list=list.filter(paid);
   }
 
   if(state.filter==='week'){
+
     let d=new Date();
+
     let day=(d.getDay()+6)%7;
+
     let from=new Date(d);
 
-    from.setDate(d.getDate()-day);
+    from.setDate(
+      d.getDate()-day
+    );
 
     list=list.filter(
       s=>s.date>=from.toISOString().slice(0,10)
@@ -583,31 +1591,51 @@ function shiftsPage(){
   }
 
   if(state.filter==='month'){
+
     let m=today().slice(0,7);
-    list=list.filter(s=>s.date.startsWith(m));
+
+    list=list.filter(
+      s=>s.date.startsWith(m)
+    );
   }
 
   if(state.filter==='custom'){
+
     if(state.from){
-      list=list.filter(s=>s.date>=state.from);
+      list=list.filter(
+        s=>s.date>=state.from
+      );
     }
 
     if(state.to){
-      list=list.filter(s=>s.date<=state.to);
+      list=list.filter(
+        s=>s.date<=state.to
+      );
     }
   }
 
-  list.sort((a,b)=>b.date.localeCompare(a.date));
+  list.sort(
+    (a,b)=>b.date.localeCompare(a.date)
+  );
 
   $('main').innerHTML=`
+
     <div class="row">
+
       <h2>Shifts</h2>
-      <button onclick="openShift()">+ Shift</button>
+
+      <button onclick="openShift()">
+        + Shift
+      </button>
+
     </div>
 
     <div class="filters">
 
-      <select onchange="state.filter=this.value;render()">
+      <select
+        onchange="state.filter=this.value;render()"
+      >
+
         ${
           [
             ['outstanding','Outstanding'],
@@ -618,38 +1646,52 @@ function shiftsPage(){
             ['custom','Custom Dates']
           ]
           .map(x=>`
+
             <option
               value="${x[0]}"
               ${state.filter===x[0]?'selected':''}
             >
               ${x[1]}
             </option>
+
           `)
           .join('')
         }
+
       </select>
 
-      <select onchange="state.sitterFilter=this.value;render()">
-        <option value="all">All Sitters</option>
+      <select
+        onchange="state.sitterFilter=this.value;render()"
+      >
+
+        <option value="all">
+          All Sitters
+        </option>
 
         ${
           state.sitters.map(s=>`
+
             <option
               value="${s.id}"
               ${state.sitterFilter===s.id?'selected':''}
             >
               ${esc(s.name)}
             </option>
+
           `).join('')
         }
+
       </select>
 
     </div>
 
     ${
       state.filter==='custom'
+
       ?`
+
         <div class="grid">
+
           <input
             type="date"
             value="${state.from}"
@@ -661,22 +1703,37 @@ function shiftsPage(){
             value="${state.to}"
             onchange="state.to=this.value;render()"
           >
+
         </div>
+
       `
       :''
     }
 
-    <div class="list" style="margin-top:10px">
+    <div
+      class="list"
+      style="margin-top:10px"
+    >
+
       ${
         list.length
+
         ?list.map(s=>`
+
           <div class="item">
+
             ${shiftItem(s)}
 
             ${
               !paid(s)
+
               ?`
-                <div class="actions" style="margin-top:8px">
+
+                <div
+                  class="actions"
+                  style="margin-top:8px"
+                >
+
                   <button
                     class="secondary small"
                     onclick="openShift('${s.id}')"
@@ -690,56 +1747,94 @@ function shiftsPage(){
                   >
                     Delete
                   </button>
+
                 </div>
+
               `
               :''
             }
+
           </div>
+
         `).join('')
+
         :'<div class="card empty">No shifts match this filter.</div>'
       }
+
     </div>`;
 }
 
 function sittersPage(){
-  let active=state.sitters.filter(s=>!s.archived);
-  let arch=state.sitters.filter(s=>s.archived);
+
+  let active=
+    state.sitters.filter(
+      s=>!s.archived
+    );
+
+  let arch=
+    state.sitters.filter(
+      s=>s.archived
+    );
 
   $('main').innerHTML=`
+
     <div class="row">
+
       <h2>Sitters</h2>
-      <button onclick="openSitter()">+ Sitter</button>
+
+      <button onclick="openSitter()">
+        + Sitter
+      </button>
+
     </div>
 
     <div class="list">
+
       ${
         active.map(sitterCard).join('')||
         '<div class="card empty">No active sitters.</div>'
       }
+
     </div>
 
     ${
       arch.length
+
       ?`
-        <h2 class="section-title">Archived</h2>
+
+        <h2 class="section-title">
+          Archived
+        </h2>
+
         <div class="list">
           ${arch.map(sitterCard).join('')}
         </div>
+
       `
       :''
     }`;
 }
 
 function sitterCard(s){
+
   return `
-    <div class="card">
+
+    <div class="card sitter-card">
+
       <div class="row">
 
         <div class="person">
-          ${imgOrInitial(s.avatar,s.name)}
+
+          ${imgOrInitial(
+            s.avatar,
+            s.name
+          )}
 
           <div>
-            <strong>${esc(s.name)}</strong>
+
+            <strong>
+              ${esc(s.name)}
+            </strong>
 
             <div class="muted">
               ${money(s.rate)}/hr
@@ -747,33 +1842,51 @@ function sitterCard(s){
 
             ${
               s.paymentMethods?.length
+
               ?`
+
                 <div class="muted">
-                  ${s.paymentMethods.map(m=>esc(m.label)).join(' · ')}
+                  ${
+                    s.paymentMethods
+                      .map(m=>esc(m.label))
+                      .join(' · ')
+                  }
                 </div>
+
               `
+
               :s.paymentInfo
+
               ?`
+
                 <div class="muted">
                   ${esc(s.paymentInfo)}
                 </div>
+
               `
               :''
             }
 
             ${
               outstandingFor(s.id)
+
               ?`
+
                 <span class="pill warn">
-                  Owed ${money(outstandingFor(s.id))}
+                  Owed ${money(
+                    outstandingFor(s.id)
+                  )}
                 </span>
+
               `
               :''
             }
+
           </div>
+
         </div>
 
-        <div class="actions">
+        <div class="actions sitter-actions">
 
           <button
             class="secondary small"
@@ -784,13 +1897,16 @@ function sitterCard(s){
 
           ${
             outstandingFor(s.id)
+
             ?`
+
               <button
                 class="small"
                 onclick="openPay('${s.id}')"
               >
                 Pay
               </button>
+
             `
             :''
           }
@@ -799,56 +1915,93 @@ function sitterCard(s){
             class="secondary small"
             onclick="archiveSitter('${s.id}')"
           >
-            ${s.archived?'Restore':'Archive'}
+            ${
+              s.archived
+              ?'Restore'
+              :'Archive'
+            }
           </button>
 
         </div>
 
       </div>
+
     </div>`;
 }
 
 function paymentsPage(){
+
   let list=[...state.payments]
-    .sort((a,b)=>b.date.localeCompare(a.date));
+    .sort(
+      (a,b)=>b.date.localeCompare(a.date)
+    );
 
   $('main').innerHTML=`
+
     <div class="row">
+
       <h2>Payments</h2>
-      <button onclick="openPay()">+ Payment</button>
+
+      <button onclick="openPay()">
+        + Payment
+      </button>
+
     </div>
 
     <div class="list">
+
       ${
         list.length
+
         ?list.map(p=>{
+
           let s=sitter(p.sitterId);
 
           return `
+
             <div class="card">
+
               <div class="row">
 
                 <div>
+
                   <strong>
-                    ${esc(s?.name||p.sitterName||'Unknown')}
+                    ${esc(
+                      s?.name||
+                      p.sitterName||
+                      'Unknown'
+                    )}
                   </strong>
 
                   <div class="muted">
-                    ${fmt(p.date)} ·
-                    ${esc(p.method||'Other')} ·
+
+                    ${fmt(p.date)}
+                    ·
+                    ${esc(p.method||'Other')}
+                    ·
                     ${p.shiftIds?.length||0}
-                    shift${p.shiftIds?.length===1?'':'s'}
+                    shift
+                    ${
+                      p.shiftIds?.length===1
+                      ?''
+                      :'s'
+                    }
+
                   </div>
 
                   ${
                     p.note
+
                     ?`
+
                       <div class="muted">
                         ${esc(p.note)}
                       </div>
+
                     `
                     :''
                   }
+
                 </div>
 
                 <strong class="money">
@@ -856,37 +2009,52 @@ function paymentsPage(){
                 </strong>
 
               </div>
+
             </div>`;
         }).join('')
+
         :'<div class="card empty">No payments recorded.</div>'
       }
+
     </div>`;
 }
 
 function settingsPage(){
+
   let s=state.settings;
 
   $('main').innerHTML=`
+
     <h2>Settings</h2>
 
     <div class="card">
 
       <div class="field">
-        <label>Family name</label>
+
+        <label>
+          Family name
+        </label>
+
         <input
           id="familyName"
           value="${esc(s.familyName)}"
         >
+
       </div>
 
       <div class="field">
-        <label>PIN</label>
+
+        <label>
+          PIN
+        </label>
+
         <input
           id="pinSet"
           inputmode="numeric"
           maxlength="4"
           value="${esc(s.pin)}"
         >
+
       </div>
 
       <button onclick="saveSettings()">
@@ -896,16 +2064,28 @@ function settingsPage(){
     </div>
 
     <div class="card">
-      <h3>Landing-page logo</h3>
+
+      <h3>
+        Landing-page logo
+      </h3>
 
       ${
         s.logo
+
         ?`
+
           <img
             src="${esc(s.logo)}"
-            style="width:110px;height:110px;border-radius:20px;object-fit:cover"
+            style="
+              width:110px;
+              height:110px;
+              border-radius:20px;
+              object-fit:cover
+            "
           >
+
           <br>
+
         `
         :''
       }
@@ -918,26 +2098,41 @@ function settingsPage(){
       >
 
       <div class="actions">
+
         <button
           class="secondary"
           onclick="clearLogo()"
         >
           Clear Logo
         </button>
+
       </div>
+
     </div>
 
     <div class="card">
-      <h3>Dashboard banner</h3>
+
+      <h3>
+        Dashboard banner
+      </h3>
 
       ${
         s.banner
+
         ?`
+
           <img
             src="${esc(s.banner)}"
-            style="width:100%;max-height:180px;object-fit:cover;border-radius:12px"
+            style="
+              width:100%;
+              max-height:180px;
+              object-fit:cover;
+              border-radius:12px
+            "
           >
+
           <br>
+
         `
         :''
       }
@@ -950,24 +2145,38 @@ function settingsPage(){
       >
 
       <div class="actions">
+
         <button
           class="secondary"
           onclick="clearBanner()"
         >
           Clear Banner
         </button>
+
       </div>
+
     </div>
 
     <div class="card">
-      <h3>Backup</h3>
+
+      <h3>
+        Backup
+      </h3>
 
       <div class="notice">
-        Photos and tracker data are stored in this browser.
-        Keep photos reasonably sized and make backups before changing devices.
+
+        Photos and tracker data are stored
+        in this browser.
+
+        Keep photos reasonably sized and make
+        backups before changing devices.
+
       </div>
 
-      <div class="actions" style="margin-top:10px">
+      <div
+        class="actions"
+        style="margin-top:10px"
+      >
 
         <button onclick="exportData()">
           Export Backup
@@ -988,13 +2197,20 @@ function settingsPage(){
         >
 
       </div>
+
     </div>
 
     <div class="card">
-      <h3>Reset</h3>
+
+      <h3>
+        Reset
+      </h3>
 
       <div class="dangerbox">
-        This removes all sitters, shifts, payments, and settings from this browser.
+
+        This removes all sitters, shifts,
+        payments, and settings from this browser.
+
       </div>
 
       <button
@@ -1004,12 +2220,15 @@ function settingsPage(){
       >
         Clear All Data
       </button>
+
     </div>`;
 
   $('logoFile').onchange=async e=>{
+
     if(!e.target.files[0])return;
 
     try{
+
       let old=s.logo;
 
       s.logo=await image(
@@ -1018,18 +2237,26 @@ function settingsPage(){
         .78
       );
 
-      if(!save())s.logo=old;
+      if(!save()){
+        s.logo=old;
+      }
 
       render();
+
     }catch{
-      notify('Could not read that image.');
+
+      notify(
+        'Could not read that image.'
+      );
     }
   };
 
   $('bannerFile').onchange=async e=>{
+
     if(!e.target.files[0])return;
 
     try{
+
       let old=s.banner;
 
       s.banner=await image(
@@ -1038,11 +2265,17 @@ function settingsPage(){
         .78
       );
 
-      if(!save())s.banner=old;
+      if(!save()){
+        s.banner=old;
+      }
 
       render();
+
     }catch{
-      notify('Could not read that image.');
+
+      notify(
+        'Could not read that image.'
+      );
     }
   };
 
@@ -1050,45 +2283,69 @@ function settingsPage(){
 }
 
 function saveSettings(){
-  let p=$('pinSet').value.trim();
+
+  let p=$('pinSet')
+    .value
+    .trim();
 
   if(!/^\d{4}$/.test(p)){
-    return notify('PIN must be exactly 4 digits');
+
+    return notify(
+      'PIN must be exactly 4 digits'
+    );
   }
 
   state.settings.familyName=
-    $('familyName').value.trim()||'Family';
+    $('familyName')
+      .value
+      .trim()||
+    'Family';
 
   state.settings.pin=p;
 
   save();
   render();
+
   notify('Settings saved');
 }
 
 function clearLogo(){
+
   state.settings.logo='';
+
   save();
   render();
 }
 
 function clearBanner(){
+
   state.settings.banner='';
+
   save();
   render();
 }
 
 function paymentMethodsHTML(methods){
+
   return (methods||[])
     .map((m,i)=>`
+
       <div class="method">
 
         <div>
-          <strong>${esc(m.label)}</strong>
+
+          <strong>
+            ${esc(m.label)}
+          </strong>
 
           <small>
-            ${m.handle?`<br>${esc(m.handle)}`:''}
+            ${
+              m.handle
+              ?`<br>${esc(m.handle)}`
+              :''
+            }
           </small>
+
         </div>
 
         <button
@@ -1099,74 +2356,130 @@ function paymentMethodsHTML(methods){
         </button>
 
       </div>
+
     `)
     .join('');
 }
 
 function openSitter(id){
+
   let s=sitter(id);
+
   let avatar=s?.avatar||'';
 
   window.editMethods=
-    JSON.parse(JSON.stringify(s?.paymentMethods||[]));
+    JSON.parse(
+      JSON.stringify(
+        s?.paymentMethods||[]
+      )
+    );
 
   showModal(`
-    <div class="row">
-      <h2>${s?'Edit':'Add'} Sitter</h2>
 
-      <button
-        class="close secondary"
-        onclick="closeModal()"
-      >
-        ×
-      </button>
+    <div class="modal-head">
+
+      <div class="row">
+
+        <h2>
+          ${s?'Edit':'Add'} Sitter
+        </h2>
+
+        <button
+          class="close secondary"
+          onclick="closeModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
     </div>
 
     <div class="field">
-      <label>Name</label>
+
+      <label>
+        Name
+      </label>
+
       <input
         id="sn"
+        autocomplete="name"
         value="${esc(s?.name||'')}"
       >
+
     </div>
 
     <div class="field">
-      <label>Hourly rate</label>
+
+      <label>
+        Hourly rate
+      </label>
+
       <input
         id="sr"
         type="number"
         min="0"
         step="0.01"
+        inputmode="decimal"
         value="${esc(s?.rate??'20')}"
       >
+
     </div>
 
     <div class="field">
-      <label>Payment methods, in priority order</label>
+
+      <label>
+        Payment methods, in priority order
+      </label>
 
       <div class="muted">
+
         Put the preferred method first.
-        Venmo can be launched directly from the payment screen
-        when a Venmo handle is saved.
+
+        Venmo can be launched directly from
+        the payment screen when a Venmo handle
+        is saved.
+
       </div>
 
       <div id="methods">
-        ${paymentMethodsHTML(window.editMethods)}
+
+        ${paymentMethodsHTML(
+          window.editMethods
+        )}
+
       </div>
 
       <div class="grid">
 
         <select id="newMethod">
-          <option>Venmo</option>
-          <option>PayPal</option>
-          <option>Cash App</option>
-          <option>Zelle</option>
-          <option>Other</option>
+
+          <option>
+            Venmo
+          </option>
+
+          <option>
+            PayPal
+          </option>
+
+          <option>
+            Cash App
+          </option>
+
+          <option>
+            Zelle
+          </option>
+
+          <option>
+            Other
+          </option>
+
         </select>
 
         <input
           id="newHandle"
           placeholder="Handle, username, email, or other info"
+          autocomplete="off"
         >
 
       </div>
@@ -1177,28 +2490,51 @@ function openSitter(id){
       >
         + Add Payment Method
       </button>
+
     </div>
 
     <div class="field">
-      <label>Photo</label>
+
+      <label>
+        Photo
+      </label>
 
       ${
         avatar
+
         ?`
+
           <img
             id="spreview"
             src="${esc(avatar)}"
-            style="width:90px;height:90px;border-radius:50%;object-fit:cover"
+            style="
+              width:90px;
+              height:90px;
+              border-radius:50%;
+              object-fit:cover
+            "
           >
+
         `
+
         :`
+
           <div
             id="spreview"
             class="avatar"
-            style="width:90px;height:90px"
+            style="
+              width:90px;
+              height:90px
+            "
           >
-            ${esc(initials(s?.name||'Sitter'))}
+            ${esc(
+              initials(
+                s?.name||
+                'Sitter'
+              )
+            )}
           </div>
+
         `
       }
 
@@ -1210,28 +2546,31 @@ function openSitter(id){
 
       <button
         class="secondary small"
-        onclick="
-          window.removeAvatar=true;
-          window.newAvatar='';
-          $('spreview').outerHTML='<div id=\"spreview\" class=\"avatar\" style=\"width:90px;height:90px\">'+esc(initials($('sn').value||'Sitter'))+'</div>'
-        "
+        onclick="removeSitterPhoto()"
       >
         Remove Photo
       </button>
+
     </div>
 
-    <div class="actions">
+    <div class="modal-actions">
 
-      <button onclick="saveSitter('${id||''}')">
-        Save
-      </button>
+      <div class="actions">
 
-      <button
-        class="secondary"
-        onclick="closeModal()"
-      >
-        Cancel
-      </button>
+        <button
+          onclick="saveSitter('${id||''}')"
+        >
+          Save
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeModal()"
+        >
+          Cancel
+        </button>
+
+      </div>
 
     </div>
   `);
@@ -1239,96 +2578,213 @@ function openSitter(id){
   window.newAvatar=avatar;
   window.removeAvatar=false;
 
+  $('sn').addEventListener(
+    'input',
+    updateSitterPreview
+  );
+
   $('sphoto').onchange=async e=>{
+
     if(!e.target.files[0])return;
 
-    window.newAvatar=
-      await image(e.target.files[0],500,.8);
+    try{
 
-    window.removeAvatar=false;
+      window.newAvatar=
+        await image(
+          e.target.files[0],
+          500,
+          .8
+        );
 
-    $('spreview').outerHTML=`
-      <img
-        id="spreview"
-        src="${esc(window.newAvatar)}"
-        style="width:90px;height:90px;border-radius:50%;object-fit:cover"
-      >
-    `;
+      window.removeAvatar=false;
+
+      $('spreview').outerHTML=`
+
+        <img
+          id="spreview"
+          src="${esc(window.newAvatar)}"
+          style="
+            width:90px;
+            height:90px;
+            border-radius:50%;
+            object-fit:cover
+          "
+        >
+
+      `;
+
+    }catch{
+
+      notify(
+        'Could not read that image.'
+      );
+    }
   };
 }
 
+function updateSitterPreview(){
+
+  let preview=$('spreview');
+
+  if(!preview||window.newAvatar)return;
+
+  if(window.removeAvatar){
+
+    preview.textContent=
+      initials(
+        $('sn')?.value||
+        'Sitter'
+      );
+  }
+}
+
+function removeSitterPhoto(){
+
+  window.removeAvatar=true;
+  window.newAvatar='';
+
+  let preview=$('spreview');
+
+  if(preview){
+
+    preview.outerHTML=`
+
+      <div
+        id="spreview"
+        class="avatar"
+        style="
+          width:90px;
+          height:90px
+        "
+      >
+        ${esc(
+          initials(
+            $('sn')?.value||
+            'Sitter'
+          )
+        )}
+      </div>
+
+    `;
+  }
+}
+
 function addPaymentMethod(){
+
   let label=$('newMethod').value;
-  let handle=$('newHandle').value.trim();
+
+  let handle=
+    $('newHandle')
+      .value
+      .trim();
 
   if(!handle){
-    return notify('Enter the payment handle or account');
+
+    return notify(
+      'Enter the payment handle or account'
+    );
   }
 
   window.editMethods.push({
+
     id:uid(),
     label,
     handle
+
   });
 
   $('methods').innerHTML=
-    paymentMethodsHTML(window.editMethods);
+    paymentMethodsHTML(
+      window.editMethods
+    );
 
   $('newHandle').value='';
 }
 
 function removePaymentMethod(i){
+
   window.editMethods.splice(i,1);
+
   $('methods').innerHTML=
-    paymentMethodsHTML(window.editMethods);
+    paymentMethodsHTML(
+      window.editMethods
+    );
 }
 
 function saveSitter(id){
-  let name=$('sn').value.trim();
-  let rate=Number($('sr').value);
+
+  let name=
+    $('sn')
+      .value
+      .trim();
+
+  let rate=
+    Number(
+      $('sr').value
+    );
 
   if(
     !name||
     !Number.isFinite(rate)||
     rate<0
   ){
-    return notify('Enter a valid name and rate');
+
+    return notify(
+      'Enter a valid name and rate'
+    );
   }
 
   if(id){
+
     let s=sitter(id);
 
     Object.assign(s,{
       name,
       rate:round(rate),
-      paymentMethods:window.editMethods,
-      avatar:window.removeAvatar?'':window.newAvatar
+      paymentMethods:
+        window.editMethods,
+      avatar:
+        window.removeAvatar
+        ?''
+        :window.newAvatar
     });
+
   }else{
+
     state.sitters.push({
+
       id:uid(),
       name,
       rate:round(rate),
-      paymentMethods:window.editMethods,
-      avatar:window.removeAvatar?'':window.newAvatar,
+      paymentMethods:
+        window.editMethods,
+      avatar:
+        window.removeAvatar
+        ?''
+        :window.newAvatar,
       archived:false
+
     });
   }
 
   save();
   closeModal();
   render();
+
   notify('Sitter saved');
 }
 
 function archiveSitter(id){
+
   let s=sitter(id);
 
   if(!s)return;
 
   if(
     !s.archived&&
-    !confirm(`Archive ${s.name}? Their history will remain.`)
+    !confirm(
+      `Archive ${s.name}? Their history will remain.`
+    )
   ){
     return;
   }
@@ -1340,15 +2796,24 @@ function archiveSitter(id){
 }
 
 function openShift(id){
-  let sh=state.shifts.find(x=>x.id===id);
+
+  let sh=
+    state.shifts.find(
+      x=>x.id===id
+    );
 
   if(sh&&paid(sh)){
-    return notify('Paid shifts cannot be edited.');
+
+    return notify(
+      'Paid shifts cannot be edited.'
+    );
   }
 
-  let opts=state.sitters.filter(
-    s=>!s.archived||s.id===sh?.sitterId
-  );
+  let opts=
+    state.sitters.filter(
+      s=>!s.archived||
+      s.id===sh?.sitterId
+    );
 
   let selected=
     sh?.sitterId||
@@ -1361,60 +2826,93 @@ function openShift(id){
     20;
 
   showModal(`
-    <div class="row">
-      <h2>${sh?'Edit':'Add'} Shift</h2>
 
-      <button
-        class="close secondary"
-        onclick="closeModal()"
-      >
-        ×
-      </button>
+    <div class="modal-head">
+
+      <div class="row">
+
+        <h2>
+          ${sh?'Edit':'Add'} Shift
+        </h2>
+
+        <button
+          class="close secondary"
+          onclick="closeModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
     </div>
 
     <div class="field">
-      <label>Sitter</label>
+
+      <label>
+        Sitter
+      </label>
 
       <select
         id="ss"
         ${sh?'disabled':''}
       >
+
         ${
           opts.map(s=>`
+
             <option
               value="${esc(s.id)}"
               ${s.id===selected?'selected':''}
             >
               ${esc(s.name)}
-              ${s.archived?' (archived)':''}
+              ${
+                s.archived
+                ?' (archived)'
+                :''
+              }
             </option>
+
           `).join('')
         }
+
       </select>
+
     </div>
 
     <div class="grid">
 
       <div class="field">
-        <label>Date</label>
+
+        <label>
+          Date
+        </label>
 
         <input
           id="sd"
           type="date"
-          value="${esc(sh?.date||today())}"
+          value="${esc(
+            sh?.date||
+            today()
+          )}"
         >
+
       </div>
 
       <div class="field">
-        <label>Hourly rate</label>
+
+        <label>
+          Hourly rate
+        </label>
 
         <input
           id="srate"
           type="number"
           min="0"
           step="0.01"
+          inputmode="decimal"
           value="${esc(rate)}"
         >
+
       </div>
 
     </div>
@@ -1422,32 +2920,52 @@ function openShift(id){
     <div class="grid">
 
       <div class="field">
-        <label>Start</label>
+
+        <label>
+          Start
+        </label>
 
         <input
           id="sst"
           type="time"
-          value="${esc(sh?.start||'17:00')}"
+          value="${esc(
+            sh?.start||
+            '17:00'
+          )}"
         >
+
       </div>
 
       <div class="field">
-        <label>End</label>
+
+        <label>
+          End
+        </label>
 
         <input
           id="se"
           type="time"
-          value="${esc(sh?.end||'21:00')}"
+          value="${esc(
+            sh?.end||
+            '21:00'
+          )}"
         >
+
       </div>
 
     </div>
 
     <div class="field">
-      <label>Separate adjustments</label>
+
+      <label>
+        Separate adjustments
+      </label>
 
       <div class="muted">
-        Add each reimbursement, tip, bonus, or deduction as its own line.
+
+        Add each reimbursement, tip, bonus,
+        or deduction as its own line.
+
       </div>
 
       <div id="adjustments"></div>
@@ -1458,51 +2976,79 @@ function openShift(id){
       >
         + Add Adjustment
       </button>
+
     </div>
 
     <div class="field">
-      <label>Shift notes</label>
 
-      <textarea id="snotes">${esc(sh?.notes||'')}</textarea>
+      <label>
+        Shift notes
+      </label>
+
+      <textarea id="snotes">${esc(
+        sh?.notes||''
+      )}</textarea>
+
     </div>
 
     <div class="card">
-      <div class="label">Preview</div>
-      <div id="preview" class="stat">$0.00</div>
+
+      <div class="label">
+        Preview
+      </div>
+
+      <div
+        id="preview"
+        class="stat"
+      >
+        $0.00
+      </div>
+
     </div>
 
-    <div class="actions">
+    <div class="modal-actions">
 
-      <button onclick="saveShift('${id||''}')">
-        Save Shift
-      </button>
+      <div class="actions">
 
-      ${
-        sh
-        ?`
-          <button
-            class="danger"
-            onclick="deleteShift('${id}')"
-          >
-            Delete
-          </button>
-        `
-        :''
-      }
+        <button
+          onclick="saveShift('${id||''}')"
+        >
+          Save Shift
+        </button>
 
-      <button
-        class="secondary"
-        onclick="closeModal()"
-      >
-        Cancel
-      </button>
+        ${
+          sh
+
+          ?`
+
+            <button
+              class="danger"
+              onclick="deleteShift('${id}')"
+            >
+              Delete
+            </button>
+
+          `
+          :''
+        }
+
+        <button
+          class="secondary"
+          onclick="closeModal()"
+        >
+          Cancel
+        </button>
+
+      </div>
 
     </div>
   `);
 
   window.shiftAdjustments=
     JSON.parse(
-      JSON.stringify(sh?.adjustments||[])
+      JSON.stringify(
+        sh?.adjustments||[]
+      )
     );
 
   if(!window.shiftAdjustments.length){
@@ -1511,9 +3057,13 @@ function openShift(id){
 
   renderAdjustmentRows();
 
-  ['sst','se','srate'].forEach(x=>
-    $(x).addEventListener('input',updatePreview)
-  );
+  ['sst','se','srate'].forEach(x=>{
+
+    $(x).addEventListener(
+      'input',
+      updatePreview
+    );
+  });
 
   updatePreview();
 }
@@ -1523,116 +3073,166 @@ function addAdjustmentRow(
   amount='',
   note=''
 ){
+
   window.shiftAdjustments.push({
+
     id:uid(),
     type,
     amount:Number(amount)||0,
     note
+
   });
 
   renderAdjustmentRows();
 }
 
 function renderAdjustmentRows(){
+
   let box=$('adjustments');
 
   if(!box)return;
 
   box.innerHTML=
     window.shiftAdjustments.length
-    ?window.shiftAdjustments.map((a,i)=>`
-      <div class="adjust">
 
-        <select
-          onchange="
-            window.shiftAdjustments[${i}].type=this.value;
-            updatePreview()
-          "
-        >
-          <option ${a.type==='reimbursement'?'selected':''}>
-            reimbursement
-          </option>
+    ?window.shiftAdjustments
+      .map((a,i)=>`
 
-          <option ${a.type==='bonus'?'selected':''}>
-            bonus
-          </option>
+        <div class="adjust">
 
-          <option ${a.type==='tip'?'selected':''}>
-            tip
-          </option>
+          <select
+            onchange="
+              window.shiftAdjustments[${i}].type=this.value;
+              updatePreview()
+            "
+          >
 
-          <option ${a.type==='deduction'?'selected':''}>
-            deduction
-          </option>
+            <option
+              value="reimbursement"
+              ${a.type==='reimbursement'?'selected':''}
+            >
+              reimbursement
+            </option>
 
-          <option ${a.type==='other'?'selected':''}>
-            other
-          </option>
-        </select>
+            <option
+              value="bonus"
+              ${a.type==='bonus'?'selected':''}
+            >
+              bonus
+            </option>
 
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Amount"
-          value="${a.amount||''}"
-          oninput="
-            window.shiftAdjustments[${i}].amount=Number(this.value)||0;
-            updatePreview()
-          "
-        >
+            <option
+              value="tip"
+              ${a.type==='tip'?'selected':''}
+            >
+              tip
+            </option>
 
-        <input
-          placeholder="Note (food, toys, fuel...)"
-          value="${esc(a.note||'')}"
-          oninput="
-            window.shiftAdjustments[${i}].note=this.value
-          "
-        >
+            <option
+              value="deduction"
+              ${a.type==='deduction'?'selected':''}
+            >
+              deduction
+            </option>
 
-        <button
-          class="danger small"
-          onclick="
-            window.shiftAdjustments.splice(${i},1);
-            renderAdjustmentRows();
-            updatePreview()
-          "
-        >
-          ×
-        </button>
+            <option
+              value="other"
+              ${a.type==='other'?'selected':''}
+            >
+              other
+            </option>
 
-      </div>
-    `).join('')
+          </select>
+
+          <input
+            type="number"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="Amount"
+            value="${a.amount||''}"
+            oninput="
+              window.shiftAdjustments[${i}].amount=Number(this.value)||0;
+              updatePreview()
+            "
+          >
+
+          <input
+            placeholder="Note (food, toys, fuel...)"
+            value="${esc(a.note||'')}"
+            oninput="
+              window.shiftAdjustments[${i}].note=this.value
+            "
+          >
+
+          <button
+            class="danger small"
+            onclick="
+              window.shiftAdjustments.splice(${i},1);
+              renderAdjustmentRows();
+              updatePreview()
+            "
+          >
+            ×
+          </button>
+
+        </div>
+
+      `)
+      .join('')
+
     :'<div class="muted">No adjustments added.</div>';
 }
 
 function adjSigned(a){
-  let n=Math.abs(Number(a.amount)||0);
-  return a.type==='deduction'?-n:n;
+
+  let n=
+    Math.abs(
+      Number(a.amount)||0
+    );
+
+  return a.type==='deduction'
+    ?-n
+    :n;
 }
 
 function updatePreview(){
+
   let h=hours(
     $('sst').value,
     $('se').value
   );
 
   let base=round(
-    h*(Number($('srate').value)||0)
+    h*
+    (Number(
+      $('srate').value
+    )||0)
   );
 
   let adj=round(
     (window.shiftAdjustments||[])
-      .reduce((a,x)=>a+adjSigned(x),0)
+      .reduce(
+        (a,x)=>a+adjSigned(x),
+        0
+      )
   );
 
   $('preview').textContent=
-    money(base+adj)+` (${h}h)`;
+    money(base+adj)+
+    ` (${h}h)`;
 }
 
 function saveShift(id){
-  let s=sitter($('ss').value);
 
-  if(!s)return notify('Choose a sitter');
+  let s=sitter(
+    $('ss').value
+  );
+
+  if(!s){
+    return notify(
+      'Choose a sitter'
+    );
+  }
 
   let h=hours(
     $('sst').value,
@@ -1640,81 +3240,138 @@ function saveShift(id){
   );
 
   if(!h){
+
     return notify(
       'Enter valid start and end times'
     );
   }
 
-  let rate=Number($('srate').value);
+  let rate=
+    Number(
+      $('srate').value
+    );
 
   if(
     !Number.isFinite(rate)||
     rate<0
   ){
-    return notify('Enter a valid rate');
+
+    return notify(
+      'Enter a valid rate'
+    );
   }
 
-  let adj=(window.shiftAdjustments||[])
-    .map(a=>({
-      ...a,
-      amount:round(adjSigned(a)),
-      typeLabel:
-        a.type.charAt(0).toUpperCase()+
-        a.type.slice(1)
-    }))
-    .filter(
-      a=>a.amount!==0||a.note
-    );
+  let adj=
+    (window.shiftAdjustments||[])
+      .map(a=>({
 
-  let base=round(h*rate);
+        ...a,
+
+        amount:
+          round(
+            adjSigned(a)
+          ),
+
+        typeLabel:
+          a.type.charAt(0).toUpperCase()+
+          a.type.slice(1)
+
+      }))
+      .filter(
+        a=>a.amount!==0||
+        a.note
+      );
+
+  let base=round(
+    h*rate
+  );
 
   let obj={
+
     id:id||uid(),
+
     sitterId:s.id,
+
     sitterName:s.name,
+
     date:$('sd').value,
+
     start:$('sst').value,
+
     end:$('se').value,
+
     hours:h,
+
     hourlyRate:round(rate),
+
     basePay:base,
+
     adjustments:adj,
+
     totalPay:round(
       base+
-      adj.reduce((a,x)=>a+x.amount,0)
+      adj.reduce(
+        (a,x)=>a+x.amount,
+        0
+      )
     ),
-    notes:$('snotes').value.trim(),
+
+    notes:
+      $('snotes')
+        .value
+        .trim(),
+
     paymentId:id
       ?(
-        state.shifts.find(x=>x.id===id)?.paymentId||
+        state.shifts.find(
+          x=>x.id===id
+        )?.paymentId||
         null
       )
       :null
   };
 
   if(id){
+
     state.shifts[
-      state.shifts.findIndex(x=>x.id===id)
+      state.shifts.findIndex(
+        x=>x.id===id
+      )
     ]=obj;
+
   }else{
+
     state.shifts.push(obj);
   }
 
   save();
   closeModal();
   render();
+
   notify('Shift saved');
 }
 
 function deleteShift(id){
-  let s=state.shifts.find(x=>x.id===id);
+
+  let s=
+    state.shifts.find(
+      x=>x.id===id
+    );
 
   if(!s||paid(s))return;
 
-  if(!confirm('Delete this unpaid shift?'))return;
+  if(
+    !confirm(
+      'Delete this unpaid shift?'
+    )
+  ){
+    return;
+  }
 
   state.shifts=
-    state.shifts.filter(x=>x.id!==id);
+    state.shifts.filter(
+      x=>x.id!==id
+    );
 
   save();
   closeModal();
@@ -1722,13 +3379,17 @@ function deleteShift(id){
 }
 
 function openPay(pre){
+
   let candidates=
     state.sitters.filter(
       s=>outstandingFor(s.id)>0
     );
 
   if(!candidates.length){
-    return notify('No unpaid shifts to pay');
+
+    return notify(
+      'No unpaid shifts to pay'
+    );
   }
 
   let sid=
@@ -1737,109 +3398,314 @@ function openPay(pre){
     :candidates[0].id;
 
   showModal(`
-    <div class="row">
-      <h2>Record Payment</h2>
 
-      <button
-        class="close secondary"
-        onclick="closeModal()"
-      >
-        ×
-      </button>
+    <div class="modal-head">
+
+      <div class="row">
+
+        <h2>
+          Record Payment
+        </h2>
+
+        <button
+          class="close secondary"
+          onclick="closeModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
     </div>
 
     <div class="field">
-      <label>Sitter</label>
+
+      <label>
+        Sitter
+      </label>
 
       <select
         id="ps"
         onchange="payList()"
       >
+
         ${
           candidates.map(s=>`
+
             <option
               value="${s.id}"
               ${s.id===sid?'selected':''}
             >
               ${esc(s.name)}
             </option>
+
           `).join('')
         }
+
       </select>
+
     </div>
 
     <div id="payList"></div>
 
     <div class="field">
-      <label>Payment date</label>
+
+      <label>
+        Payment date
+      </label>
 
       <input
         id="pd"
         type="date"
         value="${today()}"
       >
+
     </div>
 
     <div class="field">
-      <label>Method</label>
 
-      <select id="pm">
-        <option>Venmo</option>
-        <option>PayPal</option>
-        <option>Cash App</option>
-        <option>Zelle</option>
-        <option>Cash</option>
-        <option>Check</option>
-        <option>Bank Transfer</option>
-        <option>Other</option>
+      <label>
+        Method
+      </label>
+
+      <select
+        id="pm"
+        onchange="renderVenmoButton()"
+      >
+
+        <option>
+          Venmo
+        </option>
+
+        <option>
+          PayPal
+        </option>
+
+        <option>
+          Cash App
+        </option>
+
+        <option>
+          Zelle
+        </option>
+
+        <option>
+          Cash
+        </option>
+
+        <option>
+          Check
+        </option>
+
+        <option>
+          Bank Transfer
+        </option>
+
+        <option>
+          Other
+        </option>
+
       </select>
+
     </div>
 
     <div class="field">
-      <label>Note / reference</label>
 
-      <input id="pn">
+      <label>
+        Payment note
+      </label>
+
+      <input
+        id="pn"
+        placeholder="Auto-generated from selected shifts"
+        oninput="paymentNoteManuallyEdited=true"
+      >
+
+      <button
+        class="secondary small"
+        onclick="useAutoPaymentNote()"
+      >
+        Use Auto Note
+      </button>
+
     </div>
 
     <div id="payActions"></div>
 
-    <button onclick="recordPayment()">
-      Record Payment
-    </button>
+    <div class="modal-actions">
+
+      <button
+        style="width:100%"
+        onclick="recordPayment()"
+      >
+        Record Payment
+      </button>
+
+    </div>
   `);
+
+  window.paymentNoteManuallyEdited=false;
 
   payList();
 }
 
 function selectedPayIds(){
+
   return [
     ...document.querySelectorAll(
       'input[name=payshift]:checked'
     )
-  ].map(x=>x.value);
+  ].map(
+    x=>x.value
+  );
 }
 
 function selectedPayAmount(){
+
   return round(
     selectedPayIds()
       .reduce(
-        (a,id)=>
-          a+
-          total(
+        (a,id)=>{
+
+          let s=
             state.shifts.find(
               s=>s.id===id
-            )
-          ),
+            );
+
+          return a+
+            (s?total(s):0);
+
+        },
         0
       )
   );
 }
 
+function selectedPayShifts(){
+
+  let ids=selectedPayIds();
+
+  return state.shifts
+    .filter(
+      s=>ids.includes(s.id)
+    )
+    .sort(
+      (a,b)=>a.date.localeCompare(b.date)
+    );
+}
+
+function adjustmentDescription(shifts){
+
+  let parts=[];
+
+  shifts.forEach(s=>{
+
+    (s.adjustments||[]).forEach(a=>{
+
+      if(!a.note)return;
+
+      let label=
+        a.type==='deduction'
+        ?'deduction'
+        :'reimbursement';
+
+      parts.push(
+        `${label}: ${a.note}`
+      );
+    });
+  });
+
+  return parts;
+}
+
+function autoPaymentNote(){
+
+  let shifts=
+    selectedPayShifts();
+
+  if(!shifts.length){
+    return 'Sitter payment';
+  }
+
+  let dateParts=
+    shifts.map(s=>{
+
+      let day=
+        dayName(s.date);
+
+      let date=
+        shortFmt(s.date);
+
+      return `${day} ${date}`;
+    });
+
+  let uniqueDates=[
+    ...new Set(dateParts)
+  ];
+
+  let dateText=
+    uniqueDates.join(', ');
+
+  let adjustmentParts=
+    adjustmentDescription(
+      shifts
+    );
+
+  let note=
+    `Childcare: ${dateText}`;
+
+  if(adjustmentParts.length){
+
+    note+=
+      `; ${adjustmentParts.join(', ')}`;
+  }
+
+  if(
+    shifts.length===1 &&
+    shifts[0].notes
+  ){
+
+    note+=
+      `; ${shifts[0].notes}`;
+  }
+
+  /*
+    Venmo/payment notes should stay reasonably
+    short. Keep the generated version concise
+    while retaining the most useful details.
+  */
+  if(note.length>240){
+
+    note=
+      note.slice(0,237)+
+      '...';
+  }
+
+  return note;
+}
+
+function useAutoPaymentNote(){
+
+  let input=$('pn');
+
+  if(!input)return;
+
+  paymentNoteManuallyEdited=false;
+
+  input.value=
+    autoPaymentNote();
+
+  renderVenmoButton();
+}
+
 function payList(){
+
   let id=$('ps').value;
+
   let list=unpaid(id);
 
   $('payList').innerHTML=`
+
     <div class="field">
 
       <label>
@@ -1848,6 +3714,7 @@ function payList(){
 
       ${
         list.map(s=>`
+
           <label class="check">
 
             <input
@@ -1858,10 +3725,15 @@ function payList(){
             >
 
             <span>
+
               <strong>
                 ${fmt(s.date)}
               </strong>
-              · ${s.start}–${s.end}
+
+              ·
+              ${s.start}
+              –
+              ${s.end}
 
               <br>
 
@@ -1870,92 +3742,321 @@ function payList(){
               </span>
 
               ${breakdownHTML(s)}
+
             </span>
 
           </label>
+
         `).join('')
       }
 
     </div>
 
-    <div id="ptotal" class="paytotal">
+    <div
+      id="ptotal"
+      class="paytotal"
+    >
       Selected: $0.00
     </div>
   `;
+
+  paymentNoteManuallyEdited=false;
 
   payTotal();
 }
 
 function payTotal(){
-  let amount=selectedPayAmount();
+
+  let amount=
+    selectedPayAmount();
 
   if($('ptotal')){
+
     $('ptotal').textContent=
-      'Selected: '+money(amount);
+      'Selected: '+
+      money(amount);
   }
 
+  if(
+    $('pn')&&
+    !paymentNoteManuallyEdited
+  ){
+
+    $('pn').value=
+      autoPaymentNote();
+  }
+
+  renderPaymentSummary();
   renderVenmoButton();
 }
 
+function renderPaymentSummary(){
+
+  let box=$('payActions');
+
+  if(!box)return;
+
+  let s=
+    sitter(
+      $('ps')?.value
+    );
+
+  let amount=
+    selectedPayAmount();
+
+  let shifts=
+    selectedPayShifts();
+
+  if(!amount||!s){
+
+    box.innerHTML='';
+    return;
+  }
+
+  let v=
+    venmoMethod(s);
+
+  let note=
+    $('pn')?.value.trim()||
+    autoPaymentNote();
+
+  box.innerHTML=`
+
+    <div class="payment-summary">
+
+      <div class="label">
+        Payment Summary
+      </div>
+
+      <div class="big">
+        ${money(amount)}
+      </div>
+
+      <div class="muted">
+        To ${esc(s.name)}
+      </div>
+
+      ${
+        v
+
+        ?`
+
+          <div class="muted">
+            Venmo:
+            <strong>
+              @${esc(
+                String(v.handle)
+                  .replace(/^@/,'')
+              )}
+            </strong>
+          </div>
+
+        `
+        :''
+      }
+
+      <div class="muted">
+        ${shifts.length}
+        selected shift
+        ${shifts.length===1?'':'s'}
+      </div>
+
+      <div
+        class="muted"
+        style="margin-top:6px"
+      >
+        ${esc(note)}
+      </div>
+
+      <div class="copy-grid">
+
+        <button
+          class="secondary small"
+          onclick="copyPaymentAmount()"
+        >
+          Copy Amount
+        </button>
+
+        <button
+          class="secondary small"
+          onclick="copyPaymentNote()"
+        >
+          Copy Note
+        </button>
+
+        <button
+          class="secondary small"
+          onclick="copyVenmoHandle()"
+        >
+          Copy Venmo
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
 function venmoMethod(s){
+
   return (s?.paymentMethods||[])
     .find(
-      m=>String(m.label).toLowerCase()==='venmo'
+      m=>
+        String(m.label)
+          .toLowerCase()
+        ===
+        'venmo'
     );
 }
 
-function venmoUrl(handle,amount,note){
-  let h=String(handle||'')
-    .trim()
-    .replace(/^@/,'');
+function venmoUrl(
+  handle,
+  amount,
+  note
+){
+
+  let h=
+    String(handle||'')
+      .trim()
+      .replace(/^@/,'');
 
   let cleanNote=
     encodeURIComponent(
-      note||'Sitter payment'
+      note||
+      'Sitter payment'
     );
 
   return `https://venmo.com/u/${encodeURIComponent(h)}?txn=pay&amount=${encodeURIComponent(amount.toFixed(2))}&note=${cleanNote}`;
 }
 
+function venmoDeepLink(
+  handle,
+  amount,
+  note
+){
+
+  let h=
+    String(handle||'')
+      .trim()
+      .replace(/^@/,'');
+
+  return `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(h)}&amount=${encodeURIComponent(amount.toFixed(2))}&note=${encodeURIComponent(note||'Sitter payment')}`;
+}
+
 function renderVenmoButton(){
+
   let box=$('payActions');
 
   if(!box)return;
 
-  let s=sitter($('ps').value);
-  let v=venmoMethod(s);
-  let amount=selectedPayAmount();
+  /*
+    renderPaymentSummary creates the box contents.
+    If there is no payment selected, nothing is shown.
+  */
 
-  box.innerHTML=
-    amount&&v
-    ?`
-      <div
-        class="notice"
-        style="margin:10px 0"
-      >
-        Venmo recipient:
-        <strong>
-          @${esc(String(v.handle).replace(/^@/,''))}
-        </strong>
-      </div>
+  let s=
+    sitter(
+      $('ps')?.value
+    );
 
-      <button
-        class="secondary"
-        style="width:100%;margin-bottom:10px"
-        onclick="openVenmo()"
-      >
-        Open Venmo — ${money(amount)}
-      </button>
-    `
-    :'';
+  let amount=
+    selectedPayAmount();
+
+  let v=
+    venmoMethod(s);
+
+  if(
+    !amount||
+    !v
+  ){
+
+    return;
+  }
+
+  let note=
+    $('pn')?.value.trim()||
+    autoPaymentNote();
+
+  let summary=
+    box.querySelector(
+      '.payment-summary'
+    );
+
+  if(!summary){
+
+    renderPaymentSummary();
+    summary=
+      box.querySelector(
+        '.payment-summary'
+      );
+  }
+
+  if(!summary)return;
+
+  let existing=
+    summary.querySelector(
+      '.venmo-actions'
+    );
+
+  if(existing){
+    existing.remove();
+  }
+
+  let div=
+    document.createElement('div');
+
+  div.className='venmo-actions';
+
+  div.innerHTML=`
+
+    <div
+      class="notice"
+      style="margin-top:10px"
+    >
+
+      Venmo recipient:
+      <strong>
+        @${esc(
+          String(v.handle)
+            .replace(/^@/,'')
+        )}
+      </strong>
+
+    </div>
+
+    <button
+      style="
+        width:100%;
+        margin-top:8px
+      "
+      onclick="openVenmo()"
+    >
+      Open Venmo — ${money(amount)}
+    </button>
+
+  `;
+
+  summary.appendChild(div);
 }
 
 function openVenmo(){
-  let s=sitter($('ps').value);
-  let v=venmoMethod(s);
-  let amount=selectedPayAmount();
 
-  if(!v||!amount){
+  let s=
+    sitter(
+      $('ps').value
+    );
+
+  let v=
+    venmoMethod(s);
+
+  let amount=
+    selectedPayAmount();
+
+  if(
+    !v||
+    !amount
+  ){
+
     return notify(
       'Select shifts and add a Venmo handle for this sitter'
     );
@@ -1963,23 +4064,161 @@ function openVenmo(){
 
   let note=
     $('pn').value.trim()||
-    'Sitter payment';
+    autoPaymentNote();
 
-  let url=
+  let nativeUrl=
+    venmoDeepLink(
+      v.handle,
+      amount,
+      note
+    );
+
+  let webUrl=
     venmoUrl(
       v.handle,
       amount,
       note
     );
 
-  window.open(url,'_blank');
+  /*
+    Try the native Venmo app first.
+    If the browser cannot hand off to the
+    Venmo app, fall back to the web URL.
+  */
+
+  let started=
+    Date.now();
+
+  try{
+
+    window.location.href=
+      nativeUrl;
+
+  }catch{
+
+    window.open(
+      webUrl,
+      '_blank'
+    );
+
+    return;
+  }
+
+  setTimeout(()=>{
+
+    if(
+      Date.now()-started<
+      2200
+    ){
+
+      try{
+        window.open(
+          webUrl,
+          '_blank'
+        );
+      }catch{}
+    }
+
+  },1200);
+}
+
+async function copyText(text,success){
+
+  try{
+
+    if(
+      navigator.clipboard&&
+      window.isSecureContext
+    ){
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+    }else{
+
+      let ta=
+        document.createElement('textarea');
+
+      ta.value=text;
+      ta.style.position='fixed';
+      ta.style.opacity='0';
+
+      document.body.appendChild(ta);
+
+      ta.select();
+      document.execCommand('copy');
+
+      ta.remove();
+    }
+
+    notify(success);
+
+  }catch{
+
+    notify(
+      'Could not copy. Please select it manually.'
+    );
+  }
+}
+
+function copyPaymentAmount(){
+
+  let amount=
+    selectedPayAmount();
+
+  copyText(
+    amount.toFixed(2),
+    'Amount copied'
+  );
+}
+
+function copyPaymentNote(){
+
+  let note=
+    $('pn')?.value.trim()||
+    autoPaymentNote();
+
+  copyText(
+    note,
+    'Payment note copied'
+  );
+}
+
+function copyVenmoHandle(){
+
+  let s=
+    sitter(
+      $('ps')?.value
+    );
+
+  let v=
+    venmoMethod(s);
+
+  if(!v){
+
+    return notify(
+      'No Venmo handle saved for this sitter'
+    );
+  }
+
+  copyText(
+    String(v.handle)
+      .replace(/^@/,''),
+    'Venmo handle copied'
+  );
 }
 
 function recordPayment(){
-  let ids=selectedPayIds();
+
+  let ids=
+    selectedPayIds();
 
   if(!ids.length){
-    return notify('Select at least one shift');
+
+    return notify(
+      'Select at least one shift'
+    );
   }
 
   let sh=
@@ -1994,17 +4233,35 @@ function recordPayment(){
     )
   );
 
-  let sid=$('ps').value;
+  let sid=
+    $('ps').value;
+
+  let note=
+    $('pn').value.trim()||
+    autoPaymentNote();
 
   let p={
+
     id:uid(),
+
     sitterId:sid,
-    sitterName:sitter(sid)?.name||'',
-    date:$('pd').value,
+
+    sitterName:
+      sitter(sid)?.name||
+      '',
+
+    date:
+      $('pd').value,
+
     amount,
-    method:$('pm').value,
-    note:$('pn').value.trim(),
+
+    method:
+      $('pm').value,
+
+    note,
+
     shiftIds:ids
+
   };
 
   state.payments.push(p);
@@ -2014,55 +4271,110 @@ function recordPayment(){
   );
 
   save();
+
   closeModal();
   render();
-  notify('Payment recorded');
+
+  notify(
+    'Payment recorded'
+  );
 }
 
 function showModal(html){
+
   closeModal();
 
-  let d=document.createElement('div');
+  let d=
+    document.createElement('div');
 
   d.id='modalRoot';
   d.className='modalbg';
 
   d.innerHTML=
-    `<div class="modal">${html}</div>`;
+    `<div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+    >
+      ${html}
+    </div>`;
 
   document.body.appendChild(d);
+
+  /*
+    Prevent the background page from scrolling
+    while a modal is open.
+  */
+
+  document.body.style.overflow='hidden';
 
   d.addEventListener(
     'click',
     e=>{
-      if(e.target===d)closeModal();
+
+      if(e.target===d){
+        closeModal();
+      }
+
     }
   );
+
+  /*
+    Put focus into the first useful input,
+    but do not force the mobile keyboard open.
+  */
+
+  setTimeout(()=>{
+
+    let first=
+      d.querySelector(
+        'input:not([type=file]),select,textarea'
+      );
+
+    if(first){
+      try{
+        first.focus({
+          preventScroll:true
+        });
+      }catch{}
+    }
+
+  },100);
 }
 
 function closeModal(){
-  document.getElementById('modalRoot')?.remove();
+
+  document.getElementById(
+    'modalRoot'
+  )?.remove();
+
+  document.body.style.overflow='';
 }
 
 function exportData(){
-  let blob=new Blob(
-    [
-      JSON.stringify(
-        {
-          version:2,
-          sitters:state.sitters,
-          shifts:state.shifts,
-          payments:state.payments,
-          settings:state.settings
-        },
-        null,
-        2
-      )
-    ],
-    {type:'application/json'}
-  );
 
-  let a=document.createElement('a');
+  let blob=
+    new Blob(
+      [
+        JSON.stringify(
+          {
+            version:3,
+            sitters:state.sitters,
+            shifts:state.shifts,
+            payments:state.payments,
+            settings:state.settings
+          },
+          null,
+          2
+        )
+      ],
+      {
+        type:'application/json'
+      }
+    );
+
+  let a=
+    document.createElement('a');
 
   a.href=
     URL.createObjectURL(blob);
@@ -2081,21 +4393,30 @@ function exportData(){
 }
 
 function importData(e){
-  let f=e.target.files[0];
+
+  let f=
+    e.target.files[0];
 
   if(!f)return;
 
-  let r=new FileReader();
+  let r=
+    new FileReader();
 
   r.onload=()=>{
+
     try{
-      let d=JSON.parse(r.result);
+
+      let d=
+        JSON.parse(
+          r.result
+        );
 
       if(
         !Array.isArray(d.sitters)||
         !Array.isArray(d.shifts)||
         !Array.isArray(d.payments)
       ){
+
         throw 0;
       }
 
@@ -2120,9 +4441,15 @@ function importData(e){
       save();
       render();
 
-      notify('Backup imported');
+      notify(
+        'Backup imported'
+      );
+
     }catch{
-      notify('Invalid backup file');
+
+      notify(
+        'Invalid backup file'
+      );
     }
   };
 
@@ -2130,6 +4457,7 @@ function importData(e){
 }
 
 function resetAll(){
+
   if(
     !confirm(
       'Clear ALL tracker data from this browser?'
@@ -2139,7 +4467,8 @@ function resetAll(){
   }
 
   Object.values(K).forEach(
-    k=>localStorage.removeItem(k)
+    k=>
+      localStorage.removeItem(k)
   );
 
   sessionStorage.removeItem(
@@ -2156,10 +4485,14 @@ if(
     'fst_unlocked'
   )
 ){
+
   pin();
+
 }else{
+
   render();
 }
 </script>
+
 </body>
 </html>
