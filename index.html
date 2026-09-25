@@ -1,422 +1,3052 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Favero Family Sitter Tracker</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; display: flex; flex-direction: column; align-items: center; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Favero Family Sitter Tracker</title>
 
-    /* --- FULL SCREEN PIN LANDING SCREEN --- */
-    #pin-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100vh;
-      background-color: #0f172a;
-      z-index: 999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1.5rem;
-    }
+<style>
+:root{
+  --bg:#0b1020;
+  --panel:#111827;
+  --panel2:#182235;
+  --panel3:#202c42;
+  --text:#f8fafc;
+  --muted:#9ca3af;
+  --line:#2b3952;
+  --accent:#60a5fa;
+  --green:#34d399;
+  --danger:#f87171;
+  --warning:#fbbf24;
+  --shadow:0 10px 30px rgba(0,0,0,.25);
+}
 
-    .pin-card-split {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 1rem;
-      padding: 2rem;
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    }
+*{box-sizing:border-box}
 
-    .pin-header { text-align: center; }
-    .pin-header h2 { color: #38bdf8; font-size: 1.6rem; margin-bottom: 0.5rem; }
-    .pin-header p { color: #94a3b8; font-size: 0.9rem; }
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
 
-    .pin-display-wrapper {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
+body{min-height:100vh}
 
-    .pin-input {
-      width: 100%;
-      max-width: 280px;
-      font-size: 1.8rem;
-      letter-spacing: 0.6rem;
-      text-align: center;
-      padding: 0.65rem;
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 0.5rem;
-      color: #38bdf8;
-    }
+button,input,select,textarea{font:inherit}
 
-    /* KEYPAD GRID FOR PIN */
-    .keypad-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      width: 100%;
-      max-width: 280px;
-      margin-top: 0.5rem;
-    }
+button{
+  cursor:pointer;
+  border:0;
+  border-radius:12px;
+  padding:11px 14px;
+  background:var(--panel3);
+  color:var(--text);
+  font-weight:700;
+}
 
-    .pin-key {
-      background-color: #334155;
-      color: #f8fafc;
-      border: none;
-      font-size: 1.4rem;
-      font-weight: 600;
-      padding: 1rem 0;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      transition: background-color 0.15s ease;
-    }
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
 
-    .pin-key:active {
-      background-color: #0284c7;
-    }
+button.primary{
+  background:var(--accent);
+  color:#07111f;
+}
 
-    .pin-key-action {
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      font-size: 1rem;
-      color: #94a3b8;
-    }
+button.success{
+  background:var(--green);
+  color:#062014;
+}
 
-    .pin-error { color: #f87171; font-size: 0.85rem; display: none; text-align: center; margin-top: 0.5rem; }
+button.danger{
+  background:#3b1e25;
+  color:#fecaca;
+}
 
-    /* --- DASHBOARD MAIN LAYOUT --- */
-    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.25rem; }
-    header { text-align: center; padding: 1rem 0; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.4rem; color: #38bdf8; }
-    
-    .card { background-color: #1e293b; border-radius: 0.75rem; padding: 1.25rem; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-    
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; }
-    label { font-size: 0.85rem; color: #94a3b8; }
-    input, select, textarea { background-color: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 0.65rem; border-radius: 0.5rem; font-size: 0.95rem; width: 100%; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #38bdf8; }
-    
-    .btn { background-color: #0284c7; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem; }
-    .btn-secondary { background-color: #334155; }
-    .btn-danger { background-color: #991b1b; }
-    
-    .sitter-list, .shift-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-    .list-item { background-color: #0f172a; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-    .list-item-info { display: flex; flex-direction: column; gap: 0.2rem; }
-    .list-item-title { font-weight: 600; color: #f8fafc; }
-    .list-item-sub { font-size: 0.8rem; color: #94a3b8; }
-    .action-btns { display: flex; gap: 0.35rem; }
-    .sm-btn { padding: 0.35rem 0.65rem; font-size: 0.8rem; border-radius: 0.35rem; width: auto; }
-    
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; padding: 1rem; z-index: 100; }
-    .modal-overlay.active { display: flex; }
-    .modal { background-color: #1e293b; border-radius: 0.75rem; padding: 1.5rem; width: 100%; max-width: 500px; border: 1px solid #334155; }
-  </style>
+button.ghost{
+  background:transparent;
+  border:1px solid var(--line);
+}
+
+button.small{
+  padding:8px 10px;
+  font-size:13px;
+}
+
+input,select,textarea{
+  width:100%;
+  background:#0d1525;
+  border:1px solid var(--line);
+  color:var(--text);
+  border-radius:11px;
+  padding:11px 12px;
+  outline:none;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent);
+}
+
+textarea{
+  min-height:82px;
+  resize:vertical;
+}
+
+label{
+  display:block;
+  color:#cbd5e1;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.hidden{display:none!important}
+
+.app{
+  max-width:760px;
+  margin:0 auto;
+  min-height:100vh;
+}
+
+.screen{
+  min-height:100vh;
+  padding:16px;
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.spread{
+  justify-content:space-between;
+}
+
+.wrap{
+  flex-wrap:wrap;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.muted{color:var(--muted)}
+
+.smalltext{
+  font-size:12px;
+}
+
+.money{
+  font-variant-numeric:tabular-nums;
+}
+
+h1{
+  font-size:25px;
+  margin:0 0 4px;
+}
+
+h2{
+  font-size:20px;
+  margin:0 0 12px;
+}
+
+h3{
+  font-size:16px;
+  margin:0 0 5px;
+}
+
+.section{
+  margin-top:16px;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  gap:10px;
+}
+
+.section-title h2{
+  margin:0;
+}
+
+.list{
+  display:grid;
+  gap:10px;
+}
+
+.item{
+  padding:14px;
+}
+
+.empty{
+  padding:24px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:11px;
+  font-weight:800;
+  background:#273449;
+  color:#cbd5e1;
+}
+
+.badge.paid{
+  background:#12392e;
+  color:#86efac;
+}
+
+.badge.unpaid{
+  background:#3a2c12;
+  color:#fde68a;
+}
+
+.badge.archived{
+  background:#332331;
+  color:#f0abfc;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(11,16,32,.94);
+  backdrop-filter:blur(14px);
+  padding:10px 0 12px;
+}
+
+.topbar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.brand-avatar,
+.avatar{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#273449;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  color:#cbd5e1;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+
+.brand-avatar{
+  width:40px;
+  height:40px;
+}
+
+.brand-avatar img,
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.avatar.large{
+  width:70px;
+  height:70px;
+  font-size:22px;
+}
+
+.banner{
+  height:145px;
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#182235,#0f172a);
+  border:1px solid var(--line);
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.banner-placeholder{
+  padding:20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.summary{
+  padding:15px;
+}
+
+.summary .value{
+  font-size:25px;
+  font-weight:900;
+  margin-top:5px;
+}
+
+.sitter-card{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.sitter-main{
+  flex:1;
+  min-width:0;
+}
+
+.sitter-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.nav{
+  position:sticky;
+  bottom:0;
+  z-index:25;
+  padding:10px 0 max(10px,env(safe-area-inset-bottom));
+  background:linear-gradient(transparent,var(--bg) 20%);
+}
+
+.nav-inner{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  background:#101827;
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:5px;
+}
+
+.nav button{
+  background:transparent;
+  padding:9px 4px;
+  font-size:11px;
+  color:#94a3b8;
+}
+
+.nav button.active{
+  background:var(--panel3);
+  color:var(--text);
+}
+
+.nav-icon{
+  display:block;
+  font-size:18px;
+  line-height:20px;
+  margin-bottom:2px;
+}
+
+hr{
+  border:0;
+  border-top:1px solid var(--line);
+  margin:14px 0;
+}
+
+/* Modal */
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  z-index:50;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0;
+}
+
+.modal{
+  width:min(760px,100%);
+  max-height:94vh;
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px 22px 0 0;
+  padding:18px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.modal-head h2{
+  margin:0;
+}
+
+.close{
+  width:38px;
+  height:38px;
+  padding:0;
+  border-radius:50%;
+}
+
+.check-item{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:12px;
+  background:#0d1525;
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:8px;
+}
+
+.check-item input{
+  width:20px;
+  height:20px;
+  margin-top:2px;
+}
+
+.check-main{
+  flex:1;
+}
+
+.total-box{
+  padding:14px;
+  border-radius:14px;
+  background:#0d1525;
+  border:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  font-size:13px;
+}
+
+.detail-grid div{
+  background:#0d1525;
+  border-radius:10px;
+  padding:10px;
+}
+
+.settings-logo{
+  width:90px;
+  height:90px;
+  border-radius:18px;
+  object-fit:cover;
+  background:#273449;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  font-size:32px;
+  font-weight:900;
+}
+
+.settings-logo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.file-input{
+  padding:9px;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:85px;
+  transform:translateX(-50%);
+  z-index:100;
+  background:#f8fafc;
+  color:#0b1020;
+  padding:11px 15px;
+  border-radius:12px;
+  font-weight:800;
+  box-shadow:var(--shadow);
+  max-width:90%;
+  text-align:center;
+}
+
+/* PIN */
+
+.pin-screen{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:20px;
+}
+
+.pin-card{
+  width:min(390px,100%);
+  padding:24px;
+  text-align:center;
+}
+
+.pin-logo{
+  width:105px;
+  height:105px;
+  margin:0 auto 16px;
+  border-radius:24px;
+  background:#182235;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid var(--line);
+  font-size:38px;
+  font-weight:900;
+}
+
+.pin-logo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.pin-dots{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:18px 0;
+}
+
+.pin-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#334155;
+}
+
+.pin-dot.filled{
+  background:var(--accent);
+}
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.keypad button{
+  height:58px;
+  font-size:20px;
+  background:#182235;
+}
+
+.keypad .zero{
+  grid-column:2;
+}
+
+.pin-error{
+  height:20px;
+  color:#fca5a5;
+  font-size:13px;
+}
+
+.footer-note{
+  text-align:center;
+  color:#64748b;
+  font-size:11px;
+  margin:16px 0 6px;
+}
+
+@media(min-width:650px){
+  .modal-backdrop{
+    align-items:center;
+    padding:20px;
+  }
+
+  .modal{
+    border-radius:22px;
+    max-height:90vh;
+  }
+}
+
+@media(max-width:430px){
+  .grid2{
+    grid-template-columns:1fr;
+  }
+
+  .sitter-actions{
+    justify-content:flex-start;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <!-- KEYPAD PIN LANDING SCREEN -->
-  <div id="pin-overlay">
-    <div class="pin-card-split">
-      <div class="pin-header">
-        <h2>Favero Sitter Tracker</h2>
-        <p>Enter 4-digit passcode to unlock</p>
+<div id="app" class="app"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   FAVERO FAMILY SITTER TRACKER
+   Phase 1 - Local Device Version
+
+   Features:
+   - PIN landing page
+   - Family logo/photo
+   - Dashboard banner
+   - Sitter profiles + avatars
+   - Sitter archive/restore
+   - Shift logging
+   - Historical hourly rates
+   - Adjustments/bonuses/reimbursements/deductions
+   - Flexible payments
+   - Pay multiple shifts in one transaction
+   - Payment history
+   - Backup / restore
+   - Mobile-first design
+   ========================================================= */
+
+const KEYS = {
+  sitters: "favero_sitters_v2",
+  shifts: "favero_shifts_v2",
+  payments: "favero_payments_v2",
+  settings: "favero_settings_v2",
+  unlocked: "favero_unlocked_v2"
+};
+
+const DEFAULT_SETTINGS = {
+  pin: "1313",
+  familyName: "Favero Family",
+  banner: "",
+  logo: ""
+};
+
+let state = {
+  sitters: [],
+  shifts: [],
+  payments: [],
+  settings: {...DEFAULT_SETTINGS},
+  tab: "dashboard",
+  filter: "outstanding",
+  sitterFilter: "all",
+  dateFrom: "",
+  dateTo: ""
+};
+
+
+/* =========================================================
+   BASIC HELPERS
+   ========================================================= */
+
+function uid(prefix="id"){
+  return prefix + "_" +
+    Date.now().toString(36) + "_" +
+    Math.random().toString(36).slice(2,8);
+}
+
+function round2(n){
+  return Math.round((Number(n)||0)*100)/100;
+}
+
+function money(n){
+  return new Intl.NumberFormat("en-US",{
+    style:"currency",
+    currency:"USD"
+  }).format(Number(n)||0);
+}
+
+function esc(value){
+  return String(value ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+function initials(name){
+  const parts = String(name||"")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  return parts
+    .slice(0,2)
+    .map(x => x[0].toUpperCase())
+    .join("") || "?";
+}
+
+function todayISO(){
+  const d = new Date();
+  const offset = d.getTimezoneOffset();
+  return new Date(d.getTime()-offset*60000)
+    .toISOString()
+    .slice(0,10);
+}
+
+function fmtDate(value){
+  if(!value) return "";
+
+  const d = new Date(value+"T12:00:00");
+
+  if(isNaN(d)) return value;
+
+  return d.toLocaleDateString(undefined,{
+    month:"short",
+    day:"numeric",
+    year:"numeric"
+  });
+}
+
+function load(key,fallback){
+  try{
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  }catch{
+    return fallback;
+  }
+}
+
+function save(){
+  localStorage.setItem(KEYS.sitters,JSON.stringify(state.sitters));
+  localStorage.setItem(KEYS.shifts,JSON.stringify(state.shifts));
+  localStorage.setItem(KEYS.payments,JSON.stringify(state.payments));
+  localStorage.setItem(KEYS.settings,JSON.stringify(state.settings));
+}
+
+function getSitter(id){
+  return state.sitters.find(s => s.id === id);
+}
+
+function calcHours(start,end){
+  if(!start || !end) return 0;
+
+  const [sh,sm] = start.split(":").map(Number);
+  const [eh,em] = end.split(":").map(Number);
+
+  let startMinutes = sh*60+sm;
+  let endMinutes = eh*60+em;
+
+  if(endMinutes <= startMinutes){
+    endMinutes += 1440;
+  }
+
+  return round2((endMinutes-startMinutes)/60);
+}
+
+function shiftPaid(shift){
+  return !!shift.paymentId;
+}
+
+function shiftTotal(shift){
+  return Number(
+    shift.totalPay ??
+    (
+      (Number(shift.hours)||0) *
+      (Number(shift.hourlyRate)||0) +
+      (Number(shift.adjustment)||0)
+    )
+  );
+}
+
+function sitterShifts(id){
+  return state.shifts.filter(s => s.sitterId === id);
+}
+
+function sitterOutstanding(id){
+  return sitterShifts(id).filter(s => !shiftPaid(s));
+}
+
+function sitterOwed(id){
+  return round2(
+    sitterOutstanding(id)
+      .reduce((total,s) => total + shiftTotal(s),0)
+  );
+}
+
+function totalOutstanding(){
+  return round2(
+    state.shifts
+      .filter(s => !shiftPaid(s))
+      .reduce((total,s) => total + shiftTotal(s),0)
+  );
+}
+
+function totalPaid(){
+  return round2(
+    state.payments
+      .reduce((total,p) => total + Number(p.amount||0),0)
+  );
+}
+
+function activeSitters(){
+  return state.sitters.filter(s => !s.archived);
+}
+
+function recent(items){
+  return [...items].sort((a,b) =>
+    String(b.date).localeCompare(String(a.date))
+  );
+}
+
+
+/* =========================================================
+   MIGRATION FROM ORIGINAL VERSION
+   ========================================================= */
+
+function migrateOldData(){
+
+  const oldSitters = load("favero_sitters",null);
+  const oldShifts = load("favero_shifts",null);
+
+  if(
+    state.sitters.length ||
+    state.shifts.length ||
+    !oldSitters
+  ){
+    return;
+  }
+
+  const sitterMap = {};
+
+  state.sitters = (
+    Array.isArray(oldSitters)
+      ? oldSitters
+      : []
+  ).map(old => {
+
+    const id = uid("sit");
+
+    sitterMap[old.id ?? old.name] = id;
+
+    return {
+      id,
+      name: old.name || "Unnamed Sitter",
+      rate: Number(old.rate)||0,
+      paymentInfo: old.paymentInfo || "",
+      archived: false,
+      avatar: ""
+    };
+  });
+
+  state.shifts = (
+    Array.isArray(oldShifts)
+      ? oldShifts
+      : []
+  ).map(old => {
+
+    const sitter = state.sitters.find(
+      s =>
+        s.name === old.sitter ||
+        s.id === old.sitterId
+    );
+
+    const start = old.start || "";
+    const end = old.end || "";
+
+    const hours = calcHours(start,end);
+
+    const hourlyRate =
+      Number(old.hourlyRate ??
+      sitter?.rate ??
+      0);
+
+    const basePay =
+      round2(hours * hourlyRate);
+
+    const adjustment =
+      Number(old.adjustment)||0;
+
+    return {
+      id: uid("sh"),
+      sitterId: sitter?.id || "",
+      sitterName: sitter?.name || old.sitter || "",
+      date: old.date || todayISO(),
+      start,
+      end,
+      hours,
+      hourlyRate,
+      basePay,
+      adjustment,
+      adjustmentType: old.adjustmentType || "none",
+      adjustmentNote: old.adjustmentNote || "",
+      totalPay: round2(basePay + adjustment),
+      notes: old.notes || "",
+      paymentId: null
+    };
+  });
+
+  save();
+}
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+function init(){
+
+  state.sitters =
+    load(KEYS.sitters,[]);
+
+  state.shifts =
+    load(KEYS.shifts,[]);
+
+  state.payments =
+    load(KEYS.payments,[]);
+
+  state.settings = {
+    ...DEFAULT_SETTINGS,
+    ...load(KEYS.settings,{})
+  };
+
+  migrateOldData();
+
+  state.sitters = state.sitters.map(s => ({
+    ...s,
+    avatar: s.avatar || "",
+    archived: !!s.archived
+  }));
+
+  state.shifts = state.shifts.map(s => ({
+    ...s,
+    adjustment: Number(s.adjustment)||0,
+    totalPay: Number(
+      s.totalPay ??
+      (
+        (Number(s.hours)||0) *
+        (Number(s.hourlyRate)||0) +
+        (Number(s.adjustment)||0)
+      )
+    ),
+    paymentId: s.paymentId || null
+  }));
+
+  state.payments = state.payments.map(p => ({
+    ...p,
+    shiftIds: Array.isArray(p.shiftIds)
+      ? p.shiftIds
+      : [],
+    amount: Number(p.amount)||0
+  }));
+
+  save();
+
+  render();
+}
+
+
+/* =========================================================
+   AVATARS / BRANDING
+   ========================================================= */
+
+function avatarHTML(s,size=""){
+
+  const cls = "avatar " + size;
+
+  if(s?.avatar){
+
+    return `
+      <div class="${cls}">
+        <img
+          src="${esc(s.avatar)}"
+          alt=""
+        >
       </div>
-      
-      <div class="pin-display-wrapper">
-        <input type="password" id="pin-input" class="pin-input" maxlength="4" readonly placeholder="••••" />
-        <div id="pin-error" class="pin-error">Incorrect Passcode</div>
-        
-        <div class="keypad-grid">
-          <button class="pin-key" onclick="pressKey('1')">1</button>
-          <button class="pin-key" onclick="pressKey('2')">2</button>
-          <button class="pin-key" onclick="pressKey('3')">3</button>
-          <button class="pin-key" onclick="pressKey('4')">4</button>
-          <button class="pin-key" onclick="pressKey('5')">5</button>
-          <button class="pin-key" onclick="pressKey('6')">6</button>
-          <button class="pin-key" onclick="pressKey('7')">7</button>
-          <button class="pin-key" onclick="pressKey('8')">8</button>
-          <button class="pin-key" onclick="pressKey('9')">9</button>
-          <button class="pin-key pin-key-action" onclick="clearKey()">C</button>
-          <button class="pin-key" onclick="pressKey('0')">0</button>
-          <button class="pin-key pin-key-action" onclick="deleteKey()">⌫</button>
-        </div>
+    `;
+  }
+
+  return `
+    <div class="${cls}">
+      ${esc(initials(s?.name))}
+    </div>
+  `;
+}
+
+function logoHTML(){
+
+  if(state.settings.logo){
+
+    return `
+      <div class="brand-avatar">
+        <img
+          src="${esc(state.settings.logo)}"
+          alt=""
+        >
       </div>
+    `;
+  }
+
+  return `
+    <div class="brand-avatar">F</div>
+  `;
+}
+
+async function imageToDataUrl(
+  file,
+  maxDimension=1000,
+  quality=.8
+){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+      const img = new Image();
+
+      img.onload = () => {
+
+        let width = img.naturalWidth;
+        let height = img.naturalHeight;
+
+        const scale =
+          Math.min(
+            1,
+            maxDimension /
+            Math.max(width,height)
+          );
+
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+
+        const canvas =
+          document.createElement("canvas");
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx =
+          canvas.getContext("2d");
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          width,
+          height
+        );
+
+        resolve(
+          canvas.toDataURL(
+            "image/jpeg",
+            quality
+          )
+        );
+      };
+
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
+
+
+/* =========================================================
+   MAIN RENDER
+   ========================================================= */
+
+function render(){
+
+  const root =
+    document.getElementById("app");
+
+  if(
+    sessionStorage.getItem(KEYS.unlocked)
+    !== "yes"
+  ){
+
+    root.innerHTML = renderPin();
+
+    bindPin();
+
+    return;
+  }
+
+  root.innerHTML = renderMain();
+
+  bindMain();
+}
+
+function renderPin(){
+
+  return `
+    <div class="pin-screen">
+
+      <div class="pin-card card">
+
+        <div class="pin-logo">
+
+          ${
+            state.settings.logo
+
+              ? `
+                <img
+                  src="${esc(state.settings.logo)}"
+                  alt=""
+                >
+              `
+
+              : `<span>F</span>`
+          }
+
+        </div>
+
+        <h1>
+          ${esc(state.settings.familyName)}
+        </h1>
+
+        <p class="muted">
+          Sitter Tracker
+        </p>
+
+        <div
+          class="pin-dots"
+          id="pinDots"
+        >
+          ${[0,1,2,3].map(i => `
+            <span
+              class="pin-dot"
+              data-dot="${i}"
+            ></span>
+          `).join("")}
+        </div>
+
+        <div
+          id="pinError"
+          class="pin-error"
+        ></div>
+
+        <div class="keypad">
+
+          ${[1,2,3,4,5,6,7,8,9]
+            .map(n => `
+              <button
+                data-key="${n}"
+              >
+                ${n}
+              </button>
+            `).join("")}
+
+          <button data-key="back">
+            ⌫
+          </button>
+
+          <button
+            class="zero"
+            data-key="0"
+          >
+            0
+          </button>
+
+          <button data-key="enter">
+            ✓
+          </button>
+
+        </div>
+
+        <div class="footer-note">
+          PIN is a convenience lock, not encryption.
+        </div>
+
+      </div>
+
     </div>
-  </div>
+  `;
+}
 
-  <div class="container">
-    <header>
-      <h1>Favero Sitter Tracker</h1>
-      <button class="btn btn-secondary sm-btn" onclick="lockApp()">Lock</button>
-    </header>
 
-    <!-- Shift Entry Form -->
-    <div class="card">
-      <h2>Log New Shift</h2>
-      <form id="shift-form">
-        <div class="form-group">
-          <label for="shift-sitter">Select Sitter</label>
-          <select id="shift-sitter" required><option value="">Select Sitter...</option></select>
+/* =========================================================
+   PIN
+   ========================================================= */
+
+function bindPin(){
+
+  let entered = "";
+
+  function update(){
+
+    document
+      .querySelectorAll("[data-dot]")
+      .forEach((dot,index)=>{
+        dot.classList.toggle(
+          "filled",
+          index < entered.length
+        );
+      });
+  }
+
+  function submit(){
+
+    if(
+      entered ===
+      String(state.settings.pin || "1313")
+    ){
+
+      sessionStorage.setItem(
+        KEYS.unlocked,
+        "yes"
+      );
+
+      render();
+
+    }else{
+
+      document
+        .getElementById("pinError")
+        .textContent =
+        "Incorrect PIN";
+
+      entered = "";
+
+      update();
+    }
+  }
+
+  document
+    .querySelectorAll("[data-key]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const key =
+            button.dataset.key;
+
+          if(key === "back"){
+
+            entered =
+              entered.slice(0,-1);
+
+          }else if(key === "enter"){
+
+            if(entered.length === 4){
+              submit();
+            }
+
+            return;
+
+          }else if(entered.length < 4){
+
+            entered += key;
+          }
+
+          update();
+
+          if(entered.length === 4){
+
+            setTimeout(
+              submit,
+              120
+            );
+          }
+        }
+      );
+    });
+}
+
+
+/* =========================================================
+   MAIN APP
+   ========================================================= */
+
+function renderMain(){
+
+  const tabs = [
+    ["dashboard","🏠","Dashboard"],
+    ["shifts","🕒","Shifts"],
+    ["sitters","👥","Sitters"],
+    ["payments","💵","Payments"],
+    ["settings","⚙️","Settings"]
+  ];
+
+  return `
+    <div class="screen">
+
+      <div class="topbar">
+
+        <div class="topbar-inner">
+
+          <div class="brand">
+
+            ${logoHTML()}
+
+            <div>
+
+              <div style="font-weight:900">
+                ${esc(state.settings.familyName)}
+              </div>
+
+              <div class="smalltext muted">
+                Sitter Tracker
+              </div>
+
+            </div>
+
+          </div>
+
+          <button
+            class="small ghost"
+            id="lockBtn"
+          >
+            Lock
+          </button>
+
         </div>
-        <div class="form-group">
-          <label for="shift-date">Date</label>
-          <input type="date" id="shift-date" required />
+
+      </div>
+
+      <main id="content">
+        ${renderTab()}
+      </main>
+
+      <div class="nav">
+
+        <div class="nav-inner">
+
+          ${tabs.map(t => `
+            <button
+              class="${state.tab===t[0] ? "active" : ""}"
+              data-tab="${t[0]}"
+            >
+              <span class="nav-icon">
+                ${t[1]}
+              </span>
+              ${t[2]}
+            </button>
+          `).join("")}
+
         </div>
-        <div class="form-group">
-          <label for="shift-start">Start Time</label>
-          <input type="time" id="shift-start" required />
+
+      </div>
+
+    </div>
+  `;
+}
+
+function renderTab(){
+
+  if(state.tab === "dashboard")
+    return renderDashboard();
+
+  if(state.tab === "shifts")
+    return renderShifts();
+
+  if(state.tab === "sitters")
+    return renderSitters();
+
+  if(state.tab === "payments")
+    return renderPayments();
+
+  return renderSettings();
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function renderDashboard(){
+
+  const banner =
+    state.settings.banner
+
+      ? `
+        <div class="banner">
+          <img
+            src="${esc(state.settings.banner)}"
+            alt=""
+          >
         </div>
-        <div class="form-group">
-          <label for="shift-end">End Time</label>
-          <input type="time" id="shift-end" required />
+      `
+
+      : `
+        <div class="banner">
+          <div class="banner-placeholder">
+            <strong>
+              ${esc(state.settings.familyName)}
+            </strong>
+            <br>
+            <span class="smalltext">
+              Add a banner in Settings
+            </span>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="shift-notes">Notes / Adjustments</label>
-          <textarea id="shift-notes" rows="2" placeholder="Optional notes..."></textarea>
+      `;
+
+  const sitterSummary =
+    activeSitters()
+      .map(s => ({
+        sitter:s,
+        owed:sitterOwed(s.id),
+        count:sitterOutstanding(s.id).length,
+        hours:sitterOutstanding(s.id)
+          .reduce(
+            (total,shift) =>
+              total + Number(shift.hours||0),
+            0
+          )
+      }))
+      .filter(x => x.owed > 0)
+      .sort((a,b)=>b.owed-a.owed);
+
+  const recentShifts =
+    recent(state.shifts).slice(0,5);
+
+  const recentPayments =
+    recent(state.payments).slice(0,4);
+
+  return `
+
+    ${banner}
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <h2>
+          Currently Owed
+        </h2>
+
+        <button
+          class="primary small"
+          id="quickPay"
+        >
+          Pay Sitter
+        </button>
+
+      </div>
+
+      <div class="summary-grid">
+
+        <div class="summary card">
+
+          <div class="muted smalltext">
+            Outstanding
+          </div>
+
+          <div class="value money">
+            ${money(totalOutstanding())}
+          </div>
+
         </div>
-        <button type="submit" class="btn">Save Shift</button>
-      </form>
+
+        <div class="summary card">
+
+          <div class="muted smalltext">
+            Paid to Date
+          </div>
+
+          <div class="value money">
+            ${money(totalPaid())}
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <!-- Sitters Section -->
-    <div class="card">
-      <h2>Sitters <button class="btn btn-secondary sm-btn" onclick="openAddSitterModal()">+ Add Sitter</button></h2>
-      <ul id="sitter-list" class="sitter-list"></ul>
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <h2>
+          By Sitter
+        </h2>
+
+        <button
+          class="small ghost"
+          id="addSitterBtn"
+        >
+          + Sitter
+        </button>
+
+      </div>
+
+      <div class="list">
+
+        ${
+          sitterSummary.length
+
+            ? sitterSummary.map(x => `
+
+              <div class="item card sitter-card">
+
+                ${avatarHTML(x.sitter)}
+
+                <div class="sitter-main">
+
+                  <h3>
+                    ${esc(x.sitter.name)}
+                  </h3>
+
+                  <div class="muted smalltext">
+                    ${x.count}
+                    unpaid shift${x.count===1?"":"s"}
+                    ·
+                    ${x.hours.toFixed(2)}
+                    hrs
+                  </div>
+
+                </div>
+
+                <div style="text-align:right">
+
+                  <div
+                    class="money"
+                    style="font-size:18px;font-weight:900"
+                  >
+                    ${money(x.owed)}
+                  </div>
+
+                  <button
+                    class="small primary paySitterBtn"
+                    data-id="${esc(x.sitter.id)}"
+                  >
+                    Pay
+                  </button>
+
+                </div>
+
+              </div>
+
+            `).join("")
+
+            : `
+              <div class="empty card">
+                Nobody is currently owed money.
+              </div>
+            `
+        }
+
+      </div>
+
     </div>
 
-    <!-- Recent Shifts Section -->
-    <div class="card">
-      <h2>Recent Shifts</h2>
-      <ul id="shift-list" class="shift-list"></ul>
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <h2>
+          Recent Shifts
+        </h2>
+
+        <button
+          class="small ghost"
+          id="addShiftBtn"
+        >
+          + Shift
+        </button>
+
+      </div>
+
+      ${renderShiftList(recentShifts)}
+
     </div>
-  </div>
 
-  <!-- Sitter Add/Edit Modal -->
-  <div id="sitter-modal" class="modal-overlay">
-    <div class="modal">
-      <h2 id="sitter-modal-title" style="margin-bottom:1rem;">Add Sitter Profile</h2>
-      <form id="sitter-form">
-        <input type="hidden" id="edit-s-id" value="-1" />
-        <div class="form-group">
-          <label for="edit-s-name">Sitter Name</label>
-          <input type="text" id="edit-s-name" required />
-        </div>
-        <div class="form-group">
-          <label for="edit-s-rate">Hourly Rate ($)</label>
-          <input type="number" step="0.50" id="edit-s-rate" required />
-        </div>
-        <div class="form-group">
-          <label for="edit-s-venmo">Venmo / Payment Info</label>
-          <input type="text" id="edit-s-venmo" placeholder="@username or phone" />
-        </div>
-        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('sitter-modal')">Cancel</button>
-          <button type="submit" class="btn">Save Profile</button>
-        </div>
-      </form>
+
+    <div class="section">
+
+      <div class="section-title">
+
+        <h2>
+          Recent Payments
+        </h2>
+
+      </div>
+
+      ${renderPaymentList(recentPayments)}
+
     </div>
-  </div>
+  `;
+}
 
-  <script>
-    const APP_PIN = "1313";
-    let currentPinInput = "";
 
-    function pressKey(num) {
-      if (currentPinInput.length < 4) {
-        currentPinInput += num;
-        updatePinDisplay();
-        if (currentPinInput.length === 4) {
-          setTimeout(validatePin, 150);
+/* =========================================================
+   SHIFT LIST
+   ========================================================= */
+
+function renderShiftList(items){
+
+  if(!items.length){
+
+    return `
+      <div class="empty card">
+        No shifts logged yet.
+      </div>
+    `;
+  }
+
+  return `
+    <div class="list">
+
+      ${items.map(shift => {
+
+        const sitter =
+          getSitter(shift.sitterId) ||
+          {
+            name:shift.sitterName || "Unknown",
+            avatar:""
+          };
+
+        return `
+
+          <div class="item card">
+
+            <div class="row spread">
+
+              <div class="row">
+
+                ${avatarHTML(sitter)}
+
+                <div>
+
+                  <strong>
+                    ${esc(sitter.name)}
+                  </strong>
+
+                  <div class="muted smalltext">
+                    ${fmtDate(shift.date)}
+                    ·
+                    ${esc(shift.start)}
+                    –
+                    ${esc(shift.end)}
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span
+                class="badge ${
+                  shiftPaid(shift)
+                    ? "paid"
+                    : "unpaid"
+                }"
+              >
+                ${
+                  shiftPaid(shift)
+                    ? "Paid"
+                    : "Unpaid"
+                }
+              </span>
+
+            </div>
+
+            <div
+              class="row spread"
+              style="margin-top:10px"
+            >
+
+              <span class="muted smalltext">
+
+                ${Number(shift.hours).toFixed(2)}
+                hrs @
+                ${money(shift.hourlyRate)}/hr
+
+              </span>
+
+              <strong class="money">
+                ${money(shiftTotal(shift))}
+              </strong>
+
+            </div>
+
+            ${
+              shift.notes
+
+                ? `
+                  <div
+                    class="muted smalltext"
+                    style="margin-top:6px"
+                  >
+                    ${esc(shift.notes)}
+                  </div>
+                `
+
+                : ""
+            }
+
+            ${
+              !shiftPaid(shift)
+
+                ? `
+                  <div style="margin-top:10px">
+                    <button
+                      class="small ghost editShiftBtn"
+                      data-id="${esc(shift.id)}"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                `
+
+                : ""
+            }
+
+          </div>
+
+        `;
+      }).join("")}
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   SHIFTS TAB
+   ========================================================= */
+
+function renderShifts(){
+
+  let items = recent(state.shifts);
+
+  const filter = state.filter;
+
+  const now = new Date();
+
+  const startWeek =
+    new Date(now);
+
+  startWeek.setHours(0,0,0,0);
+
+  const day =
+    startWeek.getDay();
+
+  startWeek.setDate(
+    startWeek.getDate() -
+    (day === 0 ? 6 : day-1)
+  );
+
+  const weekISO =
+    new Date(
+      startWeek.getTime() -
+      startWeek.getTimezoneOffset()*60000
+    )
+    .toISOString()
+    .slice(0,10);
+
+  const monthISO =
+    todayISO().slice(0,7);
+
+  if(state.sitterFilter !== "all"){
+
+    items =
+      items.filter(
+        s =>
+          s.sitterId ===
+          state.sitterFilter
+      );
+  }
+
+  if(filter === "outstanding")
+    items = items.filter(
+      s => !shiftPaid(s)
+    );
+
+  if(filter === "paid")
+    items = items.filter(
+      s => shiftPaid(s)
+    );
+
+  if(filter === "week")
+    items = items.filter(
+      s => s.date >= weekISO
+    );
+
+  if(filter === "month")
+    items = items.filter(
+      s => s.date.startsWith(monthISO)
+    );
+
+  if(filter === "custom"){
+
+    if(state.dateFrom)
+      items =
+        items.filter(
+          s => s.date >= state.dateFrom
+        );
+
+    if(state.dateTo)
+      items =
+        items.filter(
+          s => s.date <= state.dateTo
+        );
+  }
+
+  return `
+
+    <div class="section-title">
+
+      <h1>
+        Shifts
+      </h1>
+
+      <button
+        class="primary small"
+        id="addShiftBtn"
+      >
+        + Add Shift
+      </button>
+
+    </div>
+
+
+    <div class="card item">
+
+      <div class="grid2">
+
+        <div class="field">
+
+          <label>
+            View
+          </label>
+
+          <select id="shiftFilter">
+
+            <option
+              value="outstanding"
+              ${filter==="outstanding"?"selected":""}
+            >
+              Outstanding
+            </option>
+
+            <option
+              value="all"
+              ${filter==="all"?"selected":""}
+            >
+              All Shifts
+            </option>
+
+            <option
+              value="paid"
+              ${filter==="paid"?"selected":""}
+            >
+              Paid
+            </option>
+
+            <option
+              value="week"
+              ${filter==="week"?"selected":""}
+            >
+              This Week
+            </option>
+
+            <option
+              value="month"
+              ${filter==="month"?"selected":""}
+            >
+              This Month
+            </option>
+
+            <option
+              value="custom"
+              ${filter==="custom"?"selected":""}
+            >
+              Custom Dates
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Sitter
+          </label>
+
+          <select id="sitterFilter">
+
+            <option value="all">
+              All Sitters
+            </option>
+
+            ${
+              state.sitters.map(s => `
+
+                <option
+                  value="${esc(s.id)}"
+                  ${
+                    state.sitterFilter===s.id
+                      ? "selected"
+                      : ""
+                  }
+                >
+                  ${esc(s.name)}
+                  ${s.archived?" (Archived)":""}
+                </option>
+
+              `).join("")
+            }
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      ${
+        filter === "custom"
+
+          ? `
+
+            <div class="grid2">
+
+              <div class="field">
+
+                <label>
+                  From
+                </label>
+
+                <input
+                  id="dateFrom"
+                  type="date"
+                  value="${esc(state.dateFrom)}"
+                >
+
+              </div>
+
+              <div class="field">
+
+                <label>
+                  To
+                </label>
+
+                <input
+                  id="dateTo"
+                  type="date"
+                  value="${esc(state.dateTo)}"
+                >
+
+              </div>
+
+            </div>
+
+          `
+
+          : ""
+      }
+
+    </div>
+
+
+    <div class="section">
+
+      ${renderShiftList(items)}
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   SITTERS
+   ========================================================= */
+
+function renderSitters(){
+
+  const active =
+    state.sitters.filter(
+      s => !s.archived
+    );
+
+  const archived =
+    state.sitters.filter(
+      s => s.archived
+    );
+
+  return `
+
+    <div class="section-title">
+
+      <h1>
+        Sitters
+      </h1>
+
+      <button
+        class="primary small"
+        id="addSitterBtn"
+      >
+        + Add Sitter
+      </button>
+
+    </div>
+
+
+    <div class="list">
+
+      ${
+        active.length
+
+          ? active.map(
+              renderSitterCard
+            ).join("")
+
+          : `
+            <div class="empty card">
+              No active sitters yet.
+            </div>
+          `
+      }
+
+    </div>
+
+
+    ${
+      archived.length
+
+        ? `
+
+          <div class="section">
+
+            <div class="section-title">
+
+              <h2>
+                Archived
+              </h2>
+
+            </div>
+
+            <div class="list">
+
+              ${
+                archived
+                  .map(renderSitterCard)
+                  .join("")
+              }
+
+            </div>
+
+          </div>
+
+        `
+
+        : ""
+    }
+
+  `;
+}
+
+function renderSitterCard(s){
+
+  const owed =
+    sitterOwed(s.id);
+
+  const shifts =
+    sitterShifts(s.id);
+
+  return `
+
+    <div class="item card sitter-card">
+
+      ${avatarHTML(s,"large")}
+
+      <div class="sitter-main">
+
+        <h3>
+
+          ${esc(s.name)}
+
+          ${
+            s.archived
+              ? `
+                <span class="badge archived">
+                  Archived
+                </span>
+              `
+              : ""
+          }
+
+        </h3>
+
+        <div class="muted smalltext">
+
+          ${money(s.rate)}/hr
+
+          ·
+
+          ${shifts.length}
+          total shift${shifts.length===1?"":"s"}
+
+        </div>
+
+        <div
+          class="smalltext"
+          style="margin-top:5px"
+        >
+
+          <strong>
+            ${money(owed)}
+          </strong>
+
+          currently owed
+
+        </div>
+
+      </div>
+
+
+      <div class="sitter-actions">
+
+        <button
+          class="small ghost editSitterBtn"
+          data-id="${esc(s.id)}"
+        >
+          Edit
+        </button>
+
+        ${
+          owed > 0 && !s.archived
+
+            ? `
+              <button
+                class="small primary paySitterBtn"
+                data-id="${esc(s.id)}"
+              >
+                Pay
+              </button>
+            `
+
+            : ""
+        }
+
+        <button
+          class="small ghost toggleArchiveBtn"
+          data-id="${esc(s.id)}"
+        >
+          ${
+            s.archived
+              ? "Restore"
+              : "Archive"
+          }
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   PAYMENTS
+   ========================================================= */
+
+function renderPayments(){
+
+  const payments =
+    recent(state.payments);
+
+  return `
+
+    <div class="section-title">
+
+      <h1>
+        Payments
+      </h1>
+
+      <button
+        class="primary small"
+        id="quickPay"
+      >
+        + Record Payment
+      </button>
+
+    </div>
+
+
+    <div class="summary-grid">
+
+      <div class="summary card">
+
+        <div class="muted smalltext">
+          Outstanding
+        </div>
+
+        <div class="value">
+          ${money(totalOutstanding())}
+        </div>
+
+      </div>
+
+      <div class="summary card">
+
+        <div class="muted smalltext">
+          Payments
+        </div>
+
+        <div class="value">
+          ${state.payments.length}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>
+        Payment History
+      </h2>
+
+      ${renderPaymentList(payments)}
+
+    </div>
+  `;
+}
+
+function renderPaymentList(items){
+
+  if(!items.length){
+
+    return `
+      <div class="empty card">
+        No payments recorded yet.
+      </div>
+    `;
+  }
+
+  return `
+
+    <div class="list">
+
+      ${
+        items.map(payment => {
+
+          const sitter =
+            getSitter(payment.sitterId) ||
+            {
+              name:"Unknown",
+              avatar:""
+            };
+
+          return `
+
+            <div class="item card">
+
+              <div class="row spread">
+
+                <div class="row">
+
+                  ${avatarHTML(sitter)}
+
+                  <div>
+
+                    <strong>
+                      ${esc(sitter.name)}
+                    </strong>
+
+                    <div class="muted smalltext">
+
+                      ${fmtDate(payment.date)}
+
+                      ·
+
+                      ${esc(
+                        payment.method ||
+                        "Other"
+                      )}
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <strong class="money">
+
+                  ${money(payment.amount)}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="smalltext muted"
+                style="margin-top:8px"
+              >
+
+                ${payment.shiftIds.length}
+                shift${payment.shiftIds.length===1?"":"s"}
+                paid
+
+                ${
+                  payment.note
+                    ? ` · ${esc(payment.note)}`
+                    : ""
+                }
+
+              </div>
+
+            </div>
+
+          `;
+        }).join("")
+      }
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function renderSettings(){
+
+  return `
+
+    <div class="section-title">
+
+      <h1>
+        Settings
+      </h1>
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>
+        Family
+      </h2>
+
+      <div class="card item">
+
+        <div class="field">
+
+          <label>
+            Family Name
+          </label>
+
+          <input
+            id="familyName"
+            value="${esc(state.settings.familyName)}"
+            maxlength="60"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            PIN
+          </label>
+
+          <input
+            id="appPin"
+            inputmode="numeric"
+            maxlength="4"
+            value="${esc(state.settings.pin)}"
+          >
+
+          <div class="smalltext muted">
+            Use 4 digits. This is a convenience lock,
+            not encryption.
+          </div>
+
+        </div>
+
+
+        <button
+          class="primary"
+          id="saveFamilySettings"
+        >
+          Save Family Settings
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>
+        Branding
+      </h2>
+
+      <div class="card item">
+
+
+        <div class="field">
+
+          <label>
+            Landing Page Logo / Photo
+          </label>
+
+          <div class="row">
+
+            <div class="settings-logo">
+
+              ${
+                state.settings.logo
+
+                  ? `
+                    <img
+                      src="${esc(state.settings.logo)}"
+                      alt=""
+                    >
+                  `
+
+                  : "F"
+              }
+
+            </div>
+
+
+            <div style="flex:1">
+
+              <input
+                class="file-input"
+                id="logoFile"
+                type="file"
+                accept="image/*"
+              >
+
+              <button
+                class="small ghost"
+                id="clearLogo"
+                style="margin-top:8px"
+              >
+                Clear Logo
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <hr>
+
+
+        <div class="field">
+
+          <label>
+            Main Dashboard Banner
+          </label>
+
+          ${
+            state.settings.banner
+
+              ? `
+                <div
+                  class="banner"
+                  style="height:110px"
+                >
+                  <img
+                    src="${esc(state.settings.banner)}"
+                    alt=""
+                  >
+                </div>
+              `
+
+              : ""
+          }
+
+
+          <input
+            class="file-input"
+            id="bannerFile"
+            type="file"
+            accept="image/*"
+          >
+
+
+          <button
+            class="small ghost"
+            id="clearBanner"
+            style="margin-top:8px"
+          >
+            Clear Banner
+          </button>
+
+        </div>
+
+
+        <div class="smalltext muted">
+
+          Images are resized automatically before
+          being stored on this device.
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <h2>
+        Backup & Restore
+      </h2>
+
+      <div class="card item">
+
+        <p class="muted smalltext">
+
+          Export your sitters, shifts, payments,
+          settings, and photos into one JSON backup file.
+
+        </p>
+
+
+        <div class="actions">
+
+          <button
+            class="primary"
+            id="exportBtn"
+          >
+            Export Backup
+          </button>
+
+          <button
+            class="ghost"
+            id="importBtn"
+          >
+            Import Backup
+          </button>
+
+          <input
+            id="importFile"
+            type="file"
+            accept=".json,application/json"
+            class="hidden"
+          >
+
+        </div>
+
+
+        <hr>
+
+
+        <button
+          class="danger"
+          id="clearAllBtn"
+        >
+          Clear All App Data
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-note">
+
+      Favero Family Sitter Tracker
+      · Local device storage
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   EVENT BINDING
+   ========================================================= */
+
+function bindMain(){
+
+  document
+    .querySelectorAll("[data-tab]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          state.tab =
+            button.dataset.tab;
+
+          render();
+        }
+      );
+    });
+
+
+  document
+    .getElementById("lockBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        sessionStorage.removeItem(
+          KEYS.unlocked
+        );
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("addShiftBtn")
+    ?.addEventListener(
+      "click",
+      () => openShiftModal()
+    );
+
+
+  document
+    .getElementById("addSitterBtn")
+    ?.addEventListener(
+      "click",
+      () => openSitterModal()
+    );
+
+
+  document
+    .querySelectorAll(".editSitterBtn")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          openSitterModal(
+            button.dataset.id
+          )
+      );
+    });
+
+
+  document
+    .querySelectorAll(".editShiftBtn")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          openShiftModal(
+            button.dataset.id
+          )
+      );
+    });
+
+
+  document
+    .querySelectorAll(".toggleArchiveBtn")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          toggleArchive(
+            button.dataset.id
+          )
+      );
+    });
+
+
+  document
+    .querySelectorAll(".paySitterBtn")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          openPayModal(
+            button.dataset.id
+          )
+      );
+    });
+
+
+  document
+    .getElementById("quickPay")
+    ?.addEventListener(
+      "click",
+      () => openPayModal()
+    );
+
+
+  document
+    .getElementById("shiftFilter")
+    ?.addEventListener(
+      "change",
+      event => {
+
+        state.filter =
+          event.target.value;
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("sitterFilter")
+    ?.addEventListener(
+      "change",
+      event => {
+
+        state.sitterFilter =
+          event.target.value;
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("dateFrom")
+    ?.addEventListener(
+      "change",
+      event => {
+
+        state.dateFrom =
+          event.target.value;
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("dateTo")
+    ?.addEventListener(
+      "change",
+      event => {
+
+        state.dateTo =
+          event.target.value;
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("saveFamilySettings")
+    ?.addEventListener(
+      "click",
+      saveFamilySettings
+    );
+
+
+  document
+    .getElementById("logoFile")
+    ?.addEventListener(
+      "change",
+      async event => {
+
+        const file =
+          event.target.files[0];
+
+        if(!file) return;
+
+        try{
+
+          state.settings.logo =
+            await imageToDataUrl(
+              file,
+              500,
+              .82
+            );
+
+          save();
+
+          render();
+
+          toast("Logo updated");
+
+        }catch{
+
+          toast("Could not load image");
         }
       }
-    }
+    );
 
-    function deleteKey() {
-      currentPinInput = currentPinInput.slice(0, -1);
-      updatePinDisplay();
-    }
 
-    function clearKey() {
-      currentPinInput = "";
-      updatePinDisplay();
-    }
+  document
+    .getElementById("bannerFile")
+    ?.addEventListener(
+      "change",
+      async event => {
 
-    function updatePinDisplay() {
-      document.getElementById('pin-input').value = currentPinInput;
-    }
+        const file =
+          event.target.files[0];
 
-    function validatePin() {
-      if (currentPinInput === APP_PIN) {
-        document.getElementById('pin-overlay').style.display = 'none';
-        document.getElementById('pin-error').style.display = 'none';
-        sessionStorage.setItem('favero_unlocked', 'true');
-      } else {
-        document.getElementById('pin-error').style.display = 'block';
-        clearKey();
+        if(!file) return;
+
+        try{
+
+          state.settings.banner =
+            await imageToDataUrl(
+              file,
+              1400,
+              .78
+            );
+
+          save();
+
+          render();
+
+          toast("Banner updated");
+
+        }catch{
+
+          toast("Could not load image");
+        }
       }
-    }
+    );
 
-    function lockApp() {
-      sessionStorage.removeItem('favero_unlocked');
-      clearKey();
-      document.getElementById('pin-overlay').style.display = 'flex';
-    }
 
-    if (sessionStorage.getItem('favero_unlocked') === 'true') {
-      document.getElementById('pin-overlay').style.display = 'none';
-    }
+  document
+    .getElementById("clearLogo")
+    ?.addEventListener(
+      "click",
+      () => {
 
-    let sitters = JSON.parse(localStorage.getItem('favero_sitters')) || [];
-    let shifts = JSON.parse(localStorage.getItem('favero_shifts')) || [];
+        state.settings.logo = "";
 
-    function renderSitters() {
-      const listEl = document.getElementById('sitter-list');
-      const selectEl = document.getElementById('shift-sitter');
-      listEl.innerHTML = '';
-      selectEl.innerHTML = '<option value="">Select Sitter...</option>';
+        save();
 
-      if (sitters.length === 0) {
-        listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No sitters added yet.</span></li>';
-        return;
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("clearBanner")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        state.settings.banner = "";
+
+        save();
+
+        render();
+      }
+    );
+
+
+  document
+    .getElementById("exportBtn")
+    ?.addEventListener(
+      "click",
+      exportBackup
+    );
+
+
+  document
+    .getElementById("importBtn")
+    ?.addEventListener(
+      "click",
+      () =>
+        document
+          .getElementById("importFile")
+          .click()
+    );
+
+
+  document
+    .getElementById("importFile")
+    ?.addEventListener(
+      "change",
+      importBackup
+    );
+
+
+  document
+    .getElementById("clearAllBtn")
+    ?.addEventListener(
+      "click",
+      clearAll
+    );
+}
+
+
+/* =========================================================
+   SITTER MODAL
+   ========================================================= */
+
+function openSitterModal(id=null){
+
+  const sitter =
+    id ? getSitter(id) : null;
+
+  showModal(`
+
+    <div class="modal-head">
+
+      <h2>
+        ${sitter ? "Edit Sitter" : "Add Sitter"}
+      </h2>
+
+      <button
+        class="close ghost"
+        id="closeModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      class="field"
+      style="text-align:center"
+    >
+
+      ${
+        sitter
+          ? avatarHTML(sitter,"large")
+          : `
+            <div
+              class="avatar large"
+              style="margin:auto"
+            >
+              ?
+            </div>
+          `
       }
 
-      sitters.forEach((sitter, idx) => {
-        const opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = `${sitter.name} ($${sitter.rate}/hr)`;
-        selectEl.appendChild(opt);
 
-        const li = document.createElement('li');
-        li.className = 'list-item';
-        li.innerHTML = `
-          <div class="list-item-info">
-            <span class="list-item-title">${sitter.name}</span>
-            <span class="list-item-sub">$${sitter.rate}/hr | Venmo: ${sitter.venmo || 'N/A'}</span>
-          </div>
-          <div class="action-btns">
-            <button class="btn btn-secondary sm-btn" onclick="openEditSitterModal(${idx})">Edit</button>
-            <button class="btn btn-danger sm-btn" onclick="deleteSitter(${idx})">Delete</button>
-          </div>
-        `;
-        listEl.appendChild(li);
-      });
-    }
+      <div style="margin-top:10px">
 
-    function renderShifts() {
-      const listEl = document.getElementById('shift-list');
-      listEl.innerHTML = '';
+        <input
+          id="sitterAvatar"
+          class="file-input"
+          type="file"
+          accept="image/*"
+        >
 
-      if (shifts.length === 0) {
-        listEl.innerHTML = '<li class="list-item"><span class="list-item-sub">No logged shifts yet.</span></li>';
-        return;
+      </div>
+
+
+      ${
+        sitter?.avatar
+
+          ? `
+            <button
+              class="small ghost"
+              id="removeSitterAvatar"
+              style="margin-top:7px"
+            >
+              Remove Photo
+            </button>
+          `
+
+          : ""
       }
 
-      shifts.forEach((shift) => {
-        const li = document.createElement('li');
-        li.className = 'list-item';
-        li.innerHTML = `
-          <div class="list-item-info">
-            <span class="list-item-title">${shift.sitterName} - $${shift.totalPay}</span>
-            <span class="list-item-sub">${shift.date} | ${shift.start} - ${shift.end} (${shift.hours} hrs)</span>
-            ${shift.notes ? `<span class="list-item-sub">Notes: ${shift.notes}</span>` : ''}
-          </div>
-        `;
-        listEl.appendChild(li);
-      });
-    }
+    </div>
 
-    window.openAddSitterModal = function() {
-      document.getElementById('sitter-modal-title').textContent = 'Add Sitter Profile';
-      document.getElementById('edit-s-id').value = '-1';
-      document.getElementById('edit-s-name').value = '';
-      document.getElementById('edit-s-rate').value = '';
-      document.getElementById('edit-s-venmo').value = '';
-      document.getElementById('sitter-modal').classList.add('active');
-    };
 
-    window.openEditSitterModal = function(idx) {
-      const sitter = sitters[idx];
-      if (!sitter) return;
-      document.getElementById('sitter-modal-title').textContent = 'Edit Sitter Profile';
-      document.getElementById('edit-s-id').value = idx;
-      document.getElementById('edit-s-name').value = sitter.name;
-      document.getElementById('edit-s-rate').value = sitter.rate;
-      document.getElementById('edit-s-venmo').value = sitter.venmo || '';
-      document.getElementById('sitter-modal').classList.add('active');
-    };
+    <div class="field">
 
-    window.deleteSitter = function(idx) {
-      if (confirm(`Are you sure you want to delete ${sitters[idx].name}?`)) {
-        sitters.splice(idx, 1);
-        localStorage.setItem('favero_sitters', JSON.stringify(sitters));
-        renderSitters();
-      }
-    };
+      <label>
+        Name
+      </label>
 
-    window.closeModal = function(id) {
-      document.getElementById(id).classList.remove('active');
-    };
+      <input
+        id="sitterName"
+        value="${esc(sitter?.name||"")}"
+        maxlength="80"
+        placeholder="Sitter name"
+      >
 
-    document.getElementById('sitter-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const idx = parseInt(document.getElementById('edit-s-id').value, 10);
-      const name = document.getElementById('edit-s-name').value;
-      const rate = parseFloat(document.getElementById('edit-s-rate').value);
-      const venmo = document.getElementById('edit-s-venmo').value;
+    </div>
 
-      if (idx >= 0) {
-        sitters[idx] = { name, rate, venmo };
-      } else {
-        sitters.push({ name, rate, venmo });
-      }
 
-      localStorage.setItem('favero_sitters', JSON.stringify(sitters));
-      renderSitters();
-      closeModal('sitter-modal');
-    });
+    <div class="field">
 
-    document.getElementById('shift-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const sitterIdx = document.getElementById('shift-sitter').value;
-      const date = document.getElementById('shift-date').value;
-      const start = document.getElementById('shift-start').value;
-      const end = document.getElementById('shift-end').value;
-      const notes = document.getElementById('shift-notes').value;
+      <label>
+        Hourly Rate
+      </label>
 
-      if (sitterIdx === "") return;
-      const sitter = sitters[sitterIdx];
+      <input
+        id="sitterRate"
+        type="number"
+        min="0"
+        step="0.01"
+        inputmode="decimal"
+        value="${sitter?.rate ?? ""}"
+        placeholder="18.00"
+      >
 
-      const startTime = new Date(`${date}T${start}`);
-      const endTime = new Date(`${date}T${end}`);
-      let diffMs = endTime - startTime;
-      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
-      const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
-      const totalPay = (hours * sitter.rate).toFixed(2);
+    </div>
 
-      shifts.unshift({ sitterName: sitter.name, date, start, end, hours, totalPay, notes });
-      localStorage.setItem('favero_shifts', JSON.stringify(shifts));
-      renderShifts();
-      this.reset();
-    });
 
-    renderSitters();
-    renderShifts();
-  </script>
-</body>
-</html>
+    <div class="field">
+
+      <label>
+       
