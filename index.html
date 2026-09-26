@@ -20,7 +20,9 @@
   --shadow:0 12px 30px #0008;
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 html{
   min-height:100%;
@@ -36,7 +38,10 @@ body{
   overflow-x:hidden;
 }
 
-button,input,select,textarea{
+button,
+input,
+select,
+textarea{
   font:inherit;
 }
 
@@ -160,6 +165,12 @@ nav button.active{
 }
 
 .grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.form-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
@@ -298,6 +309,14 @@ nav button.active{
   color:var(--muted);
 }
 
+.field-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
 input,
 select,
 textarea{
@@ -309,6 +328,7 @@ textarea{
   border-radius:11px;
   padding:11px;
   outline:none;
+  font-size:16px;
 }
 
 input:focus,
@@ -338,46 +358,63 @@ textarea{
     8px
     max(8px,env(safe-area-inset-bottom));
   overflow:hidden;
+  overscroll-behavior:contain;
 }
 
 .modal{
-  width:min(700px,100%);
-  max-height:calc(100dvh - 16px);
+  width:min(720px,100%);
+  max-height:calc(100vh - 16px);
+  max-height:calc(
+    100dvh -
+    env(safe-area-inset-top,0px) -
+    env(safe-area-inset-bottom,0px) -
+    8px
+  );
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+}
+
+.modal-head{
+  flex:none;
+  background:var(--card);
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--line);
+}
+
+.modal-head h2{
+  margin:0;
+}
+
+.modal-body{
+  flex:1 1 auto;
+  min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:16px;
-  box-shadow:var(--shadow);
-}
-
-.modal h2{
-  margin:0 0 12px;
-}
-
-.modal-head{
-  position:sticky;
-  top:-16px;
-  z-index:3;
-  background:var(--card);
-  padding-top:2px;
-  padding-bottom:8px;
+  padding:4px 16px 16px;
 }
 
 .modal-actions{
-  position:sticky;
-  bottom:-16px;
-  z-index:3;
-  background:linear-gradient(
-    to bottom,
-    transparent,
-    var(--card) 18%
+  flex:none;
+  background:var(--card);
+  border-top:1px solid var(--line);
+  padding:12px 16px calc(
+    12px + env(safe-area-inset-bottom)
   );
-  padding-top:18px;
-  padding-bottom:2px;
+}
+
+.modal-actions .actions{
+  width:100%;
+}
+
+.modal-actions .actions button{
+  flex:1 1 150px;
 }
 
 .close{
@@ -509,7 +546,11 @@ textarea{
 
 .adjust{
   display:grid;
-  grid-template-columns:minmax(110px,.8fr) minmax(90px,.7fr) minmax(130px,1.3fr) auto;
+  grid-template-columns:
+    minmax(110px,.8fr)
+    minmax(90px,.7fr)
+    minmax(130px,1.3fr)
+    auto;
   gap:7px;
   align-items:center;
   margin:7px 0;
@@ -599,6 +640,24 @@ textarea{
   flex:0 0 auto;
 }
 
+.venmo-field{
+  border:1px solid #2c6955;
+  background:#10231d;
+  border-radius:13px;
+  padding:12px;
+  margin:10px 0;
+}
+
+.venmo-field label{
+  color:#b9f7dc;
+}
+
+.saved-check{
+  color:var(--accent);
+  font-size:12px;
+  font-weight:700;
+}
+
 @media(max-width:649px){
 
   .wrap{
@@ -620,6 +679,10 @@ textarea{
 
   .card{
     padding:12px;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
   }
 
   .sitter-card>.row{
@@ -660,20 +723,27 @@ textarea{
 
   .modal{
     width:100%;
-    max-height:calc(100dvh - 4px);
+    max-height:calc(100vh - 4px);
+    max-height:calc(
+      100dvh -
+      env(safe-area-inset-top,0px) -
+      env(safe-area-inset-bottom,0px) -
+      2px
+    );
     border-radius:20px 20px 0 0;
-    padding:
-      14px
-      14px
-      calc(14px + env(safe-area-inset-bottom));
   }
 
   .modal-head{
-    top:-14px;
+    padding-top:12px;
   }
 
-  .modal-actions{
-    bottom:-14px;
+  .modal-actions .actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .modal-actions .actions button{
+    width:100%;
   }
 }
 
@@ -694,6 +764,7 @@ textarea{
 
   .modal{
     max-height:92dvh;
+    border-radius:20px;
   }
 }
 </style>
@@ -782,6 +853,7 @@ const dayName=d=>d
 const sitter=id=>state.sitters.find(s=>s.id===id);
 
 function notify(msg){
+
   let t=$('toast');
 
   if(!t)return;
@@ -811,13 +883,27 @@ function normalize(){
     :[];
 
   state.sitters=state.sitters.map(s=>({
+
     ...s,
+
     id:s.id||uid(),
-    paymentMethods:Array.isArray(s.paymentMethods)
+
+    paymentMethods:
+      Array.isArray(s.paymentMethods)
       ?s.paymentMethods
+        .filter(m=>m)
+        .map(m=>({
+          ...m,
+          id:m.id||uid(),
+          label:String(m.label||'Other').trim(),
+          handle:String(m.handle||'').trim()
+        }))
       :[],
+
     avatar:s.avatar||'',
+
     archived:!!s.archived
+
   }));
 
   state.shifts=state.shifts.map(s=>{
@@ -831,11 +917,17 @@ function normalize(){
       !adjustments.length &&
       (Number(s.adjustment)||0)!==0
     ){
+
       adjustments=[{
+
         id:uid(),
+
         type:s.adjustmentType||'other',
+
         amount:Number(s.adjustment)||0,
+
         note:s.adjustmentNote||''
+
       }];
     }
 
@@ -848,9 +940,13 @@ function normalize(){
     );
 
     return {
+
       ...s,
+
       id:s.id||uid(),
+
       adjustments,
+
       totalPay:round(
         base+
         adjustments.reduce(
@@ -858,6 +954,7 @@ function normalize(){
           0
         )
       ),
+
       basePay:base
     };
   });
@@ -953,6 +1050,7 @@ function hours(a,b){
 }
 
 function adjustmentsTotal(s){
+
   return round(
     (s.adjustments||[])
       .reduce(
@@ -963,6 +1061,7 @@ function adjustmentsTotal(s){
 }
 
 function total(s){
+
   return round(
     Number(s?.basePay||0)+
     adjustmentsTotal(s||{})
@@ -974,6 +1073,7 @@ function paid(s){
 }
 
 function outstandingFor(id){
+
   return round(
     state.shifts
       .filter(
@@ -987,6 +1087,7 @@ function outstandingFor(id){
 }
 
 function unpaid(id){
+
   return state.shifts
     .filter(
       s=>s.sitterId===id&&!paid(s)
@@ -1132,6 +1233,7 @@ function shell(){
 }
 
 function tab(t){
+
   state.tab=t;
   render();
 }
@@ -1690,7 +1792,7 @@ function shiftsPage(){
 
       ?`
 
-        <div class="grid">
+        <div class="form-grid">
 
           <input
             type="date"
@@ -1720,7 +1822,7 @@ function shiftsPage(){
 
         ?list.map(s=>`
 
-          <div class="item">
+          <div class="card">
 
             ${shiftItem(s)}
 
@@ -1817,6 +1919,8 @@ function sittersPage(){
 
 function sitterCard(s){
 
+  let venmo=venmoMethod(s);
+
   return `
 
     <div class="card sitter-card">
@@ -1841,21 +1945,50 @@ function sitterCard(s){
             </div>
 
             ${
-              s.paymentMethods?.length
+              venmo
 
               ?`
 
                 <div class="muted">
-                  ${
-                    s.paymentMethods
-                      .map(m=>esc(m.label))
-                      .join(' · ')
-                  }
+                  Venmo:
+                  <strong>
+                    @${esc(
+                      String(venmo.handle)
+                        .replace(/^@/,'')
+                    )}
+                  </strong>
                 </div>
 
               `
+              :''
+            }
 
-              :s.paymentInfo
+            ${
+              (s.paymentMethods||[])
+                .filter(
+                  m=>
+                    String(m.label).toLowerCase()!=='venmo'
+                )
+                .length
+
+              ?`
+
+                <div class="muted">
+
+                  ${
+                    (s.paymentMethods||[])
+                      .filter(
+                        m=>
+                          String(m.label).toLowerCase()!=='venmo'
+                      )
+                      .map(m=>esc(m.label))
+                      .join(' · ')
+                  }
+
+                </div>
+
+              `
+              :!venmo&&s.paymentInfo
 
               ?`
 
@@ -2325,23 +2458,35 @@ function clearBanner(){
   render();
 }
 
+/*
+  Payment methods other than Venmo are shown
+  here. Venmo now has its own dedicated field
+  in the sitter editor so the handle cannot be
+  accidentally left unsaved.
+*/
 function paymentMethodsHTML(methods){
 
   return (methods||[])
-    .map((m,i)=>`
+    .map((m,i)=>({m,i}))
+    .filter(
+      x=>
+        String(x.m.label)
+          .toLowerCase()!=='venmo'
+    )
+    .map(x=>`
 
       <div class="method">
 
         <div>
 
           <strong>
-            ${esc(m.label)}
+            ${esc(x.m.label)}
           </strong>
 
           <small>
             ${
-              m.handle
-              ?`<br>${esc(m.handle)}`
+              x.m.handle
+              ?`<br>${esc(x.m.handle)}`
               :''
             }
           </small>
@@ -2350,7 +2495,7 @@ function paymentMethodsHTML(methods){
 
         <button
           class="danger small"
-          onclick="removePaymentMethod(${i})"
+          onclick="removePaymentMethod(${x.i})"
         >
           Remove
         </button>
@@ -2361,11 +2506,103 @@ function paymentMethodsHTML(methods){
     .join('');
 }
 
+function getVenmoHandle(methods){
+
+  let m=(methods||[])
+    .find(
+      x=>
+        String(x.label)
+          .toLowerCase()
+        ===
+        'venmo'
+    );
+
+  return m
+    ?String(m.handle||'')
+      .trim()
+      .replace(/^@/,'')
+    :'';
+}
+
+function setVenmoHandle(handle){
+
+  handle=String(handle||'')
+    .trim()
+    .replace(/^@/,'');
+
+  let index=
+    window.editMethods.findIndex(
+      m=>
+        String(m.label)
+          .toLowerCase()
+        ===
+        'venmo'
+    );
+
+  if(handle){
+
+    if(index>=0){
+
+      window.editMethods[index]={
+        ...window.editMethods[index],
+        handle
+      };
+
+    }else{
+
+      /*
+        Put Venmo first because it is normally
+        the preferred payment method.
+      */
+
+      window.editMethods.unshift({
+
+        id:uid(),
+
+        label:'Venmo',
+
+        handle
+
+      });
+    }
+
+  }else if(index>=0){
+
+    window.editMethods.splice(
+      index,
+      1
+    );
+  }
+
+  let status=$('venmoStatus');
+
+  if(status){
+
+    status.textContent=
+      handle
+      ?'✓ Venmo handle will be saved with this sitter'
+      :'No Venmo handle saved';
+
+    status.className=
+      handle
+      ?'saved-check'
+      :'muted';
+  }
+
+  let methods=$('methods');
+
+  if(methods){
+
+    methods.innerHTML=
+      paymentMethodsHTML(
+        window.editMethods
+      );
+  }
+}
+
 function openSitter(id){
 
   let s=sitter(id);
-
-  let avatar=s?.avatar||'';
 
   window.editMethods=
     JSON.parse(
@@ -2373,6 +2610,13 @@ function openSitter(id){
         s?.paymentMethods||[]
       )
     );
+
+  let venmoHandle=
+    getVenmoHandle(
+      window.editMethods
+    );
+
+  let avatar=s?.avatar||'';
 
   showModal(`
 
@@ -2395,161 +2639,195 @@ function openSitter(id){
 
     </div>
 
-    <div class="field">
+    <div class="modal-body">
 
-      <label>
-        Name
-      </label>
+      <div class="field">
 
-      <input
-        id="sn"
-        autocomplete="name"
-        value="${esc(s?.name||'')}"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Hourly rate
-      </label>
-
-      <input
-        id="sr"
-        type="number"
-        min="0"
-        step="0.01"
-        inputmode="decimal"
-        value="${esc(s?.rate??'20')}"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Payment methods, in priority order
-      </label>
-
-      <div class="muted">
-
-        Put the preferred method first.
-
-        Venmo can be launched directly from
-        the payment screen when a Venmo handle
-        is saved.
-
-      </div>
-
-      <div id="methods">
-
-        ${paymentMethodsHTML(
-          window.editMethods
-        )}
-
-      </div>
-
-      <div class="grid">
-
-        <select id="newMethod">
-
-          <option>
-            Venmo
-          </option>
-
-          <option>
-            PayPal
-          </option>
-
-          <option>
-            Cash App
-          </option>
-
-          <option>
-            Zelle
-          </option>
-
-          <option>
-            Other
-          </option>
-
-        </select>
+        <label>
+          Name
+        </label>
 
         <input
-          id="newHandle"
-          placeholder="Handle, username, email, or other info"
-          autocomplete="off"
+          id="sn"
+          autocomplete="name"
+          value="${esc(s?.name||'')}"
         >
 
       </div>
 
-      <button
-        class="secondary small"
-        onclick="addPaymentMethod()"
-      >
-        + Add Payment Method
-      </button>
+      <div class="field">
 
-    </div>
+        <label>
+          Hourly rate
+        </label>
 
-    <div class="field">
+        <input
+          id="sr"
+          type="number"
+          min="0"
+          step="0.01"
+          inputmode="decimal"
+          value="${esc(s?.rate??'20')}"
+        >
 
-      <label>
-        Photo
-      </label>
+      </div>
 
-      ${
-        avatar
+      <div class="venmo-field">
 
-        ?`
+        <div class="field" style="margin:0">
 
-          <img
-            id="spreview"
-            src="${esc(avatar)}"
-            style="
-              width:90px;
-              height:90px;
-              border-radius:50%;
-              object-fit:cover
-            "
+          <label>
+            Venmo username
+          </label>
+
+          <input
+            id="venmoHandle"
+            placeholder="Example: jane-smith23"
+            autocomplete="off"
+            value="${esc(venmoHandle)}"
+            oninput="setVenmoHandle(this.value)"
           >
-
-        `
-
-        :`
 
           <div
-            id="spreview"
-            class="avatar"
-            style="
-              width:90px;
-              height:90px
-            "
+            id="venmoStatus"
+            class="${venmoHandle?'saved-check':'muted'}"
           >
-            ${esc(
-              initials(
-                s?.name||
-                'Sitter'
-              )
-            )}
+            ${
+              venmoHandle
+              ?'✓ Venmo handle will be saved with this sitter'
+              :'No Venmo handle saved'
+            }
           </div>
 
-        `
-      }
+          <div class="muted">
+            Enter the Venmo username only. You can include
+            or leave off the @ — the app will clean it up.
+          </div>
 
-      <input
-        id="sphoto"
-        type="file"
-        accept="image/*"
-      >
+        </div>
 
-      <button
-        class="secondary small"
-        onclick="removeSitterPhoto()"
-      >
-        Remove Photo
-      </button>
+      </div>
+
+      <div class="field">
+
+        <label>
+          Other payment methods
+        </label>
+
+        <div class="muted">
+
+          Venmo is saved automatically above.
+          Use this section for PayPal, Cash App,
+          Zelle, cash, or other payment information.
+
+        </div>
+
+        <div id="methods">
+
+          ${paymentMethodsHTML(
+            window.editMethods
+          )}
+
+        </div>
+
+        <div class="form-grid">
+
+          <select id="newMethod">
+
+            <option>
+              PayPal
+            </option>
+
+            <option>
+              Cash App
+            </option>
+
+            <option>
+              Zelle
+            </option>
+
+            <option>
+              Other
+            </option>
+
+          </select>
+
+          <input
+            id="newHandle"
+            placeholder="Handle, username, email, or other info"
+            autocomplete="off"
+          >
+
+        </div>
+
+        <button
+          class="secondary small"
+          onclick="addPaymentMethod()"
+        >
+          + Add Payment Method
+        </button>
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Photo
+        </label>
+
+        ${
+          avatar
+
+          ?`
+
+            <img
+              id="spreview"
+              src="${esc(avatar)}"
+              style="
+                width:90px;
+                height:90px;
+                border-radius:50%;
+                object-fit:cover
+              "
+            >
+
+          `
+
+          :`
+
+            <div
+              id="spreview"
+              class="avatar"
+              style="
+                width:90px;
+                height:90px
+              "
+            >
+              ${esc(
+                initials(
+                  s?.name||
+                  'Sitter'
+                )
+              )}
+            </div>
+
+          `
+        }
+
+        <input
+          id="sphoto"
+          type="file"
+          accept="image/*"
+        >
+
+        <button
+          class="secondary small"
+          onclick="removeSitterPhoto()"
+        >
+          Remove Photo
+        </button>
+
+      </div>
 
     </div>
 
@@ -2685,10 +2963,31 @@ function addPaymentMethod(){
     );
   }
 
+  /*
+    This is a safety net in case Venmo is ever
+    selected from the generic payment method box.
+    It updates the dedicated Venmo field instead
+    of creating a duplicate Venmo entry.
+  */
+
+  if(
+    String(label)
+      .toLowerCase()==='venmo'
+  ){
+
+    setVenmoHandle(handle);
+
+    $('newHandle').value='';
+
+    return;
+  }
+
   window.editMethods.push({
 
     id:uid(),
+
     label,
+
     handle
 
   });
@@ -2703,7 +3002,10 @@ function addPaymentMethod(){
 
 function removePaymentMethod(i){
 
-  window.editMethods.splice(i,1);
+  window.editMethods.splice(
+    i,
+    1
+  );
 
   $('methods').innerHTML=
     paymentMethodsHTML(
@@ -2734,19 +3036,57 @@ function saveSitter(id){
     );
   }
 
+  /*
+    IMPORTANT:
+    Read the dedicated Venmo field directly
+    at save time. This means the handle is saved
+    even if the user never presses an Add button.
+  */
+
+  let venmoInput=
+    $('venmoHandle')?.value||
+    '';
+
+  setVenmoHandle(
+    venmoInput
+  );
+
+  /*
+    Make a clean copy so the temporary editor
+    object is not accidentally shared with state.
+  */
+
+  let methods=
+    JSON.parse(
+      JSON.stringify(
+        window.editMethods||[]
+      )
+    );
+
   if(id){
 
     let s=sitter(id);
 
+    if(!s){
+
+      return notify(
+        'Sitter could not be found'
+      );
+    }
+
     Object.assign(s,{
+
       name,
+
       rate:round(rate),
-      paymentMethods:
-        window.editMethods,
+
+      paymentMethods:methods,
+
       avatar:
         window.removeAvatar
         ?''
         :window.newAvatar
+
     });
 
   }else{
@@ -2754,24 +3094,51 @@ function saveSitter(id){
     state.sitters.push({
 
       id:uid(),
+
       name,
+
       rate:round(rate),
-      paymentMethods:
-        window.editMethods,
+
+      paymentMethods:methods,
+
       avatar:
         window.removeAvatar
         ?''
         :window.newAvatar,
+
       archived:false
 
     });
   }
 
-  save();
+  if(!save()){
+
+    return notify(
+      'Could not save sitter. Try again.'
+    );
+  }
+
+  /*
+    Verify that the Venmo handle really made it
+    into localStorage before closing the modal.
+  */
+
+  let saved=
+    sitter(id||state.sitters[state.sitters.length-1].id);
+
+  let savedVenmo=
+    getVenmoHandle(
+      saved?.paymentMethods||[]
+    );
+
   closeModal();
   render();
 
-  notify('Sitter saved');
+  notify(
+    savedVenmo
+    ?`Sitter saved — Venmo @${savedVenmo} saved`
+    :'Sitter saved'
+  );
 }
 
 function archiveSitter(id){
@@ -2815,6 +3182,13 @@ function openShift(id){
       s.id===sh?.sitterId
     );
 
+  if(!opts.length){
+
+    return notify(
+      'Add a sitter before adding a shift'
+    );
+  }
+
   let selected=
     sh?.sitterId||
     opts[0]?.id||
@@ -2846,162 +3220,166 @@ function openShift(id){
 
     </div>
 
-    <div class="field">
-
-      <label>
-        Sitter
-      </label>
-
-      <select
-        id="ss"
-        ${sh?'disabled':''}
-      >
-
-        ${
-          opts.map(s=>`
-
-            <option
-              value="${esc(s.id)}"
-              ${s.id===selected?'selected':''}
-            >
-              ${esc(s.name)}
-              ${
-                s.archived
-                ?' (archived)'
-                :''
-              }
-            </option>
-
-          `).join('')
-        }
-
-      </select>
-
-    </div>
-
-    <div class="grid">
+    <div class="modal-body">
 
       <div class="field">
 
         <label>
-          Date
+          Sitter
         </label>
 
-        <input
-          id="sd"
-          type="date"
-          value="${esc(
-            sh?.date||
-            today()
-          )}"
+        <select
+          id="ss"
+          ${sh?'disabled':''}
         >
+
+          ${
+            opts.map(s=>`
+
+              <option
+                value="${esc(s.id)}"
+                ${s.id===selected?'selected':''}
+              >
+                ${esc(s.name)}
+                ${
+                  s.archived
+                  ?' (archived)'
+                  :''
+                }
+              </option>
+
+            `).join('')
+          }
+
+        </select>
+
+      </div>
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label>
+            Date
+          </label>
+
+          <input
+            id="sd"
+            type="date"
+            value="${esc(
+              sh?.date||
+              today()
+            )}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            Hourly rate
+          </label>
+
+          <input
+            id="srate"
+            type="number"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            value="${esc(rate)}"
+          >
+
+        </div>
+
+      </div>
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label>
+            Start
+          </label>
+
+          <input
+            id="sst"
+            type="time"
+            value="${esc(
+              sh?.start||
+              '17:00'
+            )}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>
+            End
+          </label>
+
+          <input
+            id="se"
+            type="time"
+            value="${esc(
+              sh?.end||
+              '21:00'
+            )}"
+          >
+
+        </div>
 
       </div>
 
       <div class="field">
 
         <label>
-          Hourly rate
+          Separate adjustments
         </label>
 
-        <input
-          id="srate"
-          type="number"
-          min="0"
-          step="0.01"
-          inputmode="decimal"
-          value="${esc(rate)}"
+        <div class="muted">
+
+          Add each reimbursement, tip, bonus,
+          or deduction as its own line.
+
+        </div>
+
+        <div id="adjustments"></div>
+
+        <button
+          class="secondary small"
+          onclick="addAdjustmentRow()"
         >
-
-      </div>
-
-    </div>
-
-    <div class="grid">
-
-      <div class="field">
-
-        <label>
-          Start
-        </label>
-
-        <input
-          id="sst"
-          type="time"
-          value="${esc(
-            sh?.start||
-            '17:00'
-          )}"
-        >
+          + Add Adjustment
+        </button>
 
       </div>
 
       <div class="field">
 
         <label>
-          End
+          Shift notes
         </label>
 
-        <input
-          id="se"
-          type="time"
-          value="${esc(
-            sh?.end||
-            '21:00'
-          )}"
+        <textarea id="snotes">${esc(
+          sh?.notes||''
+        )}</textarea>
+
+      </div>
+
+      <div class="card">
+
+        <div class="label">
+          Preview
+        </div>
+
+        <div
+          id="preview"
+          class="stat"
         >
+          $0.00
+        </div>
 
-      </div>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Separate adjustments
-      </label>
-
-      <div class="muted">
-
-        Add each reimbursement, tip, bonus,
-        or deduction as its own line.
-
-      </div>
-
-      <div id="adjustments"></div>
-
-      <button
-        class="secondary small"
-        onclick="addAdjustmentRow()"
-      >
-        + Add Adjustment
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Shift notes
-      </label>
-
-      <textarea id="snotes">${esc(
-        sh?.notes||''
-      )}</textarea>
-
-    </div>
-
-    <div class="card">
-
-      <div class="label">
-        Preview
-      </div>
-
-      <div
-        id="preview"
-        class="stat"
-      >
-        $0.00
       </div>
 
     </div>
@@ -3077,8 +3455,11 @@ function addAdjustmentRow(
   window.shiftAdjustments.push({
 
     id:uid(),
+
     type,
+
     amount:Number(amount)||0,
+
     note
 
   });
@@ -3418,119 +3799,132 @@ function openPay(pre){
 
     </div>
 
-    <div class="field">
+    <div class="modal-body">
 
-      <label>
-        Sitter
-      </label>
+      <div class="field">
 
-      <select
-        id="ps"
-        onchange="payList()"
-      >
+        <label>
+          Sitter
+        </label>
 
-        ${
-          candidates.map(s=>`
+        <select
+          id="ps"
+          onchange="payList()"
+        >
 
-            <option
-              value="${s.id}"
-              ${s.id===sid?'selected':''}
-            >
-              ${esc(s.name)}
-            </option>
+          ${
+            candidates.map(s=>`
 
-          `).join('')
-        }
+              <option
+                value="${s.id}"
+                ${s.id===sid?'selected':''}
+              >
+                ${esc(s.name)}
+              </option>
 
-      </select>
+            `).join('')
+          }
+
+        </select>
+
+      </div>
+
+      <div id="payList"></div>
+
+      <div class="field">
+
+        <label>
+          Payment date
+        </label>
+
+        <input
+          id="pd"
+          type="date"
+          value="${today()}"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Method
+        </label>
+
+        <select
+          id="pm"
+          onchange="renderPaymentSummary();renderVenmoButton()"
+        >
+
+          <option>
+            Venmo
+          </option>
+
+          <option>
+            PayPal
+          </option>
+
+          <option>
+            Cash App
+          </option>
+
+          <option>
+            Zelle
+          </option>
+
+          <option>
+            Cash
+          </option>
+
+          <option>
+            Check
+          </option>
+
+          <option>
+            Bank Transfer
+          </option>
+
+          <option>
+            Other
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="field">
+
+        <div class="field-head">
+
+          <label>
+            Payment note
+          </label>
+
+          <button
+            class="secondary small"
+            onclick="useAutoPaymentNote()"
+          >
+            Use Auto Note
+          </button>
+
+        </div>
+
+        <input
+          id="pn"
+          placeholder="Auto-generated from selected shifts"
+          oninput="paymentNoteManuallyEdited=true;renderVenmoButton()"
+        >
+
+        <div class="muted">
+          Automatically built from the selected shift dates,
+          shift notes, and adjustment notes.
+        </div>
+
+      </div>
+
+      <div id="payActions"></div>
 
     </div>
-
-    <div id="payList"></div>
-
-    <div class="field">
-
-      <label>
-        Payment date
-      </label>
-
-      <input
-        id="pd"
-        type="date"
-        value="${today()}"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Method
-      </label>
-
-      <select
-        id="pm"
-        onchange="renderVenmoButton()"
-      >
-
-        <option>
-          Venmo
-        </option>
-
-        <option>
-          PayPal
-        </option>
-
-        <option>
-          Cash App
-        </option>
-
-        <option>
-          Zelle
-        </option>
-
-        <option>
-          Cash
-        </option>
-
-        <option>
-          Check
-        </option>
-
-        <option>
-          Bank Transfer
-        </option>
-
-        <option>
-          Other
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Payment note
-      </label>
-
-      <input
-        id="pn"
-        placeholder="Auto-generated from selected shifts"
-        oninput="paymentNoteManuallyEdited=true"
-      >
-
-      <button
-        class="secondary small"
-        onclick="useAutoPaymentNote()"
-      >
-        Use Auto Note
-      </button>
-
-    </div>
-
-    <div id="payActions"></div>
 
     <div class="modal-actions">
 
@@ -3651,6 +4045,11 @@ function autoPaymentNote(){
       shifts
     );
 
+  let shiftNotes=
+    shifts
+      .map(s=>String(s.notes||'').trim())
+      .filter(Boolean);
+
   let note=
     `Childcare: ${dateText}`;
 
@@ -3660,20 +4059,16 @@ function autoPaymentNote(){
       `; ${adjustmentParts.join(', ')}`;
   }
 
-  if(
-    shifts.length===1 &&
-    shifts[0].notes
-  ){
+  if(shiftNotes.length){
+
+    let uniqueNotes=[
+      ...new Set(shiftNotes)
+    ];
 
     note+=
-      `; ${shifts[0].notes}`;
+      `; Notes: ${uniqueNotes.join('; ')}`;
   }
 
-  /*
-    Venmo/payment notes should stay reasonably
-    short. Keep the generated version concise
-    while retaining the most useful details.
-  */
   if(note.length>240){
 
     note=
@@ -3695,7 +4090,48 @@ function useAutoPaymentNote(){
   input.value=
     autoPaymentNote();
 
+  renderPaymentSummary();
   renderVenmoButton();
+}
+
+function setPreferredPaymentMethod(sid){
+
+  let s=sitter(sid);
+
+  let preferred=
+    s?.paymentMethods?.[0];
+
+  let select=$('pm');
+
+  if(
+    !select||
+    !preferred
+  ){
+    return;
+  }
+
+  let value=
+    String(preferred.label||'');
+
+  let exists=
+    [...select.options]
+      .some(
+        o=>
+          o.value.toLowerCase()===
+          value.toLowerCase()
+      );
+
+  if(exists){
+
+    select.value=
+      [...select.options]
+        .find(
+          o=>
+            o.value.toLowerCase()===
+            value.toLowerCase()
+        )?.value||
+      select.value;
+  }
 }
 
 function payList(){
@@ -3703,6 +4139,8 @@ function payList(){
   let id=$('ps').value;
 
   let list=unpaid(id);
+
+  setPreferredPaymentMethod(id);
 
   $('payList').innerHTML=`
 
@@ -3816,6 +4254,9 @@ function renderPaymentSummary(){
   let v=
     venmoMethod(s);
 
+  let isVenmo=
+    $('pm')?.value==='Venmo';
+
   let note=
     $('pn')?.value.trim()||
     autoPaymentNote();
@@ -3837,7 +4278,7 @@ function renderPaymentSummary(){
       </div>
 
       ${
-        v
+        v&&isVenmo
 
         ?`
 
@@ -3884,12 +4325,28 @@ function renderPaymentSummary(){
           Copy Note
         </button>
 
-        <button
-          class="secondary small"
-          onclick="copyVenmoHandle()"
-        >
-          Copy Venmo
-        </button>
+        ${
+          v
+
+          ?`
+
+            <button
+              class="secondary small"
+              onclick="copyVenmoHandle()"
+            >
+              Copy Venmo
+            </button>
+
+          `
+          :`
+            <button
+              class="secondary small"
+              disabled
+            >
+              No Venmo
+            </button>
+          `
+        }
 
       </div>
 
@@ -3905,7 +4362,8 @@ function venmoMethod(s){
         String(m.label)
           .toLowerCase()
         ===
-        'venmo'
+        'venmo' &&
+        String(m.handle||'').trim()
     );
 }
 
@@ -3949,11 +4407,6 @@ function renderVenmoButton(){
 
   if(!box)return;
 
-  /*
-    renderPaymentSummary creates the box contents.
-    If there is no payment selected, nothing is shown.
-  */
-
   let s=
     sitter(
       $('ps')?.value
@@ -3965,17 +4418,13 @@ function renderVenmoButton(){
   let v=
     venmoMethod(s);
 
-  if(
-    !amount||
-    !v
-  ){
+  /*
+    Only show the Venmo controls when Venmo
+    is actually the selected payment method.
+  */
 
-    return;
-  }
-
-  let note=
-    $('pn')?.value.trim()||
-    autoPaymentNote();
+  let isVenmo=
+    $('pm')?.value==='Venmo';
 
   let summary=
     box.querySelector(
@@ -3984,11 +4433,16 @@ function renderVenmoButton(){
 
   if(!summary){
 
-    renderPaymentSummary();
-    summary=
-      box.querySelector(
-        '.payment-summary'
-      );
+    if(
+      amount&&
+      s
+    ){
+      renderPaymentSummary();
+      summary=
+        box.querySelector(
+          '.payment-summary'
+        );
+    }
   }
 
   if(!summary)return;
@@ -4002,6 +4456,19 @@ function renderVenmoButton(){
     existing.remove();
   }
 
+  if(
+    !isVenmo||
+    !amount||
+    !v
+  ){
+
+    return;
+  }
+
+  let note=
+    $('pn')?.value.trim()||
+    autoPaymentNote();
+
   let div=
     document.createElement('div');
 
@@ -4014,13 +4481,31 @@ function renderVenmoButton(){
       style="margin-top:10px"
     >
 
-      Venmo recipient:
+      <strong>
+        Venmo is ready
+      </strong>
+
+      <br>
+
+      Recipient:
       <strong>
         @${esc(
           String(v.handle)
             .replace(/^@/,'')
         )}
       </strong>
+
+      <br>
+
+      Amount:
+      <strong>
+        ${money(amount)}
+      </strong>
+
+      <br>
+
+      Note:
+      ${esc(note)}
 
     </div>
 
@@ -4032,6 +4517,17 @@ function renderVenmoButton(){
       onclick="openVenmo()"
     >
       Open Venmo — ${money(amount)}
+    </button>
+
+    <button
+      class="secondary small"
+      style="
+        width:100%;
+        margin-top:7px
+      "
+      onclick="openVenmoWeb()"
+    >
+      Open Venmo Web
     </button>
 
   `;
@@ -4082,8 +4578,8 @@ function openVenmo(){
 
   /*
     Try the native Venmo app first.
-    If the browser cannot hand off to the
-    Venmo app, fall back to the web URL.
+    If the device/browser cannot hand off
+    to Venmo, fall back to the web URL.
   */
 
   let started=
@@ -4107,19 +4603,59 @@ function openVenmo(){
   setTimeout(()=>{
 
     if(
+      document.visibilityState==='visible' &&
       Date.now()-started<
-      2200
+      2500
     ){
 
       try{
-        window.open(
-          webUrl,
-          '_blank'
-        );
+        window.location.href=
+          webUrl;
       }catch{}
     }
 
-  },1200);
+  },1400);
+}
+
+function openVenmoWeb(){
+
+  let s=
+    sitter(
+      $('ps').value
+    );
+
+  let v=
+    venmoMethod(s);
+
+  let amount=
+    selectedPayAmount();
+
+  if(
+    !v||
+    !amount
+  ){
+
+    return notify(
+      'Select shifts and add a Venmo handle for this sitter'
+    );
+  }
+
+  let note=
+    $('pn').value.trim()||
+    autoPaymentNote();
+
+  let url=
+    venmoUrl(
+      v.handle,
+      amount,
+      note
+    );
+
+  window.open(
+    url,
+    '_blank',
+    'noopener,noreferrer'
+  );
 }
 
 async function copyText(text,success){
@@ -4301,11 +4837,6 @@ function showModal(html){
 
   document.body.appendChild(d);
 
-  /*
-    Prevent the background page from scrolling
-    while a modal is open.
-  */
-
   document.body.style.overflow='hidden';
 
   d.addEventListener(
@@ -4319,11 +4850,6 @@ function showModal(html){
     }
   );
 
-  /*
-    Put focus into the first useful input,
-    but do not force the mobile keyboard open.
-  */
-
   setTimeout(()=>{
 
     let first=
@@ -4332,10 +4858,13 @@ function showModal(html){
       );
 
     if(first){
+
       try{
+
         first.focus({
           preventScroll:true
         });
+
       }catch{}
     }
 
@@ -4358,7 +4887,7 @@ function exportData(){
       [
         JSON.stringify(
           {
-            version:3,
+            version:4,
             sitters:state.sitters,
             shifts:state.shifts,
             payments:state.payments,
