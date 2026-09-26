@@ -47,13 +47,13 @@ textarea{
 
 button{
   border:0;
-  border-radius:12px;
-  padding:11px 14px;
+  border-radius:13px;
+  padding:12px 16px;
   background:var(--accent);
   color:#062218;
   font-weight:750;
   cursor:pointer;
-  min-height:42px;
+  min-height:52px;
 }
 
 button.secondary{
@@ -68,9 +68,9 @@ button.danger{
 }
 
 button.small{
-  padding:7px 10px;
-  min-height:36px;
-  font-size:13px;
+  padding:9px 12px;
+  min-height:44px;
+  font-size:14px;
 }
 
 button:disabled{
@@ -173,7 +173,7 @@ nav button.active{
 .form-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
+  gap:12px;
 }
 
 .card{
@@ -208,7 +208,7 @@ nav button.active{
 
 .actions{
   display:flex;
-  gap:7px;
+  gap:8px;
   flex-wrap:wrap;
 }
 
@@ -287,7 +287,7 @@ nav button.active{
 
 .filters{
   display:flex;
-  gap:7px;
+  gap:8px;
   flex-wrap:wrap;
   margin-bottom:10px;
 }
@@ -300,12 +300,12 @@ nav button.active{
 
 .field{
   display:grid;
-  gap:6px;
-  margin:10px 0;
+  gap:7px;
+  margin:12px 0;
 }
 
 .field label{
-  font-size:13px;
+  font-size:14px;
   color:var(--muted);
 }
 
@@ -325,21 +325,37 @@ textarea{
   background:#0e141b;
   color:var(--text);
   border:1px solid var(--line);
-  border-radius:11px;
-  padding:11px;
+  border-radius:13px;
+  padding:13px 14px;
   outline:none;
-  font-size:16px;
+  font-size:17px;
+  min-height:54px;
 }
 
 input:focus,
 select:focus,
 textarea:focus{
   border-color:#4a7b69;
+  box-shadow:0 0 0 2px #4a7b6933;
 }
 
 textarea{
-  min-height:80px;
+  min-height:105px;
   resize:vertical;
+  line-height:1.45;
+}
+
+input[type="checkbox"]{
+  width:24px;
+  height:24px;
+  min-height:24px;
+  padding:0;
+  accent-color:var(--accent);
+}
+
+input[type="file"]{
+  min-height:52px;
+  padding:9px;
 }
 
 .modalbg{
@@ -420,25 +436,28 @@ textarea{
 .close{
   background:transparent;
   color:var(--muted);
-  font-size:22px;
-  padding:3px 8px;
-  min-height:36px;
+  font-size:28px;
+  padding:4px 10px;
+  min-height:46px;
+  min-width:46px;
+  line-height:1;
 }
 
 .check{
   display:flex;
-  gap:10px;
+  gap:12px;
   align-items:flex-start;
-  padding:10px;
+  padding:12px;
   border:1px solid var(--line);
-  border-radius:10px;
-  margin:6px 0;
+  border-radius:12px;
+  margin:7px 0;
   min-width:0;
 }
 
 .check input{
-  width:auto;
-  margin-top:3px;
+  width:24px;
+  height:24px;
+  margin-top:1px;
   flex:none;
 }
 
@@ -450,7 +469,7 @@ textarea{
 .paytotal{
   font-size:24px;
   font-weight:800;
-  margin:10px 0;
+  margin:12px 0;
 }
 
 .pin{
@@ -503,6 +522,7 @@ textarea{
   color:var(--text);
   border:1px solid var(--line);
   font-size:19px;
+  min-height:58px;
 }
 
 .toast{
@@ -523,12 +543,12 @@ textarea{
 }
 
 .file{
-  padding:8px;
+  padding:9px;
 }
 
 .notice{
-  padding:10px;
-  border-radius:10px;
+  padding:11px;
+  border-radius:11px;
   background:#10231d;
   border:1px solid #245943;
   color:#b9f7dc;
@@ -536,24 +556,47 @@ textarea{
 }
 
 .dangerbox{
-  padding:10px;
-  border-radius:10px;
+  padding:11px;
+  border-radius:11px;
   background:#2b1117;
   border:1px solid #6a2735;
   color:#fecdd3;
   font-size:13px;
 }
 
+/* =========================================================
+   ADJUSTMENTS
+   ========================================================= */
+
 .adjust{
   display:grid;
   grid-template-columns:
-    minmax(110px,.8fr)
-    minmax(90px,.7fr)
-    minmax(130px,1.3fr)
-    auto;
-  gap:7px;
+    minmax(150px,.9fr)
+    minmax(130px,.75fr)
+    minmax(220px,1.4fr)
+    48px;
+  gap:9px;
   align-items:center;
-  margin:7px 0;
+  margin:10px 0;
+}
+
+.adjust select,
+.adjust input{
+  min-width:0;
+}
+
+.adjust-remove{
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  height:48px!important;
+  min-height:48px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center;
+  font-size:23px!important;
+  line-height:1;
+  border-radius:12px!important;
 }
 
 .breakdown{
@@ -580,12 +623,12 @@ textarea{
 .method{
   display:grid;
   grid-template-columns:1fr auto;
-  gap:7px;
+  gap:9px;
   align-items:center;
-  padding:9px;
+  padding:10px;
   border:1px solid var(--line);
-  border-radius:11px;
-  margin:7px 0;
+  border-radius:12px;
+  margin:8px 0;
   min-width:0;
 }
 
@@ -595,7 +638,7 @@ textarea{
 }
 
 .payment-summary{
-  padding:12px;
+  padding:13px;
   border:1px solid var(--line);
   background:var(--card2);
   border-radius:13px;
@@ -610,8 +653,8 @@ textarea{
 .copy-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-top:8px;
+  gap:8px;
+  margin-top:9px;
 }
 
 .muted{
@@ -644,7 +687,7 @@ textarea{
   border:1px solid #2c6955;
   background:#10231d;
   border-radius:13px;
-  padding:12px;
+  padding:13px;
   margin:10px 0;
 }
 
@@ -699,16 +742,33 @@ textarea{
     width:100%;
   }
 
+  /*
+    On phones, adjustment rows become:
+    type + amount
+    full-width note
+    small square delete button
+  */
+
   .adjust{
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:
+      minmax(0,1fr)
+      minmax(0,1fr);
+    gap:9px;
+    padding:2px 0;
   }
 
-  .adjust input:last-of-type{
+  .adjust select,
+  .adjust input{
+    width:100%;
+  }
+
+  .adjust input.adjust-note{
     grid-column:1 / -1;
   }
 
-  .adjust button{
-    width:100%;
+  .adjust-remove{
+    grid-column:1 / -1;
+    justify-self:start;
   }
 
   .copy-grid{
@@ -744,6 +804,10 @@ textarea{
 
   .modal-actions .actions button{
     width:100%;
+  }
+
+  .modal-actions .actions button:last-child{
+    grid-column:1 / -1;
   }
 }
 
@@ -1782,7 +1846,6 @@ function shiftsPage(){
 
           `).join('')
         }
-
       </select>
 
     </div>
@@ -2458,12 +2521,6 @@ function clearBanner(){
   render();
 }
 
-/*
-  Payment methods other than Venmo are shown
-  here. Venmo now has its own dedicated field
-  in the sitter editor so the handle cannot be
-  accidentally left unsaved.
-*/
 function paymentMethodsHTML(methods){
 
   return (methods||[])
@@ -2549,11 +2606,6 @@ function setVenmoHandle(handle){
       };
 
     }else{
-
-      /*
-        Put Venmo first because it is normally
-        the preferred payment method.
-      */
 
       window.editMethods.unshift({
 
@@ -2963,13 +3015,6 @@ function addPaymentMethod(){
     );
   }
 
-  /*
-    This is a safety net in case Venmo is ever
-    selected from the generic payment method box.
-    It updates the dedicated Venmo field instead
-    of creating a duplicate Venmo entry.
-  */
-
   if(
     String(label)
       .toLowerCase()==='venmo'
@@ -3036,13 +3081,6 @@ function saveSitter(id){
     );
   }
 
-  /*
-    IMPORTANT:
-    Read the dedicated Venmo field directly
-    at save time. This means the handle is saved
-    even if the user never presses an Add button.
-  */
-
   let venmoInput=
     $('venmoHandle')?.value||
     '';
@@ -3050,11 +3088,6 @@ function saveSitter(id){
   setVenmoHandle(
     venmoInput
   );
-
-  /*
-    Make a clean copy so the temporary editor
-    object is not accidentally shared with state.
-  */
 
   let methods=
     JSON.parse(
@@ -3117,11 +3150,6 @@ function saveSitter(id){
       'Could not save sitter. Try again.'
     );
   }
-
-  /*
-    Verify that the Venmo handle really made it
-    into localStorage before closing the modal.
-  */
 
   let saved=
     sitter(id||state.sitters[state.sitters.length-1].id);
@@ -3486,41 +3514,42 @@ function renderAdjustmentRows(){
               window.shiftAdjustments[${i}].type=this.value;
               updatePreview()
             "
+            aria-label="Adjustment type"
           >
 
             <option
               value="reimbursement"
               ${a.type==='reimbursement'?'selected':''}
             >
-              reimbursement
+              Reimbursement
             </option>
 
             <option
               value="bonus"
               ${a.type==='bonus'?'selected':''}
             >
-              bonus
+              Bonus
             </option>
 
             <option
               value="tip"
               ${a.type==='tip'?'selected':''}
             >
-              tip
+              Tip
             </option>
 
             <option
               value="deduction"
               ${a.type==='deduction'?'selected':''}
             >
-              deduction
+              Deduction
             </option>
 
             <option
               value="other"
               ${a.type==='other'?'selected':''}
             >
-              other
+              Other
             </option>
 
           </select>
@@ -3530,6 +3559,7 @@ function renderAdjustmentRows(){
             step="0.01"
             inputmode="decimal"
             placeholder="Amount"
+            aria-label="Adjustment amount"
             value="${a.amount||''}"
             oninput="
               window.shiftAdjustments[${i}].amount=Number(this.value)||0;
@@ -3538,7 +3568,9 @@ function renderAdjustmentRows(){
           >
 
           <input
-            placeholder="Note (food, toys, fuel...)"
+            class="adjust-note"
+            placeholder="Note — food, toys, fuel..."
+            aria-label="Adjustment note"
             value="${esc(a.note||'')}"
             oninput="
               window.shiftAdjustments[${i}].note=this.value
@@ -3546,12 +3578,14 @@ function renderAdjustmentRows(){
           >
 
           <button
-            class="danger small"
+            class="danger small adjust-remove"
             onclick="
               window.shiftAdjustments.splice(${i},1);
               renderAdjustmentRows();
               updatePreview()
             "
+            aria-label="Remove adjustment"
+            title="Remove adjustment"
           >
             ×
           </button>
@@ -4418,11 +4452,6 @@ function renderVenmoButton(){
   let v=
     venmoMethod(s);
 
-  /*
-    Only show the Venmo controls when Venmo
-    is actually the selected payment method.
-  */
-
   let isVenmo=
     $('pm')?.value==='Venmo';
 
@@ -4575,12 +4604,6 @@ function openVenmo(){
       amount,
       note
     );
-
-  /*
-    Try the native Venmo app first.
-    If the device/browser cannot hand off
-    to Venmo, fall back to the web URL.
-  */
 
   let started=
     Date.now();
