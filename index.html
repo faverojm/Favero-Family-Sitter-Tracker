@@ -738,6 +738,29 @@ input[type="file"]{
   font-weight:700;
 }
 
+.backup-area{
+  min-height:180px;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  font-size:13px;
+  line-height:1.4;
+}
+
+.backup-status{
+  margin-top:9px;
+  padding:10px 11px;
+  border-radius:11px;
+  background:#10231d;
+  border:1px solid #245943;
+  color:#b9f7dc;
+  font-size:13px;
+}
+
 @media(max-width:649px){
 
   .wrap{
@@ -884,6 +907,8 @@ const K={
   payments:'fst_payments',
   settings:'fst_settings'
 };
+
+const BACKUP_VERSION=5;
 
 const DEF={
   pin:'1313',
@@ -2393,16 +2418,25 @@ function settingsPage(){
     <div class="card">
 
       <h3>
-        Backup
+        Backup &amp; Restore
       </h3>
 
       <div class="notice">
 
-        Photos and tracker data are stored
+        Your sitter profiles, shifts, payments,
+        settings, and saved photos are stored
         in this browser.
 
-        Keep photos reasonably sized and make
-        backups before changing devices.
+        <br><br>
+
+        <strong>
+          Recommended:
+        </strong>
+        use <strong>Copy Backup</strong> when
+        moving to a new version or device.
+        You can then use <strong>Paste Backup</strong>
+        in the new app without hunting through
+        the iPhone Files app.
 
       </div>
 
@@ -2411,23 +2445,46 @@ function settingsPage(){
         style="margin-top:10px"
       >
 
-        <button onclick="exportData()">
-          Export Backup
+        <button onclick="copyBackup()">
+          Copy Backup
+        </button>
+
+        <button
+          class="secondary"
+          onclick="viewBackup()"
+        >
+          View Backup
+        </button>
+
+        <button
+          class="secondary"
+          onclick="pasteBackup()"
+        >
+          Paste Backup
         </button>
 
         <button
           class="secondary"
           onclick="$('importFile').click()"
         >
-          Import Backup
+          Import Backup File
         </button>
 
         <input
           id="importFile"
           type="file"
-          accept="application/json"
+          accept="application/json,.json"
           class="hidden"
         >
+
+      </div>
+
+      <div class="muted" style="margin-top:10px">
+
+        File download/import remains available as
+        a backup method. Photos can make backups
+        larger, so keep this backup somewhere safe
+        before changing devices.
 
       </div>
 
@@ -4940,22 +4997,427 @@ function closeModal(){
   document.body.style.overflow='';
 }
 
+/* =========================================================
+   BACKUP / RESTORE
+   ========================================================= */
+
+function getBackupObject(){
+
+  return {
+    app:'Family Sitter Tracker',
+    backupVersion:BACKUP_VERSION,
+    createdAt:new Date().toISOString(),
+    sitters:state.sitters,
+    shifts:state.shifts,
+    payments:state.payments,
+    settings:state.settings
+  };
+}
+
+function getBackupString(){
+
+  return JSON.stringify(
+    getBackupObject(),
+    null,
+    2
+  );
+}
+
+function validateBackupData(d){
+
+  if(!d||typeof d!=='object'){
+    return false;
+  }
+
+  if(
+    !Array.isArray(d.sitters)||
+    !Array.isArray(d.shifts)||
+    !Array.isArray(d.payments)
+  ){
+    return false;
+  }
+
+  if(
+    d.settings!==undefined&&
+    (
+      typeof d.settings!=='object'||
+      d.settings===null
+    )
+  ){
+    return false;
+  }
+
+  return true;
+}
+
+async function copyBackup(){
+
+  let text=
+    getBackupString();
+
+  try{
+
+    if(
+      navigator.clipboard&&
+      window.isSecureContext
+    ){
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      notify(
+        'Backup copied to clipboard'
+      );
+
+      return;
+    }
+
+    let ta=
+      document.createElement('textarea');
+
+    ta.value=text;
+
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    ta.style.top='0';
+
+    document.body.appendChild(ta);
+
+    ta.focus();
+    ta.select();
+
+    let ok=
+      document.execCommand('copy');
+
+    ta.remove();
+
+    if(ok){
+
+      notify(
+        'Backup copied to clipboard'
+      );
+
+    }else{
+
+      viewBackup();
+      notify(
+        'Select the backup text and copy it'
+      );
+    }
+
+  }catch(e){
+
+    viewBackup();
+
+    notify(
+      'Select the backup text and copy it'
+    );
+  }
+}
+
+async function pasteBackup(){
+
+  try{
+
+    if(
+      !navigator.clipboard||
+      !navigator.clipboard.readText
+    ){
+
+      return showPasteBackupModal(
+        'Clipboard access is not available here. Paste your backup into the box below.'
+      );
+    }
+
+    let text=
+      await navigator.clipboard.readText();
+
+    if(!text.trim()){
+
+      return showPasteBackupModal(
+        'Your clipboard appears to be empty. Paste the backup into the box below.'
+      );
+    }
+
+    showPasteBackupModal(
+      'Backup pasted from clipboard. Review it, then choose Restore Backup.',
+      text
+    );
+
+  }catch(e){
+
+    showPasteBackupModal(
+      'iPhone did not allow automatic clipboard access. Tap the backup box and paste the backup manually.'
+    );
+  }
+}
+
+function showPasteBackupModal(message='',text=''){
+
+  showModal(`
+
+    <div class="modal-head">
+
+      <div class="row">
+
+        <h2>
+          Paste Backup
+        </h2>
+
+        <button
+          class="close secondary"
+          onclick="closeModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="notice">
+        ${esc(message)}
+      </div>
+
+      <div class="field">
+
+        <label>
+          Backup text
+        </label>
+
+        <textarea
+          id="backupText"
+          class="backup-area"
+          placeholder="Paste your Family Sitter Tracker backup here..."
+          spellcheck="false"
+        ></textarea>
+
+      </div>
+
+      <div class="muted">
+
+        This backup contains your sitter profiles,
+        shifts, payments, settings, and saved photos.
+
+        The app will validate the backup before
+        replacing your current data.
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <div class="actions">
+
+        <button
+          onclick="restorePastedBackup()"
+        >
+          Restore Backup
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeModal()"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+  `);
+
+  if(text){
+
+    $('backupText').value=text;
+  }
+}
+
+function viewBackup(){
+
+  let text=
+    getBackupString();
+
+  showModal(`
+
+    <div class="modal-head">
+
+      <div class="row">
+
+        <h2>
+          Backup Text
+        </h2>
+
+        <button
+          class="close secondary"
+          onclick="closeModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="notice">
+
+        This is your complete tracker backup.
+
+        Use <strong>Copy Backup</strong> whenever
+        possible. This view is mainly a fallback
+        if automatic clipboard access does not work.
+
+      </div>
+
+      <div class="field">
+
+        <textarea
+          id="backupText"
+          class="backup-area"
+          spellcheck="false"
+        ></textarea>
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <div class="actions">
+
+        <button
+          onclick="copyVisibleBackup()"
+        >
+          Copy This Backup
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeModal()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+  `);
+
+  $('backupText').value=text;
+}
+
+function copyVisibleBackup(){
+
+  let text=
+    $('backupText')?.value||'';
+
+  if(!text){
+
+    return notify(
+      'There is no backup text to copy'
+    );
+  }
+
+  copyText(
+    text,
+    'Backup copied to clipboard'
+  );
+}
+
+function restorePastedBackup(){
+
+  let raw=
+    $('backupText')?.value?.trim()||
+    '';
+
+  if(!raw){
+
+    return notify(
+      'Paste a backup first'
+    );
+  }
+
+  let d;
+
+  try{
+
+    d=JSON.parse(raw);
+
+  }catch(e){
+
+    return notify(
+      'That does not appear to be a valid backup'
+    );
+  }
+
+  if(!validateBackupData(d)){
+
+    return notify(
+      'This backup is missing required tracker data'
+    );
+  }
+
+  let version=
+    Number(
+      d.backupVersion||
+      d.version||
+      1
+    );
+
+  let warning=
+    version>BACKUP_VERSION
+    ?'This backup was created by a newer version of the app. Continue only if you trust the backup.'
+    :'Replace all current tracker data with this backup?';
+
+  if(
+    !confirm(warning)
+  ){
+    return;
+  }
+
+  state.sitters=
+    d.sitters;
+
+  state.shifts=
+    d.shifts;
+
+  state.payments=
+    d.payments;
+
+  state.settings={
+    ...DEF,
+    ...(d.settings||{})
+  };
+
+  normalize();
+
+  if(!save()){
+
+    return notify(
+      'Could not save the restored backup'
+    );
+  }
+
+  closeModal();
+  render();
+
+  notify(
+    'Backup restored successfully'
+  );
+}
+
 function exportData(){
 
   let blob=
     new Blob(
       [
-        JSON.stringify(
-          {
-            version:4,
-            sitters:state.sitters,
-            shifts:state.shifts,
-            payments:state.payments,
-            settings:state.settings
-          },
-          null,
-          2
-        )
+        getBackupString()
       ],
       {
         type:'application/json'
@@ -4979,6 +5441,10 @@ function exportData(){
     ()=>URL.revokeObjectURL(a.href),
     1000
   );
+
+  notify(
+    'Backup download started'
+  );
 }
 
 function importData(e){
@@ -5001,17 +5467,24 @@ function importData(e){
         );
 
       if(
-        !Array.isArray(d.sitters)||
-        !Array.isArray(d.shifts)||
-        !Array.isArray(d.payments)
+        !validateBackupData(d)
       ){
 
         throw 0;
       }
 
+      let version=
+        Number(
+          d.backupVersion||
+          d.version||
+          1
+        );
+
       if(
         !confirm(
-          'Replace all current tracker data with this backup?'
+          version>BACKUP_VERSION
+          ?'This backup was created by a newer version of the app. Continue only if you trust the backup?'
+          :'Replace all current tracker data with this backup?'
         )
       ){
         return;
@@ -5027,11 +5500,18 @@ function importData(e){
       };
 
       normalize();
-      save();
+
+      if(!save()){
+
+        return notify(
+          'Could not save the imported backup'
+        );
+      }
+
       render();
 
       notify(
-        'Backup imported'
+        'Backup imported successfully'
       );
 
     }catch{
@@ -5040,6 +5520,7 @@ function importData(e){
         'Invalid backup file'
       );
     }
+
   };
 
   r.readAsText(f);
